@@ -61,7 +61,7 @@ export default class GameScene extends Phaser.Scene
         let y = this.height - this.btnSideLen;
         this.squareBtns = [];
         for (let i = 0; i < 4; i++) {
-            let x = calcLineX(i, 150, this.width) - this.btnSideLen / 2;
+            let x = calcLineX(i, this.bottomSpacing, this.width) - this.btnSideLen / 2;
             this.squareBtns[i] = new Phaser.Geom.Rectangle(x, y, this.btnSideLen, this.btnSideLen);
         }
     }
