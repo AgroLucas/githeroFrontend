@@ -1,42 +1,60 @@
-import Phaser from 'phaser'
+import Phaser, { Math } from 'phaser';
+import simple_note from "../../img/game_assets/star.png";
+
+// array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
+var map = [[0,0,1000], [0,0,3000], [0,2,3000]];
 
 export default class GameScene extends Phaser.Scene
 {
     
 	constructor()
 	{
-		super('game-scene')
+        super('game-scene');
+        this.width = 1600; //hardcoded -> TODO to find in properties ?
+        this.height = 900; //hardcoded -> TODO to find in properties ?
+        this.noteTravelTime = 3000;
+        this.btnSideLen=60;
 	}
 
 	preload()
 	{
+        this.load.image("simple_note", simple_note);
 	}
 
 	create()
 	{
-        let width = 1600; //hardcoded -> TODO to find in properties ?
-        let height = 900; //hardcoded -> TODO to find in properties ?
-
         this.graphics = this.add.graphics();
-        this.graphics.lineStyle(2,"#000000");
-        this.graphics.fillStyle(0xff0000);
 
-        this.createLines(width, height);
+        this.createLines(this.width, this.height);
 
-        let side=60;
-        this.createSquareBtns(height, side, width);
+        
+        this.createSquareBtns(this.height, this.width);
+
+        let i=1
+        this.createNote(i);
 
         this.drawAll();
     }
 
+    createNote(i) {
+        var follower = this.add.follower(this.lines[i], 0, 0, "simple_note");
 
+        follower.startFollow({
+            positionOnPath: true,
+            duration: this.noteTravelTime,
+            yoyo: true,
+            repeat: -1,
+            rotateToPath: true,
+            verticalAdjust: true
+        });
+    }
     
-    createSquareBtns(height, side, width) {
-        let y = height - side;
+    createSquareBtns(height, width) {
+        let y = height - this.btnSideLen;
         this.squareBtns = [];
         for (let i = 0; i < 4; i++) {
-            let x = calcLineX(i, 150, width) - side / 2;
-            this.squareBtns[i] = new Phaser.Geom.Rectangle(x, y, side, side);
+            let x = calcLineX(i, 150, width) - this.btnSideLen / 2;
+            this.squareBtns[i] = new Phaser.Geom.Rectangle(x, y, this.btnSideLen, this.btnSideLen);
         }
     }
 
@@ -48,15 +66,28 @@ export default class GameScene extends Phaser.Scene
         }
     }
 
-    drawAll() {
-        //lines
-        for(let i=0; i<4; i++){
-            this.lines[i].draw(this.graphics);
-        }
+    update()
+    {
 
-        //square buttons
-        for(let i=0; i<4; i++){
+    }
+
+    drawAll() {
+        this.drawLines();
+        this.drawBtns();
+    }
+
+
+    drawBtns() {
+        this.graphics.fillStyle(0xff0000);
+        for (let i = 0; i < 4; i++) {
             this.graphics.fillRectShape(this.squareBtns[i]);
+        }
+    }
+
+    drawLines() {
+        this.graphics.lineStyle(2, 0x000000);
+        for (let i = 0; i < 4; i++) {
+            this.lines[i].draw(this.graphics);
         }
     }
 }
@@ -73,5 +104,7 @@ const calcLineX = (i, deltaX, sceneWidth) => {
     return center + coeficients[i]*deltaX;
 }
 
-
-
+const calcNoteXFromY = (startX, endX, screenHeight, y) => {
+    let maxDisplacement = endX - startX;
+    return maxDisplacement * (y/screenHeight);
+}
