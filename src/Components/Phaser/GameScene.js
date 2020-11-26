@@ -56,11 +56,6 @@ export default class GameScene extends Phaser.Scene {
         this.drawAll();
         this.createNoteEvents(this.noteTravelTime, this.createNote, this);
 
-       /* for (let n = 0; n < this.arraysTimestamps.length; n++) {
-            for (let m = 0; m < this.arraysTimestamps[n].length; m++) {
-                this.createFirstTimeout(this.arraysTimestamps[n][m], n);
-            }
-        }*/
         setTimeout(this.endGame, this.songDuration, this);
         document.addEventListener("keypress", event => this.onKeypress(event));
     }
@@ -78,10 +73,11 @@ export default class GameScene extends Phaser.Scene {
 
     createNote(i, instance, time) {
         var follower = instance.add.follower(instance.lines[i], 0, 0, "simple_note");
+
         setTimeout(function(){
-            console.log("push");
             instance.queuesTimestampToValidate[i].push("a");
         },instance.noteTravelTime-instance.leway);
+
         follower.startFollow({
             positionOnPath: true,
             duration: instance.noteTravelTime,
@@ -157,35 +153,7 @@ export default class GameScene extends Phaser.Scene {
         console.log("Well Done");
         this.nbrTimestampSucceded++;
     }
-   /* 
-    //create a timeout and push it into arrayTimestampToValidate, not cleared before leway ms => user loses points
-    //second timer for x2 points if gud timing ??
-    createSecondTimeout (timestamp, arrayNumber, instance) {
-        switch(arrayNumber+1) {
-            case 1:
-                //instance.queuesTimestampToValidate[0].push(setTimeout(instance.onNoKeypress, instance.leway, timestamp, instance.queuesTimestampToValidate[0]));
-                console.log("Click on " + instance.KEY1 + " Now !");
-                break;
-            case 2:
-                instance.queuesTimestampToValidate[1].push(setTimeout(instance.onNoKeypress, instance.leway, timestamp, instance.queuesTimestampToValidate[1]));
-                console.log("Click on " + instance.KEY2 + "  Now !");
-                break;
-            case 3:
-                instance.queuesTimestampToValidate[2].push(setTimeout(instance.onNoKeypress, instance.leway, timestamp, instance.queuesTimestampToValidate[2]));
-                console.log("Click on " + instance.KEY3 + "  Now !");
-                break;
-            case 4:
-                instance.queuesTimestampToValidate[3].push(setTimeout(instance.onNoKeypress, instance.leway, timestamp, instance.queuesTimestampToValidate[3]));
-                console.log("Click on " + instance.KEY4 + "  Now !");
-                break;
-        }
-    }
-    
-    //create a timeout that will itself create another timeout after timestamp-leway ms
-    createFirstTimeout (timestamp, arrayNumber) {
-        setTimeout(this.createSecondTimeout, timestamp-this.leway, timestamp, arrayNumber, this);
-    }
-*/
+
     onKeypress (e) {
         //check if we clicked at the right time
         if (this.isStarted) {
@@ -219,8 +187,6 @@ export default class GameScene extends Phaser.Scene {
         console.log("You misclicked " + instance.nbrMissclicks + " times");
     }
 }
-
-
 
 //business methods
 
