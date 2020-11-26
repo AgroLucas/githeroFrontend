@@ -1,4 +1,3 @@
-let pageHTML = `test page content`;
-let page = document.querySelector("#page");
+import {Router} from "./Components/Router.js";
 
-page.innerHTML = pageHTML;
+Router();

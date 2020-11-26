@@ -1,0 +1,3 @@
+const setLayout = () => {};
+
+export {setLayout};
