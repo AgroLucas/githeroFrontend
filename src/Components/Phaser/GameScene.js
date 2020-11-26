@@ -2,7 +2,7 @@ import Phaser, { Game, Math, Time } from 'phaser';
 import simple_note from "../../img/game_assets/star.png";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
-var map = [[0,0,1000], [0,0,3000], [0,2,3000]];
+var beatmap = [[0,0,3000], [0,0,4000], [0,2,4000], [0,3,5000]];
 
 export default class GameScene extends Phaser.Scene
 {
@@ -26,31 +26,28 @@ export default class GameScene extends Phaser.Scene
 	create()
 	{
         this.graphics = this.add.graphics();
-
-        this.createLines(this.width, this.height);
-        
-        this.createSquareBtns(this.height, this.width);
-
+        this.createLines();
+        this.createSquareBtns();
         this.drawAll();
-
-        /*// doesn't work
-        let time = this.game.time;
-        map.forEach(function(noteObj) {
-            if(noteObj[0] == 0){//simple notes
-                let i = noteObj[1];
-                let delay = noteObj[2];
-                time.delayedCall(delay, ()=>{createNote(i)}, [], this);
-            }
-        });
-        */
+        this.createNoteEvents(this.noteTravelTime, this.createNote, this);
     }
 
-    createNote(i) {
-        var follower = this.add.follower(this.lines[i], 0, 0, "simple_note");
+    createNoteEvents(travelTime, createNote, instance) {
+        for (let n = 0; n < beatmap.length; n++) {
+            if (beatmap[n][0] == 0) { //simple notes
+                let i = beatmap[n][1];
+                let delay = beatmap[n][2] - travelTime;
+                setTimeout(function () { createNote(i, instance); }, delay);
+            }
+        }
+    }
+
+    createNote(i, instance) {
+        var follower = instance.add.follower(instance.lines[i], 0, 0, "simple_note");
 
         follower.startFollow({
             positionOnPath: true,
-            duration: this.noteTravelTime,
+            duration: instance.noteTravelTime,
             yoyo: false,
             ease: "Sine.easeIn",
             repeat: 0,
@@ -60,26 +57,25 @@ export default class GameScene extends Phaser.Scene
         });
     }
     
-    createSquareBtns(height, width) {
-        let y = height - this.btnSideLen;
+    createSquareBtns() {
+        let y = this.height - this.btnSideLen;
         this.squareBtns = [];
         for (let i = 0; i < 4; i++) {
-            let x = calcLineX(i, 150, width) - this.btnSideLen / 2;
+            let x = calcLineX(i, 150, this.width) - this.btnSideLen / 2;
             this.squareBtns[i] = new Phaser.Geom.Rectangle(x, y, this.btnSideLen, this.btnSideLen);
         }
     }
 
-    createLines(width, height) {
+    createLines() {
         this.lines = [];
         for (let i = 0; i < 4; i++) {
-            this.lines[i] = this.add.path(calcLineX(i, topSpacing, width), 0);
-            this.lines[i].lineTo(calcLineX(i, bottomSpacing, width), height+20);
+            this.lines[i] = this.add.path(calcLineX(i, this.topSpacing, this.width), 0);
+            this.lines[i].lineTo(calcLineX(i, this.bottomSpacing, this.width), this.height+20);
         }
     }
 
     update()
     {
-
     }
 
     drawAll() {

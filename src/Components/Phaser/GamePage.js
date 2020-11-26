@@ -18,7 +18,6 @@ const PhaserGamePage = () => {
     width: 1600,
     height: 900,
     backgroundColor: '#eeeeee',
-    
     /*
     physics: {
       default: "arcade",
@@ -29,7 +28,6 @@ const PhaserGamePage = () => {
       },
     },
     */
-   
     scene: [GameScene],
     //  parent DOM element into which the canvas created by the renderer will be injected.
     parent: "gameDiv",
