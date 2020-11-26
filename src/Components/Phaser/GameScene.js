@@ -1,4 +1,4 @@
-import Phaser, { Math } from 'phaser';
+import Phaser, { Game, Math, Time } from 'phaser';
 import simple_note from "../../img/game_assets/star.png";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
@@ -14,6 +14,8 @@ export default class GameScene extends Phaser.Scene
         this.height = 900; //hardcoded -> TODO to find in properties ?
         this.noteTravelTime = 3000;
         this.btnSideLen=60;
+        this.topSpacing = 50;
+        this.bottomSpacing = 150;
 	}
 
 	preload()
@@ -26,14 +28,21 @@ export default class GameScene extends Phaser.Scene
         this.graphics = this.add.graphics();
 
         this.createLines(this.width, this.height);
-
         
         this.createSquareBtns(this.height, this.width);
 
-        let i=1
-        this.createNote(i);
-
         this.drawAll();
+
+        /*// doesn't work
+        let time = this.game.time;
+        map.forEach(function(noteObj) {
+            if(noteObj[0] == 0){//simple notes
+                let i = noteObj[1];
+                let delay = noteObj[2];
+                time.delayedCall(delay, ()=>{createNote(i)}, [], this);
+            }
+        });
+        */
     }
 
     createNote(i) {
@@ -42,10 +51,12 @@ export default class GameScene extends Phaser.Scene
         follower.startFollow({
             positionOnPath: true,
             duration: this.noteTravelTime,
-            yoyo: true,
-            repeat: -1,
-            rotateToPath: true,
-            verticalAdjust: true
+            yoyo: false,
+            ease: "Sine.easeIn",
+            repeat: 0,
+            rotateToPath: false,
+            verticalAdjust: true,
+            onComplete: () => follower.destroy(),
         });
     }
     
@@ -61,8 +72,8 @@ export default class GameScene extends Phaser.Scene
     createLines(width, height) {
         this.lines = [];
         for (let i = 0; i < 4; i++) {
-            this.lines[i] = this.add.path(calcLineX(i, 50, width), 0);
-            this.lines[i].lineTo(calcLineX(i, 150, width), height);
+            this.lines[i] = this.add.path(calcLineX(i, topSpacing, width), 0);
+            this.lines[i].lineTo(calcLineX(i, bottomSpacing, width), height+20);
         }
     }
 
@@ -92,19 +103,16 @@ export default class GameScene extends Phaser.Scene
     }
 }
 
+//business methods
+
 /**
- * returns the x coordonate of the line to draw
- * @param i the number of the line (from left to right )
- * @param deltaX the distance between 2 lines
- * @param sceneWidth width of the scene 
+ * Returns the x coordonate of the line to draw
+ * @param i : the number of the line (from left to right )
+ * @param deltaX : the distance between 2 lines
+ * @param sceneWidth : width of the scene 
  */
 const calcLineX = (i, deltaX, sceneWidth) => {
     let center = sceneWidth/2;
     let coeficients = [-1.5, -0.5, 0.5, 1.5];
     return center + coeficients[i]*deltaX;
-}
-
-const calcNoteXFromY = (startX, endX, screenHeight, y) => {
-    let maxDisplacement = endX - startX;
-    return maxDisplacement * (y/screenHeight);
 }
