@@ -2,13 +2,12 @@ import Phaser, { Game, Math, Time } from 'phaser';
 import simple_note from "../../img/game_assets/star.png";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
-var beatmap = [[0,0,3000], [0,0,4000], [0,2,4000], [0,3,5000]];
+//timeStart must be > 3000
+var beatmap = [[0,0,3000], [0,0,5000], [0,0,6000], [0,0,7000]];
 
-export default class GameScene extends Phaser.Scene
-{
+export default class GameScene extends Phaser.Scene {
     
-	constructor()
-	{
+	constructor() {
         super('game-scene');
         this.width = 1600; //hardcoded -> TODO to find in properties ?
         this.height = 900; //hardcoded -> TODO to find in properties ?
@@ -16,20 +15,49 @@ export default class GameScene extends Phaser.Scene
         this.btnSideLen=60;
         this.topSpacing = 50;
         this.bottomSpacing = 150;
+        this.leway = 500; //delay in ms
+        this.isStarted = true;
+
+        /**** TODO need to be given ****/
+        this.songDuration = 8000;
+        this.KEY1 = "a";
+        this.KEY2 = "z";
+        this.KEY3 = "i";
+        this.KEY4 = "o";
+        this.arraysTimestamps = [];
+        for (let i = 0; i < 4; i++) {
+            this.arraysTimestamps[i] = [];
+        }
+
+        beatmap.forEach(element => {
+            this.arraysTimestamps[element[1]].push(element[2]);
+        });
+        /********/
+
+        //FIFO queue containing timestamps to be valitated
+        this.queuesTimestampToValidate = [];
+        for (let i = 0; i < 4; i++) {
+            this.queuesTimestampToValidate[i] = [];
+        }
+
+        this.nbrTimestamp = this.arraysTimestamps[0].length + this.arraysTimestamps[1].length + this.arraysTimestamps[2].length + this.arraysTimestamps[3].length;
+        this.nbrTimestampSucceded = 0;
+        this.nbrMissclicks = 0;
 	}
 
-	preload()
-	{
+	preload() {
         this.load.image("simple_note", simple_note);
 	}
 
-	create()
-	{
+	create() {
         this.graphics = this.add.graphics();
         this.createLines();
         this.createSquareBtns();
         this.drawAll();
         this.createNoteEvents(this.noteTravelTime, this.createNote, this);
+
+        setTimeout(this.endGame, this.songDuration, this);
+        document.addEventListener("keypress", event => this.onKeypress(event));
     }
 
     createNoteEvents(travelTime, createNote, instance) {
@@ -37,13 +65,18 @@ export default class GameScene extends Phaser.Scene
             if (beatmap[n][0] == 0) { //simple notes
                 let i = beatmap[n][1];
                 let delay = beatmap[n][2] - travelTime;
-                setTimeout(function () { createNote(i, instance); }, delay);
+                setTimeout(createNote, delay, i, instance, beatmap[n][2]);
+
             }
         }
     }
 
-    createNote(i, instance) {
+    createNote(i, instance, time) {
         var follower = instance.add.follower(instance.lines[i], 0, 0, "simple_note");
+
+        setTimeout(function(){
+            instance.queuesTimestampToValidate[i].push("a");
+        },instance.noteTravelTime-instance.leway);
 
         follower.startFollow({
             positionOnPath: true,
@@ -53,7 +86,10 @@ export default class GameScene extends Phaser.Scene
             repeat: 0,
             rotateToPath: false,
             verticalAdjust: true,
-            onComplete: () => follower.destroy(),
+            onComplete: () => {
+                follower.destroy();
+                instance.onNoKeypress(instance.queuesTimestampToValidate[i], i, time);
+            },
         });
     }
     
@@ -61,7 +97,7 @@ export default class GameScene extends Phaser.Scene
         let y = this.height - this.btnSideLen;
         this.squareBtns = [];
         for (let i = 0; i < 4; i++) {
-            let x = calcLineX(i, 150, this.width) - this.btnSideLen / 2;
+            let x = calcLineX(i, this.bottomSpacing, this.width) - this.btnSideLen / 2;
             this.squareBtns[i] = new Phaser.Geom.Rectangle(x, y, this.btnSideLen, this.btnSideLen);
         }
     }
@@ -74,8 +110,7 @@ export default class GameScene extends Phaser.Scene
         }
     }
 
-    update()
-    {
+    update() {
     }
 
     drawAll() {
@@ -96,6 +131,60 @@ export default class GameScene extends Phaser.Scene
         for (let i = 0; i < 4; i++) {
             this.lines[i].draw(this.graphics);
         }
+    }
+
+    //algorithm methods
+
+    onNoKeypress (queueToShift, lineNbr, time) {
+        if (queueToShift.length!==0) {
+            queueToShift.shift();
+            console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
+        }
+    }
+    
+    onKeypressTooEarly () { //suggested to remove ??? 
+        console.log("WRONGGG");
+        this.nbrMissclicks++;
+    }
+    
+    onKeypressRightTime (queueToShift) {
+        //clearTimeout(queueToShift.shift());
+        queueToShift.shift()
+        console.log("Well Done");
+        this.nbrTimestampSucceded++;
+    }
+
+    onKeypress (e) {
+        //check if we clicked at the right time
+        if (this.isStarted) {
+            let queueToShift;
+            switch(e.key) {
+                case this.KEY1:
+                    queueToShift = this.queuesTimestampToValidate[0];
+                    break;
+                case this.KEY2:
+                    queueToShift = this.queuesTimestampToValidate[1];
+                    break;
+                case this.KEY3:
+                    queueToShift = this.queuesTimestampToValidate[2];
+                    break;
+                case this.KEY4:
+                    queueToShift = this.queuesTimestampToValidate[3];
+                    break;
+            }
+            if (typeof queueToShift!=="undefined") {
+                if (queueToShift.length!==0)
+                    this.onKeypressRightTime(queueToShift);
+                else
+                    this.onKeypressTooEarly();
+            }
+        }
+    };
+
+    endGame (instance) {
+        instance.isStarted = false;
+        console.log("Your score is: " + instance.nbrTimestampSucceded + "/" + instance.nbrTimestamp);
+        console.log("You misclicked " + instance.nbrMissclicks + " times");
     }
 }
 
