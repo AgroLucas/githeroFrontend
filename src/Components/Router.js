@@ -75,4 +75,13 @@ const RedirectUrl = (uri, data) => {
     }
 };
 
-export { Router, RedirectUrl };
+/*
+const searchForPlayBtns = () => {
+    let playBtnArray = document.querySelectorAll(".playBtn");
+    for (let index = 0; index < playBtnArray.length; index++) {
+        let playBtn = playBtnArray[index];
+        playBtn.addEventListener("click", onNavigateHandler);
+    }
+}*/
+
+export { Router, RedirectUrl, /*searchForPlayBtns*/ };
