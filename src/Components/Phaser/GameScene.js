@@ -1,9 +1,10 @@
 import Phaser, { Game, Math, Time } from 'phaser';
-import simple_note from "../../img/game_assets/star.png";
+import simple_note from "../../img/game_assets/note_simple.png";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
 //timeStart must be > noteTravelTime
-var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400]];
+var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
+    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
 
 export default class GameScene extends Phaser.Scene {
     
@@ -17,7 +18,7 @@ export default class GameScene extends Phaser.Scene {
         this.isStarted = true;
 
         /**** TODO need to be given ****/
-        this.songDuration = 8000;
+        this.songDuration = beatmap[beatmap.length-1][2]+500;
         this.KEY1 = "d";
         this.KEY2 = "f";
         this.KEY3 = "j";
@@ -272,6 +273,6 @@ export default class GameScene extends Phaser.Scene {
         console.log("You misclicked " + instance.nbrMissclicks + " times");
 
         instance.add.text(100, 300, "Game Over", { font: '48px Arial', fill: '#000000' });
-        instance.add.text(100, 350, "Precision: " + pourcent + "%", { font: '24px Arial', fill: '#000000' })
+        instance.add.text(100, 350, "Précision: " + pourcent + "%", { font: '24px Arial', fill: '#000000' })
     }
 }
