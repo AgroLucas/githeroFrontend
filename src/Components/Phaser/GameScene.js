@@ -2,8 +2,8 @@ import Phaser, { Game, Math, Time } from 'phaser';
 import simple_note from "../../img/game_assets/star.png";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
-//timeStart must be > 3000
-var beatmap = [[0,0,3000], [0,0,5000], [0,0,6000], [0,0,7000]];
+//timeStart must be > noteTravelTime
+var beatmap = [[0,0,3000], [0,1,5000], [0,3,5000], [0,0,7000]];
 
 export default class GameScene extends Phaser.Scene {
     
@@ -13,17 +13,18 @@ export default class GameScene extends Phaser.Scene {
         this.height = 900; //hardcoded -> TODO to find in properties ?
         this.noteTravelTime = 3000;
         this.btnSideLen=60;
+        this.btnSideLenActive = 120;
         this.topSpacing = 50;
         this.bottomSpacing = 150;
-        this.leway = 500; //delay in ms
+        this.leway = 150; //delay in ms
         this.isStarted = true;
 
         /**** TODO need to be given ****/
         this.songDuration = 8000;
-        this.KEY1 = "a";
-        this.KEY2 = "z";
-        this.KEY3 = "i";
-        this.KEY4 = "o";
+        this.KEY1 = "d";
+        this.KEY2 = "f";
+        this.KEY3 = "j";
+        this.KEY4 = "k";
         this.arraysTimestamps = [];
         for (let i = 0; i < 4; i++) {
             this.arraysTimestamps[i] = [];
@@ -32,7 +33,6 @@ export default class GameScene extends Phaser.Scene {
         beatmap.forEach(element => {
             this.arraysTimestamps[element[1]].push(element[2]);
         });
-        /********/
 
         //FIFO queue containing timestamps to be valitated
         this.queuesTimestampToValidate = [];
@@ -41,7 +41,8 @@ export default class GameScene extends Phaser.Scene {
         }
 
         this.nbrTimestamp = this.arraysTimestamps[0].length + this.arraysTimestamps[1].length + this.arraysTimestamps[2].length + this.arraysTimestamps[3].length;
-        this.nbrTimestampSucceded = 0;
+        this.score = 0;
+        this.combo = 0;
         this.nbrMissclicks = 0;
 	}
 
@@ -54,10 +55,14 @@ export default class GameScene extends Phaser.Scene {
         this.createLines();
         this.createSquareBtns();
         this.drawAll();
+        this.scoreDisplay = this.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' });
+        this.comboDisplay = this.add.text(this.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
+
         this.createNoteEvents(this.noteTravelTime, this.createNote, this);
 
         setTimeout(this.endGame, this.songDuration, this);
         document.addEventListener("keypress", event => this.onKeypress(event));
+        document.addEventListener("keyup", event => this.onKeyup(event));
     }
 
     createNoteEvents(travelTime, createNote, instance) {
@@ -75,7 +80,8 @@ export default class GameScene extends Phaser.Scene {
         var follower = instance.add.follower(instance.lines[i], 0, 0, "simple_note");
 
         setTimeout(function(){
-            instance.queuesTimestampToValidate[i].push("a");
+            instance.queuesTimestampToValidate[i].push(follower);
+            console.log("push");
         },instance.noteTravelTime-instance.leway);
 
         follower.startFollow({
@@ -111,6 +117,31 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update() {
+        this.graphics.clear();
+        this.drawAll();
+    }
+
+    updateScore(scoreAdded) {
+        this.score += scoreAdded * this.combo;
+        this.scoreDisplay.setText("Score: " + this.score);
+    }
+
+    incrementCombo() {
+        this.combo++;
+        this.comboDisplay.setText("X" +this.combo);
+    }
+
+    resetCombo(){
+        this.combo = 0;
+        this.comboDisplay.setText("X" +this.combo);
+    }
+
+    setBtnBig(i) {
+        this.squareBtns[i].setSize(this.btnSideLenActive, this.btnSideLenActive);
+    }
+
+    setBtnNormal(i) {
+        this.squareBtns[i].setSize(this.btnSideLen, this.btnSideLen);
     }
 
     drawAll() {
@@ -137,6 +168,7 @@ export default class GameScene extends Phaser.Scene {
 
     onNoKeypress (queueToShift, lineNbr, time) {
         if (queueToShift.length!==0) {
+            this.resetCombo();
             queueToShift.shift();
             console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
         }
@@ -149,9 +181,11 @@ export default class GameScene extends Phaser.Scene {
     
     onKeypressRightTime (queueToShift) {
         //clearTimeout(queueToShift.shift());
-        queueToShift.shift()
+        let follower = queueToShift.shift()
+        follower.destroy();
         console.log("Well Done");
-        this.nbrTimestampSucceded++;
+        this.incrementCombo();
+        this.updateScore(100);
     }
 
     onKeypress (e) {
@@ -160,15 +194,19 @@ export default class GameScene extends Phaser.Scene {
             let queueToShift;
             switch(e.key) {
                 case this.KEY1:
+                    this.setBtnBig(0);
                     queueToShift = this.queuesTimestampToValidate[0];
                     break;
                 case this.KEY2:
+                    this.setBtnBig(1);
                     queueToShift = this.queuesTimestampToValidate[1];
                     break;
                 case this.KEY3:
+                    this.setBtnBig(2);
                     queueToShift = this.queuesTimestampToValidate[2];
                     break;
                 case this.KEY4:
+                    this.setBtnBig(3);
                     queueToShift = this.queuesTimestampToValidate[3];
                     break;
             }
@@ -180,6 +218,23 @@ export default class GameScene extends Phaser.Scene {
             }
         }
     };
+
+    onKeyup (e) {
+        switch(e.key){
+            case this.KEY1:
+                this.setBtnNormal(0);
+                break;
+            case this.KEY2:
+                this.setBtnNormal(1);
+                break;
+            case this.KEY3:
+                this.setBtnNormal(2);
+                break;
+            case this.KEY4:
+                this.setBtnNormal(3);
+                break;          
+        }
+    }
 
     endGame (instance) {
         instance.isStarted = false;
@@ -201,3 +256,4 @@ const calcLineX = (i, deltaX, sceneWidth) => {
     let coeficients = [-1.5, -0.5, 0.5, 1.5];
     return center + coeficients[i]*deltaX;
 }
+
