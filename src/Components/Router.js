@@ -1,8 +1,11 @@
 import GamePage from "./Phaser/GamePage.js";
+import MusicListPage from "./MusicListPage.js";
+import HomePage from "./HomePage.js";
 
 const routes = {
-    "/": GamePage,
+    "/": HomePage,
     "/game": GamePage,
+    "/list": MusicListPage,
 };
 
 let componentToRender;

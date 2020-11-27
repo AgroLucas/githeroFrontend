@@ -1,3 +1,7 @@
-const setLayout = () => {};
+"strict mode";
 
-export {setLayout};
+function setLayout(footerMenu) {
+    document.querySelector("#footerMenu").innerHTML = footerMenu;
+}
+
+export { setLayout };
