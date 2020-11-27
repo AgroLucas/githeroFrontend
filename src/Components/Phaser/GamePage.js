@@ -4,16 +4,14 @@ import { setLayout } from "../../utils/render.js";
 
 var game;
 
-const hideExternalElements = () => {/*
-  let header = document.querySelector("#header");
-  header.className += " d-none";*/
+const hideExternalElements = () => {
+  let navbar = document.querySelector("#navbar");
+  navbar.className += " d-none";
 }
 
 const PhaserGamePage = () => {
   hideExternalElements();
-  let phaserGame = `
-<div id="gameDiv" class="d-flex justify-content-center my-0">
-</div>`;
+  let phaserGame = `<div id="gameDiv" class="d-flex justify-content-center my-0"></div>`;
 
   let page = document.querySelector("#page");
   page.innerHTML = phaserGame;

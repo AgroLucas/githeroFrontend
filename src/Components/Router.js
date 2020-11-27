@@ -31,7 +31,10 @@ const onLoadHandler = (e) => {
 //onNavigateHandler
 const onNavigateHandler = (e) => {
     let uri;
-    if(e.target.tagName === "A") {
+    if(e.target.id === "logo"){
+        e.preventDefault();
+        uri = "/";
+    }else if(e.target.tagName === "A") {
         e.preventDefault();
         uri = e.target.dataset.uri;
     }
