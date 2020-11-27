@@ -24,19 +24,15 @@ export default class GameScene extends Phaser.Scene {
         this.KEY3 = "j";
         this.KEY4 = "k";
         this.arraysTimestamps = [];
+        this.queuesTimestampToValidate = [];
         for (let i = 0; i < 4; i++) {
             this.arraysTimestamps[i] = [];
+            this.queuesTimestampToValidate[i] = [];
         }
 
         beatmap.forEach(element => {
             this.arraysTimestamps[element[1]].push(element[2]);
         });
-
-        //FIFO queue containing timestamps to be valitated
-        this.queuesTimestampToValidate = [];
-        for (let i = 0; i < 4; i++) {
-            this.queuesTimestampToValidate[i] = [];
-        }
 
         this.nbrTimestamp = this.arraysTimestamps[0].length + this.arraysTimestamps[1].length + this.arraysTimestamps[2].length + this.arraysTimestamps[3].length;
         this.nbrHits = 0;
