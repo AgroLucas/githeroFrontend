@@ -3,19 +3,16 @@ import simple_note from "../../img/game_assets/star.png";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
 //timeStart must be > noteTravelTime
-var beatmap = [[0,0,3000], [0,1,5000], [0,3,5000], [0,0,7000]];
+var beatmap = [[0,0,3000], [0,1,3200], [0,2,3400], [0,3,3600], [0,3,4200], [0,0,4500], [0,1,4500], [0,2,4500], [0,3,4500]];
 
 export default class GameScene extends Phaser.Scene {
     
 	constructor() {
         super('game-scene');
-        this.width = 1600; //hardcoded -> TODO to find in properties ?
-        this.height = 900; //hardcoded -> TODO to find in properties ?
+        this.height = window.innerHeight;
+        this.width = window.innerWidth;//hardcoded -> TODO to find in properties ?
         this.noteTravelTime = 3000;
-        this.btnSideLen=60;
-        this.btnSideLenActive = 120;
-        this.topSpacing = 50;
-        this.bottomSpacing = 150;
+        this.setProportions();
         this.leway = 150; //delay in ms
         this.isStarted = true;
 
@@ -41,10 +38,26 @@ export default class GameScene extends Phaser.Scene {
         }
 
         this.nbrTimestamp = this.arraysTimestamps[0].length + this.arraysTimestamps[1].length + this.arraysTimestamps[2].length + this.arraysTimestamps[3].length;
+        this.nbrHits = 0;
         this.score = 0;
         this.combo = 0;
         this.nbrMissclicks = 0;
-	}
+    }
+    
+    setProportions() {
+        if(this.width < 1000){
+            this.topSpacing = this.width/5;
+            this.bottomSpacing = this.topSpacing;
+            this.btnSideLen= Math.RoundTo(this.width/6, 0);
+        }
+        else {
+            this.btnSideLen= Math.RoundTo(this.width/40, 0);
+            this.topSpacing = this.width/40, 0;
+            this.bottomSpacing = 3*this.topSpacing;
+        }
+        this.btnSideLenActive = Math.RoundTo(this.btnSideLen*0.9);
+        this.endPathY = this.height;
+    }
 
 	preload() {
         this.load.image("simple_note", simple_note);
@@ -98,12 +111,23 @@ export default class GameScene extends Phaser.Scene {
             },
         });
     }
-    
+
+    /**
+     * Returns the x coordonate of the line to draw
+     * @param i : the number of the line (from left to right )
+     * @param deltaX : the distance between 2 lines
+     */
+    calcLineX (i, deltaX) {
+        let center = this.width/2;
+        let coeficients = [-1.5, -0.5, 0.5, 1.5];
+        return center + coeficients[i]*deltaX;
+    }
+
     createSquareBtns() {
-        let y = this.height - this.btnSideLen;
+        let y = this.endPathY - this.btnSideLen;
         this.squareBtns = [];
         for (let i = 0; i < 4; i++) {
-            let x = calcLineX(i, this.bottomSpacing, this.width) - this.btnSideLen / 2;
+            let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLen / 2;
             this.squareBtns[i] = new Phaser.Geom.Rectangle(x, y, this.btnSideLen, this.btnSideLen);
         }
     }
@@ -111,8 +135,8 @@ export default class GameScene extends Phaser.Scene {
     createLines() {
         this.lines = [];
         for (let i = 0; i < 4; i++) {
-            this.lines[i] = this.add.path(calcLineX(i, this.topSpacing, this.width), 0);
-            this.lines[i].lineTo(calcLineX(i, this.bottomSpacing, this.width), this.height+20);
+            this.lines[i] = this.add.path(this.calcLineX(i, this.topSpacing), 0);
+            this.lines[i].lineTo(this.calcLineX(i, this.bottomSpacing), this.endPathY+(this.btnSideLen/2));
         }
     }
 
@@ -136,19 +160,23 @@ export default class GameScene extends Phaser.Scene {
         this.comboDisplay.setText("X" +this.combo);
     }
 
-    setBtnBig(i) {
-        this.squareBtns[i].setSize(this.btnSideLenActive, this.btnSideLenActive);
+    setBtnActive(i) {
+        let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLenActive / 2;
+        let y = this.height - this.btnSideLenActive;
+        this.squareBtns[i].setTo(x, y, this.btnSideLenActive, this.btnSideLenActive);
     }
 
-    setBtnNormal(i) {
-        this.squareBtns[i].setSize(this.btnSideLen, this.btnSideLen);
+    setBtnInactive(i) {
+        let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLen / 2;
+        let y = this.height - this.btnSideLen;
+        this.squareBtns[i].setTo(x, y, this.btnSideLen, this.btnSideLen);
+        
     }
 
     drawAll() {
         this.drawLines();
         this.drawBtns();
     }
-
 
     drawBtns() {
         this.graphics.fillStyle(0xff0000);
@@ -186,6 +214,7 @@ export default class GameScene extends Phaser.Scene {
         console.log("Well Done");
         this.incrementCombo();
         this.updateScore(100);
+        this.nbrHits++;
     }
 
     onKeypress (e) {
@@ -194,19 +223,19 @@ export default class GameScene extends Phaser.Scene {
             let queueToShift;
             switch(e.key) {
                 case this.KEY1:
-                    this.setBtnBig(0);
+                    this.setBtnActive(0);
                     queueToShift = this.queuesTimestampToValidate[0];
                     break;
                 case this.KEY2:
-                    this.setBtnBig(1);
+                    this.setBtnActive(1);
                     queueToShift = this.queuesTimestampToValidate[1];
                     break;
                 case this.KEY3:
-                    this.setBtnBig(2);
+                    this.setBtnActive(2);
                     queueToShift = this.queuesTimestampToValidate[2];
                     break;
                 case this.KEY4:
-                    this.setBtnBig(3);
+                    this.setBtnActive(3);
                     queueToShift = this.queuesTimestampToValidate[3];
                     break;
             }
@@ -222,38 +251,24 @@ export default class GameScene extends Phaser.Scene {
     onKeyup (e) {
         switch(e.key){
             case this.KEY1:
-                this.setBtnNormal(0);
+                this.setBtnInactive(0);
                 break;
             case this.KEY2:
-                this.setBtnNormal(1);
+                this.setBtnInactive(1);
                 break;
             case this.KEY3:
-                this.setBtnNormal(2);
+                this.setBtnInactive(2);
                 break;
             case this.KEY4:
-                this.setBtnNormal(3);
+                this.setBtnInactive(3);
                 break;          
         }
     }
 
     endGame (instance) {
         instance.isStarted = false;
-        console.log("Your score is: " + instance.nbrTimestampSucceded + "/" + instance.nbrTimestamp);
+        let pourcent = Math.RoundTo(instance.nbrHits/instance.nbrTimestamp*100,-2);
+        console.log("Your precision is: " + pourcent + "%");
         console.log("You misclicked " + instance.nbrMissclicks + " times");
     }
 }
-
-//business methods
-
-/**
- * Returns the x coordonate of the line to draw
- * @param i : the number of the line (from left to right )
- * @param deltaX : the distance between 2 lines
- * @param sceneWidth : width of the scene 
- */
-const calcLineX = (i, deltaX, sceneWidth) => {
-    let center = sceneWidth/2;
-    let coeficients = [-1.5, -0.5, 0.5, 1.5];
-    return center + coeficients[i]*deltaX;
-}
-

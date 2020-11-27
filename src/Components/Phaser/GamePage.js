@@ -4,10 +4,15 @@ import { setLayout } from "../../utils/render.js";
 
 var game;
 
+const hideExternalElements = () => {
+  let header = document.querySelector("#header");
+  header.className += " d-none";
+}
+
 const PhaserGamePage = () => {
-  setLayout("Making your first Phaser 3 game");
+  hideExternalElements();
   let phaserGame = `
-<div id="gameDiv" class="d-flex justify-content-center my-3">
+<div id="gameDiv" class="d-flex justify-content-center my-0">
 </div>`;
 
   let page = document.querySelector("#page");
@@ -15,8 +20,8 @@ const PhaserGamePage = () => {
 
   let config = {
     type: Phaser.AUTO,
-    width: 1600,
-    height: 900,
+    height: window.innerHeight,
+    width: window.innerWidth,
     backgroundColor: '#eeeeee',
     /*
     physics: {
