@@ -4,9 +4,9 @@ import { setLayout } from "../../utils/render.js";
 
 var game;
 
-const hideExternalElements = () => {
+const hideExternalElements = () => {/*
   let header = document.querySelector("#header");
-  header.className += " d-none";
+  header.className += " d-none";*/
 }
 
 const PhaserGamePage = () => {
