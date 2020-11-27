@@ -3,7 +3,7 @@ import simple_note from "../../img/game_assets/star.png";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
 //timeStart must be > noteTravelTime
-var beatmap = [[0,0,3000], [0,1,3200], [0,2,3400], [0,3,3600], [0,3,4200], [0,0,4500], [0,1,4500], [0,2,4500], [0,3,4500]];
+var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400]];
 
 export default class GameScene extends Phaser.Scene {
     
@@ -13,7 +13,7 @@ export default class GameScene extends Phaser.Scene {
         this.width = window.innerWidth;//hardcoded -> TODO to find in properties ?
         this.noteTravelTime = 3000;
         this.setProportions();
-        this.leway = 150; //delay in ms
+        this.leway = 170; //delay in ms
         this.isStarted = true;
 
         /**** TODO need to be given ****/
@@ -270,5 +270,8 @@ export default class GameScene extends Phaser.Scene {
         let pourcent = Math.RoundTo(instance.nbrHits/instance.nbrTimestamp*100,-2);
         console.log("Your precision is: " + pourcent + "%");
         console.log("You misclicked " + instance.nbrMissclicks + " times");
+
+        instance.add.text(100, 300, "Game Over", { font: '48px Arial', fill: '#000000' });
+        instance.add.text(100, 350, "Precision: " + pourcent + "%", { font: '24px Arial', fill: '#000000' })
     }
 }
