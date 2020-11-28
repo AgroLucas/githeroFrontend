@@ -16,6 +16,7 @@ export default class GameScene extends Phaser.Scene {
         this.setProportions();
         this.leway = 170; //delay in ms
         this.isStarted = true;
+        this.arrayTimeout = [];
 
         /**** TODO need to be given ****/
         this.songDuration = beatmap[beatmap.length-1][2]+500;
@@ -70,9 +71,10 @@ export default class GameScene extends Phaser.Scene {
 
         this.createNoteEvents(this.noteTravelTime, this.createNote, this);
 
-        setTimeout(this.endGame, this.songDuration, this);
+        this.arrayTimeout.push(setTimeout(this.endGame, this.songDuration, this));
         document.addEventListener("keypress", event => this.onKeypress(event));
         document.addEventListener("keyup", event => this.onKeyup(event));
+        
     }
 
     createNoteEvents(travelTime, createNote, instance) {
@@ -80,7 +82,7 @@ export default class GameScene extends Phaser.Scene {
             if (beatmap[n][0] == 0) { //simple notes
                 let i = beatmap[n][1];
                 let delay = beatmap[n][2] - travelTime;
-                setTimeout(createNote, delay, i, instance, beatmap[n][2]);
+                instance.arrayTimeout.push(setTimeout(createNote, delay, i, instance, beatmap[n][2]));
 
             }
         }
@@ -89,10 +91,10 @@ export default class GameScene extends Phaser.Scene {
     createNote(i, instance, time) {
         var follower = instance.add.follower(instance.lines[i], 0, 0, "simple_note");
 
-        setTimeout(function(){
+        instance.arrayTimeout.push(setTimeout(function(){
             instance.queuesTimestampToValidate[i].push(follower);
             console.log("push");
-        },instance.noteTravelTime-instance.leway);
+        },instance.noteTravelTime-instance.leway));
 
         follower.startFollow({
             positionOnPath: true,

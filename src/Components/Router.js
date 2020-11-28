@@ -10,6 +10,7 @@ const routes = {
 
 let componentToRender;
 let navbar = document.querySelector("#navbar");
+let game;
 
 const Router = () => {
     window.addEventListener("load", onLoadHandler);
@@ -20,6 +21,10 @@ const Router = () => {
 //onLoadHandler
 const onLoadHandler = (e) => {
     console.log("onLoad : ", window.location.pathname);
+    if (window.location.pathname==="/game") {
+        game = GamePage();
+        return;
+    }
     componentToRender = routes[window.location.pathname];
     if(!componentToRender){
         ErrorPage(window.location.pathname)
@@ -30,6 +35,8 @@ const onLoadHandler = (e) => {
 
 //onNavigateHandler
 const onNavigateHandler = (e) => {
+    if (game)
+        killGame();
     let uri;
     e.preventDefault();
     uri = e.target.dataset.uri;
@@ -37,6 +44,11 @@ const onNavigateHandler = (e) => {
         console.log("onNavigate : ", uri);
         if (window.location.pathname==="/list")
             removeModals();
+        if (uri==="/game") {
+            window.history.pushState({}, uri, window.location.origin + uri);
+            game = GamePage();
+            return;
+        }
         window.history.pushState({}, uri, window.location.origin + uri);
         componentToRender = routes[uri];
         if(!componentToRender) {
@@ -44,13 +56,20 @@ const onNavigateHandler = (e) => {
             return;
         }
         componentToRender();
+       
     }
 };
 
 //onHistoryHandler (arrows <- -> )
 const onHistoryHandler = (e) => {
+    if (game)
+        killGame();
     console.log("onHistory : ", window.location.pathname);
     removeModals();
+    if (window.location.pathname==="/game") {
+        game = GamePage();
+        return;
+    }
     componentToRender = routes[window.location.pathname];
     if(!componentToRender){
         ErrorPage(window.location.pathname);
@@ -89,6 +108,14 @@ const removeModals = () => {
         let m = modalArray[index];
         m.parentNode.removeChild(m);
     }
+}
+
+const killGame = () => {
+    game.scene.scenes[0].arrayTimeout.forEach(element => {
+        clearTimeout(element);
+    });
+    game.destroy(true);
+    game = undefined;
 }
 
 export { Router, RedirectUrl, searchForPlayBtns};

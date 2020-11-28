@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import GameScene from "./GameScene.js";
 import { setLayout } from "../../utils/render.js";
 
-var game;
+let game;
 
 const hideExternalElements = () => {
   let navbar = document.querySelector("#navbar");
@@ -41,6 +41,8 @@ const PhaserGamePage = () => {
   if(game)
     game.destroy(true);
   game = new Phaser.Game(config);
+  console.log("check");
+  return game;
 };
 
 export default PhaserGamePage;
