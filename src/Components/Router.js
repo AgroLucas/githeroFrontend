@@ -116,6 +116,8 @@ const killGame = () => {
     });
     game.destroy(true);
     game = undefined;
+    let navbar = document.querySelector("#navbar");
+    navbar.className -= " d-none";
 }
 
 export { Router, RedirectUrl, searchForPlayBtns};

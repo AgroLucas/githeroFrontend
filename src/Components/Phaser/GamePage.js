@@ -41,7 +41,6 @@ const PhaserGamePage = () => {
   if(game)
     game.destroy(true);
   game = new Phaser.Game(config);
-  console.log("check");
   return game;
 };
 
