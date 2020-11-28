@@ -3,8 +3,7 @@ import simple_note from "../../img/game_assets/note_simple.png";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
 //timeStart must be > noteTravelTime
-var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
+var beatmap = [[0,0,3000]];
 
 export default class GameScene extends Phaser.Scene {
     
@@ -15,15 +14,20 @@ export default class GameScene extends Phaser.Scene {
         this.noteTravelTime = 3000;
         this.setProportions();
         this.leway = 170; //delay in ms
+        this.lowestPoint = 50
         this.isStarted = true;
-        this.arrayTimeout = [];
+        // A map containing ::
+        //      As keys: all the active timeoutID
+        //      As values: an array containing the intervalID and the value(0 at the beginning) incremented by the interval 
+        this.mapTimeout = new Map();
 
         /**** TODO need to be given ****/
         this.songDuration = beatmap[beatmap.length-1][2]+500;
-        this.KEY1 = "d";
-        this.KEY2 = "f";
-        this.KEY3 = "j";
-        this.KEY4 = "k";
+        this.arrayKeys = [];
+        this.arrayKeys[0] = "d";
+        this.arrayKeys[1] = "f";
+        this.arrayKeys[2] = "j";
+        this.arrayKeys[3] = "k";
         this.arraysTimestamps = [];
         this.queuesTimestampToValidate = [];
         for (let i = 0; i < 4; i++) {
@@ -71,7 +75,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.createNoteEvents(this.noteTravelTime, this.createNote, this);
 
-        this.arrayTimeout.push(setTimeout(this.endGame, this.songDuration, this));
+        this.mapTimeout.set(setTimeout(this.endGame, this.songDuration, this));
         document.addEventListener("keypress", event => this.onKeypress(event));
         document.addEventListener("keyup", event => this.onKeyup(event));
         
@@ -80,22 +84,19 @@ export default class GameScene extends Phaser.Scene {
     createNoteEvents(travelTime, createNote, instance) {
         for (let n = 0; n < beatmap.length; n++) {
             if (beatmap[n][0] == 0) { //simple notes
-                let i = beatmap[n][1];
+                let lineNbr = beatmap[n][1];
                 let delay = beatmap[n][2] - travelTime;
-                instance.arrayTimeout.push(setTimeout(createNote, delay, i, instance, beatmap[n][2]));
-
+                instance.mapTimeout.set(setTimeout(createNote, delay, lineNbr, instance, beatmap[n][2]));
             }
         }
     }
 
-    createNote(i, instance, time) {
-        var follower = instance.add.follower(instance.lines[i], 0, 0, "simple_note");
-
-        instance.arrayTimeout.push(setTimeout(function(){
-            instance.queuesTimestampToValidate[i].push(follower);
-            console.log("push");
-        },instance.noteTravelTime-instance.leway));
-
+    createNote(lineNbr, instance, time) {
+        let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
+        let activationDelay = instance.noteTravelTime-instance.leway;
+        let timeoutID = setTimeout(instance.setFollowerToValidate, activationDelay, timeoutID, lineNbr, follower, instance);
+        
+        
         follower.startFollow({
             positionOnPath: true,
             duration: instance.noteTravelTime,
@@ -106,7 +107,7 @@ export default class GameScene extends Phaser.Scene {
             verticalAdjust: true,
             onComplete: () => {
                 follower.destroy();
-                instance.onNoKeypress(instance.queuesTimestampToValidate[i], i, time);
+                instance.onNoKeypress(instance.queuesTimestampToValidate[lineNbr], lineNbr, time, instance);
             },
         });
     }
@@ -193,10 +194,11 @@ export default class GameScene extends Phaser.Scene {
 
     //algorithm methods
 
-    onNoKeypress (queueToShift, lineNbr, time) {
+
+    onNoKeypress (queueToShift, lineNbr, time, instance) {
         if (queueToShift.length!==0) {
             this.resetCombo();
-            queueToShift.shift();
+            clearInterval(instance.mapTimeout.get(queueToShift.shift()[1])[0]);
             console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
         }
     }
@@ -207,13 +209,29 @@ export default class GameScene extends Phaser.Scene {
     }
     
     onKeypressRightTime (queueToShift) {
-        //clearTimeout(queueToShift.shift());
-        let follower = queueToShift.shift()
+        let array = queueToShift.shift();
+        let follower = array[0];
+        clearInterval(this.mapTimeout.get(array[1])[0]);
         follower.destroy();
         console.log("Well Done");
         this.incrementCombo();
-        this.updateScore(100);
+        this.updateScore(this.lowestPoint*this.mapTimeout.get(array[1])[1]);
         this.nbrHits++;
+    }
+
+    /**
+     * push into queuesTimestampToValidate the follower to validate and the timeoutID created for this follower
+     * create an interval which increment a number each 100ms
+     * set in mapTimeout the timeoutID as key and an array containing the intervalID and the incrementing value
+     * @param {*} timeoutID, the setTimeout's id of the follower
+     * @param {*} lineNbr, the line's number of the follower 
+     * @param {*} follower, the follower created 
+     * @param {*} instance, this 
+     */
+    setFollowerToValidate(timeoutID, lineNbr, follower, instance) {
+        instance.queuesTimestampToValidate[lineNbr].push([follower, timeoutID]);
+        console.log("push");
+        instance.mapTimeout.set(timeoutID, [setInterval(function() {instance.mapTimeout.get(timeoutID)[1]++}, 100),1]);
     }
 
     onKeypress (e) {
@@ -221,19 +239,19 @@ export default class GameScene extends Phaser.Scene {
         if (this.isStarted) {
             let queueToShift;
             switch(e.key) {
-                case this.KEY1:
+                case this.arrayKeys[0]:
                     this.setBtnActive(0);
                     queueToShift = this.queuesTimestampToValidate[0];
                     break;
-                case this.KEY2:
+                case this.arrayKeys[1]:
                     this.setBtnActive(1);
                     queueToShift = this.queuesTimestampToValidate[1];
                     break;
-                case this.KEY3:
+                case this.arrayKeys[2]:
                     this.setBtnActive(2);
                     queueToShift = this.queuesTimestampToValidate[2];
                     break;
-                case this.KEY4:
+                case this.arrayKeys[3]:
                     this.setBtnActive(3);
                     queueToShift = this.queuesTimestampToValidate[3];
                     break;
@@ -249,16 +267,16 @@ export default class GameScene extends Phaser.Scene {
 
     onKeyup (e) {
         switch(e.key){
-            case this.KEY1:
+            case this.arrayKeys[0]:
                 this.setBtnInactive(0);
                 break;
-            case this.KEY2:
+            case this.arrayKeys[1]:
                 this.setBtnInactive(1);
                 break;
-            case this.KEY3:
+            case this.arrayKeys[2]:
                 this.setBtnInactive(2);
                 break;
-            case this.KEY4:
+            case this.arrayKeys[3]:
                 this.setBtnInactive(3);
                 break;          
         }

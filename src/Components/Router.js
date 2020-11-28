@@ -111,9 +111,12 @@ const removeModals = () => {
 }
 
 const killGame = () => {
-    game.scene.scenes[0].arrayTimeout.forEach(element => {
-        clearTimeout(element);
-    });
+    
+    for (let [key, value] of game.scene.scenes[0].mapTimeout) {
+        clearTimeout(key);
+        if(value)
+            clearInterval(value[0]);
+    }
     game.destroy(true);
     game = undefined;
     let navbar = document.querySelector("#navbar");
