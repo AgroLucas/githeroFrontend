@@ -1,3 +1,41 @@
+/*********************************General classes*********************************/
+thead th {
+    background-color: #212529;
+}
+tbody td {
+    background-color: #292d32;
+}
+
+/*********************************On Navbar*********************************/
+#logo {
+    width: 40px;
+    cursor: pointer;
+}
+
+#profile {
+    width: 40px;
+    cursor: pointer;
+}
+
+li button {
+    margin-left: 15px;
+    margin-right: 15px;
+    width: 150px;
+    height: 60px;
+}
+
+.navbarButton {/**not used?**/
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.button_bottom { /**not used?**/
+    margin-left: 25px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+/*********************************On MusicListPage*********************************/
 .button_music {
     height: 200px;
     width: 300px;
@@ -5,7 +43,7 @@
     margin-left: 65px;
 }
 
-.modal-backdrop {
+.modal-backdrop { /**not used ?**/
     background-color: black;
 }
 
@@ -29,39 +67,4 @@
     color: white;
     font-size: 40px;
     
-}
-
-.navbarButton {
-    margin-left: 30px;
-    margin-right: 30px;
-}
-thead th {
-    background-color: #212529;
-}
-tbody td {
-    background-color: #292d32;
-}
-
-
-#logo {
-    width: 40px;
-    cursor: pointer;
-}
-
-#profile {
-    width: 40px;
-    cursor: pointer;
-}
-
-.button_bottom {
-    margin-left: 25px;
-    margin-top: 25px;
-    margin-bottom: 25px;
-}
-
-li button {
-    margin-left: 15px;
-    margin-right: 15px;
-    width: 150px;
-    height: 60px;
 }
