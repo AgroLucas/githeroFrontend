@@ -182,7 +182,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     resetCombo(){
-        if(this.combo >= 10){
+        if(this.combo > 10){
             this.playFailSound();
         }
         this.combo = 0;
@@ -238,15 +238,12 @@ export default class GameScene extends Phaser.Scene {
     }
     
     onKeypressRightTime (queueToShift) {
-<<<<<<< HEAD
+        this.playHitSound();
         let array = queueToShift.shift();
         let follower = array[0];
         clearInterval(this.mapTimeout.get(array[1])[0]);
-=======
-        //clearTimeout(queueToShift.shift());
-        this.playHitSound();
-        let follower = queueToShift.shift()
->>>>>>> a21473e... add - basic hit & fail sounds to the game
+
+        
         follower.destroy();
         console.log("Well Done");
         this.incrementCombo();
