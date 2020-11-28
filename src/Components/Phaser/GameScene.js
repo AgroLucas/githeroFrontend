@@ -182,7 +182,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     resetCombo(){
-        if(this.combo > 10){
+        if(this.combo >= 10){
             this.playFailSound();
         }
         this.combo = 0;
