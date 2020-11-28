@@ -1,4 +1,4 @@
-//import {searchForPlayBtns} from "./Router.js";
+import {searchForPlayBtns} from "./Router.js";
 
 "use strict";
 
@@ -46,7 +46,7 @@ for(const ELEMENT of TABMUSIC){
 
     modalHtml += `
 <div class="modal fade" id="myModal` + ELEMENT.id + `">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl" >
         <div class="modal-content">
         <!-- Modal Header -->
             <div class="modal-header">
@@ -101,8 +101,8 @@ for(const ELEMENT of TABMUSIC){
                 </div>
             </div>
         <!-- Modal Footer -->
-            <div class="modal-footer modal-dialog modal-dialog-centered">
-                <a type="button" class="btn btn-danger music_info_play_button playBtn"><h5>Jouer</h5></a>
+            <div class="d-flex justify-content-center mb-3">
+                <button type="button" class="btn btn-danger music_info_play_button playBtn" href="#" data-uri="/game"><h5 href="#" data-uri="/game">Jouer</h5></button>       
             </div>
         </div>
     </div>
@@ -113,7 +113,8 @@ let pageHtml = `<div id="button_page">${buttonHtml}</div><div id="modal_page">${
 
 const MusicListPage = () => {
     page.innerHTML = pageHtml;
-    //searchForPlayBtns();
+    searchForPlayBtns();
+    
 }
 
 export default MusicListPage;

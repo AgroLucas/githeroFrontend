@@ -31,13 +31,9 @@ const onLoadHandler = (e) => {
 //onNavigateHandler
 const onNavigateHandler = (e) => {
     let uri;
-    if(e.target.id === "logo"){
-        e.preventDefault();
-        uri = "/";
-    }else if(e.target.tagName === "A") {
-        e.preventDefault();
-        uri = e.target.dataset.uri;
-    }
+    e.preventDefault();
+    uri = e.target.dataset.uri;
+    
     if(uri) {
         console.log("onNavigate : ", uri);
         window.history.pushState({}, uri, window.location.origin + uri);
@@ -75,13 +71,13 @@ const RedirectUrl = (uri, data) => {
     }
 };
 
-/*
+
 const searchForPlayBtns = () => {
     let playBtnArray = document.querySelectorAll(".playBtn");
     for (let index = 0; index < playBtnArray.length; index++) {
         let playBtn = playBtnArray[index];
         playBtn.addEventListener("click", onNavigateHandler);
     }
-}*/
+}
 
-export { Router, RedirectUrl, /*searchForPlayBtns*/ };
+export { Router, RedirectUrl, searchForPlayBtns };
