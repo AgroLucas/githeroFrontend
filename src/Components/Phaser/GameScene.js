@@ -1,15 +1,14 @@
 import Phaser, { Game, Math, Time } from 'phaser';
 import simple_note from "../../img/game_assets/note_simple.png";
+import Note from "./Note.js"
 import hitSound1 from "../../audio/hit1.mp3";
 import hitSound2 from "../../audio/hit2.mp3";
 import failSound from "../../audio/fail.mp3";
 
-// array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
-//timeStart must be > noteTravelTime
+var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
+    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
+//var beatmap = [[0,0,3000]];
 
-/*var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];*/
-var beatmap = [[0,0,3000]];
 
 export default class GameScene extends Phaser.Scene {
     
@@ -22,10 +21,8 @@ export default class GameScene extends Phaser.Scene {
         this.leway = 170; //delay in ms
         this.lowestPoint = 50
         this.isStarted = true;
-        // A map containing ::
-        //      As keys: all the active timeoutID
-        //      As values: an array containing the intervalID and the value(0 at the beginning) incremented by the interval 
-        this.mapTimeout = new Map();
+        this.stackTimeout = []; //contain all timeout -> useful if we need to clear them all
+        this.stackInterval = []; //contain all interval -> useful if we need to clear them all
 
         /**** TODO need to be given ****/
         this.songDuration = beatmap[beatmap.length-1][2]+500;
@@ -34,18 +31,10 @@ export default class GameScene extends Phaser.Scene {
         this.arrayKeys[1] = "f";
         this.arrayKeys[2] = "j";
         this.arrayKeys[3] = "k";
-        this.arraysTimestamps = [];
         this.queuesTimestampToValidate = [];
-        for (let i = 0; i < 4; i++) {
-            this.arraysTimestamps[i] = [];
+        for (let i = 0; i < 4; i++)
             this.queuesTimestampToValidate[i] = [];
-        }
 
-        beatmap.forEach(element => {
-            this.arraysTimestamps[element[1]].push(element[2]);
-        });
-
-        this.nbrTimestamp = this.arraysTimestamps[0].length + this.arraysTimestamps[1].length + this.arraysTimestamps[2].length + this.arraysTimestamps[3].length;
         this.nbrHits = 0;
         this.score = 0;
         this.combo = 0;
@@ -104,7 +93,7 @@ export default class GameScene extends Phaser.Scene {
         //notes
         this.createNoteEvents(this.noteTravelTime, this.createNote, this);
 
-        this.mapTimeout.set(setTimeout(this.endGame, this.songDuration, this));
+        this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
         document.addEventListener("keypress", event => this.onKeypress(event));
         document.addEventListener("keyup", event => this.onKeyup(event));
         
@@ -112,20 +101,18 @@ export default class GameScene extends Phaser.Scene {
 
     createNoteEvents(travelTime, createNote, instance) {
         for (let n = 0; n < beatmap.length; n++) {
-            if (beatmap[n][0] == 0) { //simple notes
-                let lineNbr = beatmap[n][1];
-                let delay = beatmap[n][2] - travelTime;
-                instance.mapTimeout.set(setTimeout(createNote, delay, lineNbr, instance, beatmap[n][2]));
-            }
+            let lineNbr = beatmap[n][1];
+            let delay = beatmap[n][2] - travelTime; //when the note display
+             if (beatmap[n][0] == 0) //simple notes
+                instance.stackTimeout.push(setTimeout(createNote, delay, lineNbr, instance, beatmap[n][2]));
         }
     }
 
     createNote(lineNbr, instance, time) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
         let activationDelay = instance.noteTravelTime-instance.leway;
-        let timeoutID = setTimeout(instance.setFollowerToValidate, activationDelay, timeoutID, lineNbr, follower, instance);
-        
-        
+        instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, activationDelay, lineNbr, follower, instance));
+
         follower.startFollow({
             positionOnPath: true,
             duration: instance.noteTravelTime,
@@ -136,10 +123,11 @@ export default class GameScene extends Phaser.Scene {
             verticalAdjust: true,
             onComplete: () => {
                 follower.destroy();
-                instance.onNoKeypress(instance.queuesTimestampToValidate[lineNbr], lineNbr, time, instance);
+                instance.onNoKeypress(instance.queuesTimestampToValidate[lineNbr], lineNbr, time);
             },
-        });
-    }
+        });       
+   }
+
 
     /**
      * Returns the x coordonate of the line to draw
@@ -153,8 +141,8 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createSquareBtns() {
-        let y = this.endPathY - this.btnSideLen;
         this.squareBtns = [];
+        let y = this.endPathY - this.btnSideLen;
         for (let i = 0; i < 4; i++) {
             let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLen / 2;
             this.squareBtns[i] = new Phaser.Geom.Rectangle(x, y, this.btnSideLen, this.btnSideLen);
@@ -202,7 +190,6 @@ export default class GameScene extends Phaser.Scene {
         let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLen / 2;
         let y = this.height - this.btnSideLen;
         this.squareBtns[i].setTo(x, y, this.btnSideLen, this.btnSideLen);
-        
     }
 
     drawAll() {
@@ -226,11 +213,10 @@ export default class GameScene extends Phaser.Scene {
 
     //algorithm methods
 
-
-    onNoKeypress (queueToShift, lineNbr, time, instance) {
+    onNoKeypress (queueToShift, lineNbr, time) {
         if (queueToShift.length!==0) {
             this.resetCombo();
-            clearInterval(instance.mapTimeout.get(queueToShift.shift()[1])[0]);
+            clearInterval(queueToShift.shift().getIntervalID());
             console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
         }
     }
@@ -242,33 +228,32 @@ export default class GameScene extends Phaser.Scene {
     
     onKeypressRightTime (queueToShift) {
         this.playHitSound();
-        let array = queueToShift.shift();
-        let follower = array[0];
-        clearInterval(this.mapTimeout.get(array[1])[0]);
-
-
-        follower.destroy();
+        let note = queueToShift.shift();
+        clearInterval(note.getIntervalID());
+        note.getFollower().destroy();
+        
         console.log("Well Done");
         this.incrementCombo();
-        let precisionMultiplier = this.mapTimeout.get(array[1])[1];
-        this.updateScore(this.lowestPoint*precisionMultiplier);
+        let precisionMultiplier = note.getScore();
+        this.updateScore(this.lowestPoint*note.getScore());
         console.log("precisionMultiplier: " + precisionMultiplier);
         this.nbrHits += 1/3 * precisionMultiplier;
     }
 
     /**
-     * push into queuesTimestampToValidate the follower to validate and the timeoutID created for this follower
-     * create an interval which increment a number each 100ms
-     * set in mapTimeout the timeoutID as key and an array containing the intervalID and the incrementing value
+     * push into queuesTimestampToValidate a new note and increment this note'score every 100ms
      * @param {*} timeoutID, the setTimeout's id of the follower
      * @param {*} lineNbr, the line's number of the follower 
      * @param {*} follower, the follower created 
      * @param {*} instance, this 
      */
-    setFollowerToValidate(timeoutID, lineNbr, follower, instance) {
-        instance.queuesTimestampToValidate[lineNbr].push([follower, timeoutID]);
+    setFollowerToValidate(lineNbr, follower, instance) {
+        let note = new Note(follower);
         console.log("push");
-        instance.mapTimeout.set(timeoutID, [setInterval(function() {instance.mapTimeout.get(timeoutID)[1]++}, 100),1]);
+        instance.queuesTimestampToValidate[lineNbr].push(note); //on rend la note clicable => sera plus clicable a onComplete ou si on a valide avant
+        let intervalID = setInterval(function() {note.incrementScore()}, 100); //incremente le score toute les 100ms
+        note.setIntervalID(intervalID);
+        instance.stackInterval.push(intervalID); 
     }
 
     onKeypress (e) {
@@ -335,7 +320,7 @@ export default class GameScene extends Phaser.Scene {
 
     endGame (instance) {
         instance.isStarted = false;
-        let pourcent = Math.RoundTo(instance.nbrHits/instance.nbrTimestamp*100,-2);
+        let pourcent = Math.RoundTo(instance.nbrHits/beatmap.length*100,-2);
         console.log("Your precision is: " + pourcent + "%");
         console.log("You misclicked " + instance.nbrMissclicks + " times");
 
