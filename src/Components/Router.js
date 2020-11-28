@@ -33,9 +33,9 @@ const onNavigateHandler = (e) => {
     let uri;
     e.preventDefault();
     uri = e.target.dataset.uri;
-    
     if(uri) {
         console.log("onNavigate : ", uri);
+        removeModals();
         window.history.pushState({}, uri, window.location.origin + uri);
         componentToRender = routes[uri];
         if(!componentToRender) {
@@ -49,6 +49,7 @@ const onNavigateHandler = (e) => {
 //onHistoryHandler (arrows <- -> )
 const onHistoryHandler = (e) => {
     console.log("onHistory : ", window.location.pathname);
+    removeModals();
     componentToRender = routes[window.location.pathname];
     if(!componentToRender){
         ErrorPage(window.location.pathname);
@@ -80,4 +81,12 @@ const searchForPlayBtns = () => {
     }
 }
 
-export { Router, RedirectUrl, searchForPlayBtns };
+const removeModals = () => {
+    let modalArray = document.querySelectorAll(".modal-backdrop");
+    for (let index = 0; index < modalArray.length; index++) {
+        let m = modalArray[index];
+        m.parentNode.removeChild(m);
+    }
+}
+
+export { Router, RedirectUrl, searchForPlayBtns};

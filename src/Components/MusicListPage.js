@@ -109,12 +109,11 @@ for(const ELEMENT of TABMUSIC){
 </div>`;
 }
 
-let pageHtml = `<div id="button_page">${buttonHtml}</div><div id="modal_page">${modalHtml}</div>`
+let pageHtml = `<div id="button_page">` + buttonHtml + `</div><div id="modal_page">` + modalHtml + `</div>`
 
 const MusicListPage = () => {
     page.innerHTML = pageHtml;
     searchForPlayBtns();
-    
 }
 
 export default MusicListPage;
