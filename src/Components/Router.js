@@ -35,7 +35,8 @@ const onNavigateHandler = (e) => {
     uri = e.target.dataset.uri;
     if(uri) {
         console.log("onNavigate : ", uri);
-        removeModals();
+        if (window.location.pathname==="/list")
+            removeModals();
         window.history.pushState({}, uri, window.location.origin + uri);
         componentToRender = routes[uri];
         if(!componentToRender) {
@@ -80,6 +81,7 @@ const searchForPlayBtns = () => {
         playBtn.addEventListener("click", onNavigateHandler);
     }
 }
+
 
 const removeModals = () => {
     let modalArray = document.querySelectorAll(".modal-backdrop");
