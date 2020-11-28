@@ -1,6 +1,5 @@
 import Phaser, { Game, Math, Time } from 'phaser';
 import simple_note from "../../img/game_assets/note_simple.png";
-import Note from "./Note.js"
 import hitSound1 from "../../audio/hit1.mp3";
 import hitSound2 from "../../audio/hit2.mp3";
 import failSound from "../../audio/fail.mp3";
@@ -74,6 +73,7 @@ export default class GameScene extends Phaser.Scene {
         this.comboDisplay = this.add.text(this.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
 
         //sounds
+        console.log(this.sound);
         this.sound.decodeAudio([["hitSound1", hitSound1], ["hitSound2", hitSound2], ["failSound", failSound]]);
         let audioConfig = {
             mute: false,
@@ -216,7 +216,7 @@ export default class GameScene extends Phaser.Scene {
     onNoKeypress (queueToShift, lineNbr, time) {
         if (queueToShift.length!==0) {
             this.resetCombo();
-            clearInterval(queueToShift.shift().getIntervalID());
+            clearInterval(queueToShift.shift().intervalID);
             console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
         }
     }
@@ -229,13 +229,13 @@ export default class GameScene extends Phaser.Scene {
     onKeypressRightTime (queueToShift) {
         this.playHitSound();
         let note = queueToShift.shift();
-        clearInterval(note.getIntervalID());
-        note.getFollower().destroy();
+        clearInterval(note.intervalID);
+        note.follower.destroy();
         
         console.log("Well Done");
         this.incrementCombo();
-        let precisionMultiplier = note.getScore();
-        this.updateScore(this.lowestPoint*note.getScore());
+        let precisionMultiplier = note.score;
+        this.updateScore(this.lowestPoint*precisionMultiplier);
         console.log("precisionMultiplier: " + precisionMultiplier);
         this.nbrHits += 1/3 * precisionMultiplier;
     }
@@ -248,11 +248,11 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} instance, this 
      */
     setFollowerToValidate(lineNbr, follower, instance) {
-        let note = new Note(follower);
+        let note = {follower:follower, intervalID:undefined, score:1};
         console.log("push");
         instance.queuesTimestampToValidate[lineNbr].push(note); //on rend la note clicable => sera plus clicable a onComplete ou si on a valide avant
-        let intervalID = setInterval(function() {note.incrementScore()}, 100); //incremente le score toute les 100ms
-        note.setIntervalID(intervalID);
+        let intervalID = setInterval(function() {note.score++}, 100); //incremente le score toute les 100ms
+        note.intervalID = intervalID;
         instance.stackInterval.push(intervalID); 
     }
 
