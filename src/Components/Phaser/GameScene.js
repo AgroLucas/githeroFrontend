@@ -1,5 +1,8 @@
 import Phaser, { Game, Math, Time } from 'phaser';
 import simple_note from "../../img/game_assets/note_simple.png";
+import hitSound1 from "../../audio/hit1.mp3";
+import hitSound2 from "../../audio/hit2.mp3";
+import failSound from "../../audio/fail.mp3";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
 //timeStart must be > noteTravelTime
@@ -54,7 +57,7 @@ export default class GameScene extends Phaser.Scene {
         }
         else {
             this.btnSideLen= Math.RoundTo(this.width/40, 0);
-            this.topSpacing = this.width/40, 0;
+            this.topSpacing =  this.width/40, 0;
             this.bottomSpacing = 3*this.topSpacing;
         }
         this.btnSideLenActive = Math.RoundTo(this.btnSideLen*0.9);
@@ -63,6 +66,9 @@ export default class GameScene extends Phaser.Scene {
 
 	preload() {
         this.load.image("simple_note", simple_note);
+        this.load.audio("hitSound1", hitSound1);
+        this.load.audio("hitSound2", hitSound2);
+        this.load.audio("failSound", failSound);
 	}
 
 	create() {
@@ -70,9 +76,29 @@ export default class GameScene extends Phaser.Scene {
         this.createLines();
         this.createSquareBtns();
         this.drawAll();
+
+        //text display
         this.scoreDisplay = this.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' });
         this.comboDisplay = this.add.text(this.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
 
+        //sounds
+        this.sound.decodeAudio([["hitSound1", hitSound1], ["hitSound2", hitSound2], ["failSound", failSound]]);
+        let audioConfig = {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: false,
+            delay: 0
+        }
+        this.hitSoundSelect=1;
+        this.hitSoundMax=2;
+        this.sound.add("hitSound1", audioConfig);
+        this.sound.add("hitSound2", audioConfig);
+        this.sound.add("failSound", audioConfig);
+
+        //notes
         this.createNoteEvents(this.noteTravelTime, this.createNote, this);
 
         this.mapTimeout.set(setTimeout(this.endGame, this.songDuration, this));
@@ -156,6 +182,9 @@ export default class GameScene extends Phaser.Scene {
     }
 
     resetCombo(){
+        if(this.combo > 10){
+            this.playFailSound();
+        }
         this.combo = 0;
         this.comboDisplay.setText("X" +this.combo);
     }
@@ -209,9 +238,15 @@ export default class GameScene extends Phaser.Scene {
     }
     
     onKeypressRightTime (queueToShift) {
+<<<<<<< HEAD
         let array = queueToShift.shift();
         let follower = array[0];
         clearInterval(this.mapTimeout.get(array[1])[0]);
+=======
+        //clearTimeout(queueToShift.shift());
+        this.playHitSound();
+        let follower = queueToShift.shift()
+>>>>>>> a21473e... add - basic hit & fail sounds to the game
         follower.destroy();
         console.log("Well Done");
         this.incrementCombo();
@@ -281,6 +316,20 @@ export default class GameScene extends Phaser.Scene {
                 break;          
         }
     }
+
+    //audio
+    playHitSound() {
+        this.sound.play("hitSound"+this.hitSoundSelect);
+        this.hitSoundSelect++;
+        if(this.hitSoundSelect > this.hitSoundMax){
+            this.hitSoundSelect = 1;
+        }
+    }
+
+    playFailSound() {
+        this.sound.play("failSound");
+    }
+
 
     endGame (instance) {
         instance.isStarted = false;
