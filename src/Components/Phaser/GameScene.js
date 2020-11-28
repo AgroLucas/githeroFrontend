@@ -6,6 +6,9 @@ import failSound from "../../audio/fail.mp3";
 
 // array of [noteType, lineNumber, timeStart (, timeEnd if longNote)]
 //timeStart must be > noteTravelTime
+
+/*var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
+    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];*/
 var beatmap = [[0,0,3000]];
 
 export default class GameScene extends Phaser.Scene {
@@ -243,12 +246,14 @@ export default class GameScene extends Phaser.Scene {
         let follower = array[0];
         clearInterval(this.mapTimeout.get(array[1])[0]);
 
-        
+
         follower.destroy();
         console.log("Well Done");
         this.incrementCombo();
-        this.updateScore(this.lowestPoint*this.mapTimeout.get(array[1])[1]);
-        this.nbrHits++;
+        let precisionMultiplier = this.mapTimeout.get(array[1])[1];
+        this.updateScore(this.lowestPoint*precisionMultiplier);
+        console.log("precisionMultiplier: " + precisionMultiplier);
+        this.nbrHits += 1/3 * precisionMultiplier;
     }
 
     /**
