@@ -34,7 +34,7 @@ export default class GameScene extends Phaser.Scene {
         this.btns = [];
         this.lines = [];
 
-        this.btnYOffset = 20;
+        this.btnYOffset = 40;
 
         /**** TODO need to be given ****/
         this.songDuration = 8000; //song duration -> to change
@@ -275,6 +275,10 @@ export default class GameScene extends Phaser.Scene {
         if(this.hitSoundSelect > this.hitSoundMax){
             this.hitSoundSelect = 1;
         }
+    }
+
+    playSlideSound(){
+        //TODO
     }
 
     playFailSound() {
