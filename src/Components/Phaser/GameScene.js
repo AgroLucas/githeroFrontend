@@ -4,9 +4,9 @@ import hitSound1 from "../../audio/hit1.mp3";
 import hitSound2 from "../../audio/hit2.mp3";
 import failSound from "../../audio/fail.mp3";
 
-var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
-//var beatmap = [[0,0,3000]];
+//var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
+//    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
+var beatmap = [[1,0,3000,5000], [1,1,3500,5000]];
 
 
 export default class GameScene extends Phaser.Scene {
@@ -24,7 +24,7 @@ export default class GameScene extends Phaser.Scene {
         this.stackInterval = []; //contain all interval -> useful if we need to clear them all
 
         /**** TODO need to be given ****/
-        this.songDuration = beatmap[beatmap.length-1][2]+500;
+        this.songDuration = 6000; //song duration -> to change
         this.arrayKeys = [];
         this.arrayKeys[0] = "d";
         this.arrayKeys[1] = "f";
@@ -37,7 +37,6 @@ export default class GameScene extends Phaser.Scene {
         this.nbrHits = 0;
         this.score = 0;
         this.combo = 0;
-        this.nbrMissclicks = 0;
     }
     
     setProportions() {
@@ -73,7 +72,6 @@ export default class GameScene extends Phaser.Scene {
         this.comboDisplay = this.add.text(this.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
 
         //sounds
-        console.log(this.sound);
         this.sound.decodeAudio([["hitSound1", hitSound1], ["hitSound2", hitSound2], ["failSound", failSound]]);
         let audioConfig = {
             mute: false,
@@ -91,7 +89,7 @@ export default class GameScene extends Phaser.Scene {
         this.sound.add("failSound", audioConfig);
 
         //notes
-        this.createNoteEvents(this.noteTravelTime, this.createNote, this);
+        this.createNoteEvents(this.noteTravelTime, this);
 
         this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
         document.addEventListener("keypress", event => this.onKeypress(event));
@@ -99,16 +97,20 @@ export default class GameScene extends Phaser.Scene {
         
     }
 
-    createNoteEvents(travelTime, createNote, instance) {
+    createNoteEvents(travelTime, instance) {
         for (let n = 0; n < beatmap.length; n++) {
             let lineNbr = beatmap[n][1];
             let delay = beatmap[n][2] - travelTime; //when the note display
              if (beatmap[n][0] == 0) //simple notes
-                instance.stackTimeout.push(setTimeout(createNote, delay, lineNbr, instance, beatmap[n][2]));
+                instance.stackTimeout.push(setTimeout(instance.createNote, delay, lineNbr, instance, beatmap[n][2]));
+            else { //long notes
+                instance.stackTimeout.push(setTimeout(instance.createLongNote, delay, lineNbr, instance, beatmap[n][3]-beatmap[n][2]))
+            }
         }
     }
 
     createNote(lineNbr, instance, time) {
+        console.log("s");
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
         let activationDelay = instance.noteTravelTime-instance.leway;
         instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, activationDelay, lineNbr, follower, instance));
@@ -128,6 +130,23 @@ export default class GameScene extends Phaser.Scene {
         });       
    }
 
+   createLongNote(lineNbr, instance, end) {
+    let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note");
+    let activationDelay = instance.noteTravelTime-instance.leway;
+    instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, activationDelay, lineNbr, instance, end));
+
+    follower.startFollow({
+        positionOnPath: true,
+        duration: instance.noteTravelTime,
+        yoyo: false,
+        ease: "Sine.easeIn",
+        repeat: 0,
+        rotateToPath: false,
+        verticalAdjust: true,
+        onComplete: () => follower.destroy(),
+    });
+   }
+
 
     /**
      * Returns the x coordonate of the line to draw
@@ -145,7 +164,7 @@ export default class GameScene extends Phaser.Scene {
         let y = this.endPathY - this.btnSideLen;
         for (let i = 0; i < 4; i++) {
             let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLen / 2;
-            this.squareBtns[i] = new Phaser.Geom.Rectangle(x, y, this.btnSideLen, this.btnSideLen);
+            this.squareBtns[i] = {button:new Phaser.Geom.Rectangle(x, y, this.btnSideLen, this.btnSideLen), active:false};
         }
     }
 
@@ -183,13 +202,15 @@ export default class GameScene extends Phaser.Scene {
     setBtnActive(i) {
         let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLenActive / 2;
         let y = this.height - this.btnSideLenActive;
-        this.squareBtns[i].setTo(x, y, this.btnSideLenActive, this.btnSideLenActive);
+        this.squareBtns[i].button.setTo(x, y, this.btnSideLenActive, this.btnSideLenActive);
+        this.squareBtns[i].active = true;
     }
 
     setBtnInactive(i) {
         let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLen / 2;
         let y = this.height - this.btnSideLen;
-        this.squareBtns[i].setTo(x, y, this.btnSideLen, this.btnSideLen);
+        this.squareBtns[i].button.setTo(x, y, this.btnSideLen, this.btnSideLen);
+        this.squareBtns[i].active = false;
     }
 
     drawAll() {
@@ -200,7 +221,7 @@ export default class GameScene extends Phaser.Scene {
     drawBtns() {
         this.graphics.fillStyle(0xff0000);
         for (let i = 0; i < 4; i++) {
-            this.graphics.fillRectShape(this.squareBtns[i]);
+            this.graphics.fillRectShape(this.squareBtns[i].button);
         }
     }
 
@@ -221,11 +242,6 @@ export default class GameScene extends Phaser.Scene {
         }
     }
     
-    onKeypressTooEarly () { //suggested to remove ??? 
-        console.log("WRONGGG");
-        this.nbrMissclicks++;
-    }
-    
     onKeypressRightTime (queueToShift) {
         this.playHitSound();
         let note = queueToShift.shift();
@@ -237,7 +253,7 @@ export default class GameScene extends Phaser.Scene {
         let precisionMultiplier = note.score;
         this.updateScore(this.lowestPoint*precisionMultiplier);
         console.log("precisionMultiplier: " + precisionMultiplier);
-        this.nbrHits += 1/3 * precisionMultiplier;
+        this.nbrHits += 1/3 * precisionMultiplier; // ??
     }
 
     /**
@@ -254,6 +270,35 @@ export default class GameScene extends Phaser.Scene {
         let intervalID = setInterval(function() {note.score++}, 100); //incremente le score toute les 100ms
         note.intervalID = intervalID;
         instance.stackInterval.push(intervalID); 
+    }
+
+    setLongFollowerToValidate(lineNbr, instance, end) {
+        let note = {follower:undefined, intervalID:undefined, score:0};
+        instance.queuesTimestampToValidate[lineNbr].push(note);
+        instance.setBtnInactive(lineNbr);
+        let intervalID = setInterval(instance.onLongNotePress, 250, lineNbr, note, instance);
+        instance.stackInterval.push(intervalID); 
+        let timeoutID = setTimeout(instance.onEndLongFollower, end, lineNbr, note, intervalID, end, instance);
+        instance.stackTimeout.push(timeoutID);
+    }
+
+
+    onEndLongFollower(lineNbr, note, intervalID, end, instance) {
+        clearInterval(intervalID)
+        instance.queuesTimestampToValidate[lineNbr].shift();
+        if ((end/250)*0.70 < note.score)
+            instance.nbrHits++;
+    }
+
+    //incremente le score toutes les 250ms si la touche est enfoncée incremente le combo toutes les 0.5ms
+    onLongNotePress(lineNbr, note, instance) {
+        if(instance.squareBtns[lineNbr].active) {
+            note.score++;
+            if (note.score%4===0)
+                instance.incrementCombo();
+            instance.updateScore(note.score);
+        } else
+            instance.resetCombo();
     }
 
     onKeypress (e) {
@@ -278,11 +323,9 @@ export default class GameScene extends Phaser.Scene {
                     queueToShift = this.queuesTimestampToValidate[3];
                     break;
             }
-            if (typeof queueToShift!=="undefined") {
+            if (typeof queueToShift!=="undefined" && queueToShift[0]==undefined) {
                 if (queueToShift.length!==0)
                     this.onKeypressRightTime(queueToShift);
-                else
-                    this.onKeypressTooEarly();
             }
         }
     };
@@ -322,7 +365,6 @@ export default class GameScene extends Phaser.Scene {
         instance.isStarted = false;
         let pourcent = Math.RoundTo(instance.nbrHits/beatmap.length*100,-2);
         console.log("Your precision is: " + pourcent + "%");
-        console.log("You misclicked " + instance.nbrMissclicks + " times");
 
         instance.add.text(100, 300, "Game Over", { font: '48px Arial', fill: '#000000' });
         instance.add.text(100, 350, "Précision: " + pourcent + "%", { font: '24px Arial', fill: '#000000' })
