@@ -4,7 +4,11 @@ import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
 import hitSound1 from "../../audio/hit1.mp3";
 import hitSound2 from "../../audio/hit2.mp3";
+import hitSound3 from "../../audio/hit3.mp3";
+import hitSound4 from "../../audio/hit4.mp3";
 import failSound from "../../audio/fail.mp3";
+import btnInactive from "../../img/game_assets/btn_inactive.png";
+import btnActive from "../../img/game_assets/btn_active.png";
 
 var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
 [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
@@ -27,9 +31,10 @@ export default class GameScene extends Phaser.Scene {
         this.isStarted = true;
         this.stackTimeout = []; //contain all timeout -> useful if we need to clear them all
         this.stackInterval = []; //contain all interval -> useful if we need to clear them all
-        this.squareBtns = [];
+        this.btns = [];
         this.lines = [];
 
+        this.btnYOffset = 20;
 
         /**** TODO need to be given ****/
         this.songDuration = 8000; //song duration -> to change
@@ -51,14 +56,11 @@ export default class GameScene extends Phaser.Scene {
         if(this.width < 1000){
             this.topSpacing = this.width/5;
             this.bottomSpacing = this.topSpacing;
-            this.btnSideLen= Math.RoundTo(this.width/6, 0);
         }
         else {
-            this.btnSideLen= Math.RoundTo(this.width/40, 0);
             this.topSpacing =  this.width/40, 0;
             this.bottomSpacing = 3*this.topSpacing;
         }
-        this.btnSideLenActive = Math.RoundTo(this.btnSideLen*0.9);
         this.endPathY = this.height;
     }
 
@@ -66,15 +68,19 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("simple_note", simple_note);
         this.load.image("long_note_head", long_note_head);
         this.load.image("long_note_body", long_note_body);
+        this.load.image("btnInactive", btnInactive);
+        this.load.image("btnActive", btnActive);
         this.load.audio("hitSound1", hitSound1);
         this.load.audio("hitSound2", hitSound2);
+        this.load.audio("hitSound3", hitSound1);
+        this.load.audio("hitSound4", hitSound2);
         this.load.audio("failSound", failSound);
 	}
 
 	create() {
         this.graphics = this.add.graphics();
         this.createLines();
-        this.createSquareBtns();
+        this.createBtns();
         this.drawAll();
 
         //text display
@@ -91,9 +97,11 @@ export default class GameScene extends Phaser.Scene {
             delay: 0
         }
         this.hitSoundSelect=1;
-        this.hitSoundMax=2;
+        this.hitSoundMax=4;
         this.sound.add("hitSound1", audioConfig);
         this.sound.add("hitSound2", audioConfig);
+        this.sound.add("hitSound3", audioConfig);
+        this.sound.add("hitSound4", audioConfig);
         this.sound.add("failSound", audioConfig);
 
         //notes
@@ -183,24 +191,28 @@ export default class GameScene extends Phaser.Scene {
         return center + coeficients[i]*deltaX;
     }
 
-    createSquareBtns() {
-        let y = this.endPathY - this.btnSideLen;
+    calcLineXFromY(i, y){
+        let deltaX = this.calcLineX(i, this.bottomSpacing) - this.calcLineX(i, this.topSpacing);
+        return this.calcLineX(i, this.topSpacing) + (deltaX * y/this.height);
+    }
+
+    createBtns(){
+        
+        let y = this.endPathY - this.btnYOffset;
         for (let i = 0; i < 4; i++) {
-            let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLen / 2;
-            this.squareBtns[i] = {button:new Phaser.Geom.Rectangle(x, y, this.btnSideLen, this.btnSideLen), active:false};
+            let x = this.calcLineXFromY(i, y);
+            this.btns[i] = {button:this.add.sprite(x,y, "btnInactive"), active:false};
         }
     }
 
     createLines() {
         for (let i = 0; i < 4; i++) {
             this.lines[i] = this.add.path(this.calcLineX(i, this.topSpacing), 0);
-            this.lines[i].lineTo(this.calcLineX(i, this.bottomSpacing), this.endPathY+(this.btnSideLen/2));
+            this.lines[i].lineTo(this.calcLineX(i, this.bottomSpacing), this.endPathY+(this.btnYOffset));
         }
     }
 
     update() {
-        this.graphics.clear();
-        this.drawAll();
     }
 
     /**
@@ -232,29 +244,15 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setBtnActive(i) {
-        let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLenActive / 2;
-        let y = this.height - this.btnSideLenActive;
-        this.squareBtns[i].button.setTo(x, y, this.btnSideLenActive, this.btnSideLenActive);
-        this.squareBtns[i].active = true;
+        this.btns[i].button.setTexture("btnActive");
     }
 
     setBtnInactive(i) {
-        let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLen / 2;
-        let y = this.height - this.btnSideLen;
-        this.squareBtns[i].button.setTo(x, y, this.btnSideLen, this.btnSideLen);
-        this.squareBtns[i].active = false;
+        this.btns[i].button.setTexture("btnInactive");
     }
 
     drawAll() {
         this.drawLines();
-        this.drawBtns();
-    }
-
-    drawBtns() {
-        this.graphics.fillStyle(0xff0000);
-        for (let i = 0; i < 4; i++) {
-            this.graphics.fillRectShape(this.squareBtns[i].button);
-        }
     }
 
     drawLines() {
@@ -279,7 +277,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     //algorithm methods
-    
+
     /**
      * reset the global combo and stop the simple note's interval if it was not validated
      * @param {*} queueToShift, the queue containing the simple note to clear and remove 
@@ -354,7 +352,7 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} instance, this
      */
     onLongNotePress(lineNbr, note, instance) {
-        if(instance.squareBtns[lineNbr].active) {
+        if(instance.btns[lineNbr].active) {
             note.score += instance.longNoteIncrease
             if (note.score%4*instance.longNoteIncrease===0)
                 instance.incrementCombo();
