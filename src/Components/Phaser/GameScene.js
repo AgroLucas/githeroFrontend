@@ -5,7 +5,7 @@ import hitSound2 from "../../audio/hit2.mp3";
 import failSound from "../../audio/fail.mp3";
 
 var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
+[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
 //var beatmap = [[1,0,3000,5500], [1,1,3500,5000]];
 
 
@@ -74,8 +74,6 @@ export default class GameScene extends Phaser.Scene {
         this.scoreDisplay = this.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' });
         this.comboDisplay = this.add.text(this.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
 
-        //sounds
-        this.sound.decodeAudio([["hitSound1", hitSound1], ["hitSound2", hitSound2], ["failSound", failSound]]);
         let audioConfig = {
             mute: false,
             volume: 1,
@@ -287,8 +285,8 @@ export default class GameScene extends Phaser.Scene {
         let precisionMultiplier = note.score;
         this.updateScore(this.lowestPoint*precisionMultiplier);
         console.log("precisionMultiplier: " + precisionMultiplier);
-       // this.nbrHits += 1/3 * precisionMultiplier; // ??
-       this.nbrHits++;
+        this.nbrHits += 1/3 * precisionMultiplier;
+        //this.nbrHits++;
     }
 
     /**
@@ -337,7 +335,7 @@ export default class GameScene extends Phaser.Scene {
             instance.updateScore(note.score);
         } else {
             instance.resetCombo();
-            note.score = 1;
+            note.score = 0;
         }
     }
 
