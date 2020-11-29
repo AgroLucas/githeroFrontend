@@ -72,8 +72,8 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("btnActive", btnActive);
         this.load.audio("hitSound1", hitSound1);
         this.load.audio("hitSound2", hitSound2);
-        this.load.audio("hitSound3", hitSound1);
-        this.load.audio("hitSound4", hitSound2);
+        this.load.audio("hitSound3", hitSound3);
+        this.load.audio("hitSound4", hitSound4);
         this.load.audio("failSound", failSound);
 	}
 
@@ -251,6 +251,11 @@ export default class GameScene extends Phaser.Scene {
         this.btns[i].button.setTexture("btnInactive");
     }
 
+    displayPerfectFlash(i){
+        console.log("perfect: "+i);
+        //TODO
+    }
+
     drawAll() {
         this.drawLines();
     }
@@ -306,9 +311,10 @@ export default class GameScene extends Phaser.Scene {
         this.incrementCombo();
         let precisionMultiplier = note.score;
         this.updateScore(this.lowestPoint*precisionMultiplier);
-        console.log("precisionMultiplier: " + precisionMultiplier);
         this.nbrHits += 1/3 * precisionMultiplier;
-        //this.nbrHits++;
+        if(precisionMultiplier === 3){
+            this.displayPerfectFlash(note.line);
+        }
     }
 
     /**
@@ -318,7 +324,7 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} instance, this 
      */
     setFollowerToValidate(lineNbr, follower, instance) {
-        let note = {follower:follower, intervalID:undefined, score:1};
+        let note = {follower:follower, intervalID:undefined, score:1, line:lineNbr};
         instance.queuesTimestampToValidate[lineNbr].push(note);
         console.log("push single");
         let intervalID = setInterval(function() {note.score++}, 100);
