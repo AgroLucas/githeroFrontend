@@ -1,5 +1,7 @@
 import Phaser, { Game, Math, Time } from 'phaser';
 import simple_note from "../../img/game_assets/note_simple.png";
+import long_note_head from "../../img/game_assets/note_longue_tete.png";
+import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
 import hitSound1 from "../../audio/hit1.mp3";
 import hitSound2 from "../../audio/hit2.mp3";
 import failSound from "../../audio/fail.mp3";
@@ -18,7 +20,10 @@ export default class GameScene extends Phaser.Scene {
         this.noteTravelTime = 3000;
         this.setProportions();
         this.leway = 170; //delay in ms
+
         this.lowestPoint = 50
+        this.longNoteIncrease = 10; // score increase by 10 every 250ms holding long note
+
         this.isStarted = true;
         this.stackTimeout = []; //contain all timeout -> useful if we need to clear them all
         this.stackInterval = []; //contain all interval -> useful if we need to clear them all
@@ -59,6 +64,8 @@ export default class GameScene extends Phaser.Scene {
 
 	preload() {
         this.load.image("simple_note", simple_note);
+        this.load.image("long_note_head", long_note_head);
+        this.load.image("long_note_body", long_note_body);
         this.load.audio("hitSound1", hitSound1);
         this.load.audio("hitSound2", hitSound2);
         this.load.audio("failSound", failSound);
@@ -131,7 +138,7 @@ export default class GameScene extends Phaser.Scene {
    }
 
    createLongNote(lineNbr, instance, end) {
-    let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note");
+    let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_head");
     let activationDelay = instance.noteTravelTime-instance.leway;
     instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, activationDelay, lineNbr, instance, end));
 
@@ -145,8 +152,25 @@ export default class GameScene extends Phaser.Scene {
         verticalAdjust: true,
         onComplete: () => follower.destroy(),
     });
+
+    let intervalID = setInterval(instance.createLongNoteBodySprite, 1, lineNbr, instance);
+    instance.stackInterval.push(intervalID);
+    setTimeout(function() {clearInterval(intervalID)}, end);
    }
 
+   createLongNoteBodySprite(lineNbr, instance) {
+       let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_body");
+       follower.startFollow({
+        positionOnPath: true,
+        duration: instance.noteTravelTime,
+        yoyo: false,
+        ease: "Sine.easeIn",
+        repeat: 0,
+        rotateToPath: false,
+        verticalAdjust: true,
+        onComplete: () => follower.destroy(),
+    });
+   }
 
     /**
      * Returns the x coordonate of the line to draw
@@ -255,7 +279,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     //algorithm methods
-
+    
     /**
      * reset the global combo and stop the simple note's interval if it was not validated
      * @param {*} queueToShift, the queue containing the simple note to clear and remove 
@@ -319,6 +343,7 @@ export default class GameScene extends Phaser.Scene {
         let intervalID = setInterval(instance.onLongNotePress, 250, lineNbr, note, instance);
         instance.stackInterval.push(intervalID); 
         note.intervalID = intervalID;
+
         instance.stackTimeout.push(setTimeout(instance.onEndLongFollower, end, lineNbr, note, end, instance));
     }
 
@@ -330,7 +355,8 @@ export default class GameScene extends Phaser.Scene {
      */
     onLongNotePress(lineNbr, note, instance) {
         if(instance.squareBtns[lineNbr].active) {
-            if (++note.score%4===0)
+            note.score += instance.longNoteIncrease
+            if (note.score%4*instance.longNoteIncrease===0)
                 instance.incrementCombo();
             instance.updateScore(note.score);
         } else {
