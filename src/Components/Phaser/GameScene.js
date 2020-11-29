@@ -10,9 +10,9 @@ import failSound from "../../audio/fail.mp3";
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 
-var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
-//var beatmap = [[1,0,3000,5500], [1,1,3500,5000]];
+/*var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
+[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];*/
+var beatmap = [[0,0,1000,5500], [0,1,1500,5000]];
 
 
 export default class GameScene extends Phaser.Scene {
@@ -105,7 +105,7 @@ export default class GameScene extends Phaser.Scene {
         this.sound.add("failSound", audioConfig);
 
         //notes
-        this.createNoteEvents(this.noteTravelTime, this);
+        this.createNoteEvents(this);
 
         this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
         document.addEventListener("keypress", event => this.onKeypress(event));
@@ -113,14 +113,13 @@ export default class GameScene extends Phaser.Scene {
         
     }
 
-    createNoteEvents(travelTime, instance) {
+    createNoteEvents(instance) {
         for (let n = 0; n < beatmap.length; n++) {
             let lineNbr = beatmap[n][1];
-            let delay = beatmap[n][2] - travelTime; //when the note display
              if (beatmap[n][0] == 0) //simple notes
-                instance.stackTimeout.push(setTimeout(instance.createSimpleNote, delay, lineNbr, instance, beatmap[n][2]));
+                instance.stackTimeout.push(setTimeout(instance.createSimpleNote, beatmap[n][2], lineNbr, instance, beatmap[n][2]));
             else { //long notes
-                instance.stackTimeout.push(setTimeout(instance.createLongNote, delay, lineNbr, instance, beatmap[n][3]-beatmap[n][2]))
+                instance.stackTimeout.push(setTimeout(instance.createLongNote, beatmap[n][2], lineNbr, instance, beatmap[n][3]-beatmap[n][2]))
             }
         }
     }
