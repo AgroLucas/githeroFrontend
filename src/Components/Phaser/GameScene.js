@@ -4,9 +4,9 @@ import hitSound1 from "../../audio/hit1.mp3";
 import hitSound2 from "../../audio/hit2.mp3";
 import failSound from "../../audio/fail.mp3";
 
-//var beatmap = [[0,0,3000], [0,1,3400], [0,0,3600], [0,1,3800], [0,0,4200], [0,1,4600], [0,0,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-//    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
-var beatmap = [[1,0,3000,5000], [1,1,3500,5000]];
+var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
+    [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
+//var beatmap = [[1,0,3000,5500], [1,1,3500,5000]];
 
 
 export default class GameScene extends Phaser.Scene {
@@ -22,9 +22,12 @@ export default class GameScene extends Phaser.Scene {
         this.isStarted = true;
         this.stackTimeout = []; //contain all timeout -> useful if we need to clear them all
         this.stackInterval = []; //contain all interval -> useful if we need to clear them all
+        this.squareBtns = [];
+        this.lines = [];
+
 
         /**** TODO need to be given ****/
-        this.songDuration = 6000; //song duration -> to change
+        this.songDuration = 8000; //song duration -> to change
         this.arrayKeys = [];
         this.arrayKeys[0] = "d";
         this.arrayKeys[1] = "f";
@@ -102,15 +105,14 @@ export default class GameScene extends Phaser.Scene {
             let lineNbr = beatmap[n][1];
             let delay = beatmap[n][2] - travelTime; //when the note display
              if (beatmap[n][0] == 0) //simple notes
-                instance.stackTimeout.push(setTimeout(instance.createNote, delay, lineNbr, instance, beatmap[n][2]));
+                instance.stackTimeout.push(setTimeout(instance.createSimpleNote, delay, lineNbr, instance, beatmap[n][2]));
             else { //long notes
                 instance.stackTimeout.push(setTimeout(instance.createLongNote, delay, lineNbr, instance, beatmap[n][3]-beatmap[n][2]))
             }
         }
     }
 
-    createNote(lineNbr, instance, time) {
-        console.log("s");
+    createSimpleNote(lineNbr, instance, time) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
         let activationDelay = instance.noteTravelTime-instance.leway;
         instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, activationDelay, lineNbr, follower, instance));
@@ -150,8 +152,8 @@ export default class GameScene extends Phaser.Scene {
 
     /**
      * Returns the x coordonate of the line to draw
-     * @param i : the number of the line (from left to right )
-     * @param deltaX : the distance between 2 lines
+     * @param {*} i : the number of the line (from left to right )
+     * @param {*} deltaX : the distance between 2 lines
      */
     calcLineX (i, deltaX) {
         let center = this.width/2;
@@ -160,7 +162,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createSquareBtns() {
-        this.squareBtns = [];
         let y = this.endPathY - this.btnSideLen;
         for (let i = 0; i < 4; i++) {
             let x = this.calcLineX(i, this.bottomSpacing) - this.btnSideLen / 2;
@@ -169,7 +170,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createLines() {
-        this.lines = [];
         for (let i = 0; i < 4; i++) {
             this.lines[i] = this.add.path(this.calcLineX(i, this.topSpacing), 0);
             this.lines[i].lineTo(this.calcLineX(i, this.bottomSpacing), this.endPathY+(this.btnSideLen/2));
@@ -181,20 +181,30 @@ export default class GameScene extends Phaser.Scene {
         this.drawAll();
     }
 
-    updateScore(scoreAdded) {
-        this.score += scoreAdded * this.combo;
+    /**
+     * add the number to the global score and update the display
+     * @param {*} number, the number to add to the score 
+     */
+    updateScore(number) {
+        this.score += number * this.combo;
         this.scoreDisplay.setText("Score: " + this.score);
     }
 
+    /**
+     * increment the global combo and update the display
+     */
     incrementCombo() {
         this.combo++;
         this.comboDisplay.setText("X" +this.combo);
     }
 
+    /**
+     * increment the global combo and update the display
+     * play a sound if the combo was > 10
+     */
     resetCombo(){
-        if(this.combo > 10){
+        if(this.combo > 10)
             this.playFailSound();
-        }
         this.combo = 0;
         this.comboDisplay.setText("X" +this.combo);
     }
@@ -232,8 +242,28 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
+
+    //audio
+    playHitSound() {
+        this.sound.play("hitSound"+this.hitSoundSelect);
+        this.hitSoundSelect++;
+        if(this.hitSoundSelect > this.hitSoundMax){
+            this.hitSoundSelect = 1;
+        }
+    }
+
+    playFailSound() {
+        this.sound.play("failSound");
+    }
+
     //algorithm methods
 
+    /**
+     * reset the global combo and stop the simple note's interval if it was not validated
+     * @param {*} queueToShift, the queue containing the simple note to clear and remove 
+     * @param {*} lineNbr, the number of the line containing the simple note 
+     * @param {*} time, the time of the note's end 
+     */
     onNoKeypress (queueToShift, lineNbr, time) {
         if (queueToShift.length!==0) {
             this.resetCombo();
@@ -242,6 +272,10 @@ export default class GameScene extends Phaser.Scene {
         }
     }
     
+    /**
+     * clear and remove the validated simple note from the queue, play a sound, increment the combo and score
+     * @param {*} queueToShift, the queue containing the simple note to clear and remove 
+     */
     onKeypressRightTime (queueToShift) {
         this.playHitSound();
         let note = queueToShift.shift();
@@ -253,56 +287,76 @@ export default class GameScene extends Phaser.Scene {
         let precisionMultiplier = note.score;
         this.updateScore(this.lowestPoint*precisionMultiplier);
         console.log("precisionMultiplier: " + precisionMultiplier);
-        this.nbrHits += 1/3 * precisionMultiplier; // ??
+       // this.nbrHits += 1/3 * precisionMultiplier; // ??
+       this.nbrHits++;
     }
 
     /**
-     * push into queuesTimestampToValidate a new note and increment this note'score every 100ms
-     * @param {*} timeoutID, the setTimeout's id of the follower
-     * @param {*} lineNbr, the line's number of the follower 
+     * push into queuesTimestampToValidate[lineNbr] a new simple note and increment this note'score every 100ms
+     * @param {*} lineNbr, the line's number of the simple note 
      * @param {*} follower, the follower created 
      * @param {*} instance, this 
      */
     setFollowerToValidate(lineNbr, follower, instance) {
         let note = {follower:follower, intervalID:undefined, score:1};
-        console.log("push");
-        instance.queuesTimestampToValidate[lineNbr].push(note); //on rend la note clicable => sera plus clicable a onComplete ou si on a valide avant
-        let intervalID = setInterval(function() {note.score++}, 100); //incremente le score toute les 100ms
+        instance.queuesTimestampToValidate[lineNbr].push(note);
+        console.log("push single");
+        let intervalID = setInterval(function() {note.score++}, 100);
         note.intervalID = intervalID;
         instance.stackInterval.push(intervalID); 
     }
 
+    /**
+     * push into queuesTimestampToValidate[lineNbr] a new long note 
+     * set the line's button inactive before setting the long note clickable
+     * @param {*} lineNbr, the line's number of the long note
+     * @param {*} instance, this
+     * @param {*} end, the time the long note should stay clickable
+     */
     setLongFollowerToValidate(lineNbr, instance, end) {
+        instance.setBtnInactive(lineNbr);
         let note = {follower:undefined, intervalID:undefined, score:0};
         instance.queuesTimestampToValidate[lineNbr].push(note);
-        instance.setBtnInactive(lineNbr);
+        console.log("push long");
         let intervalID = setInterval(instance.onLongNotePress, 250, lineNbr, note, instance);
         instance.stackInterval.push(intervalID); 
-        let timeoutID = setTimeout(instance.onEndLongFollower, end, lineNbr, note, intervalID, end, instance);
-        instance.stackTimeout.push(timeoutID);
+        note.intervalID = intervalID;
+        instance.stackTimeout.push(setTimeout(instance.onEndLongFollower, end, lineNbr, note, end, instance));
     }
 
+    /**
+     * increment and display the long note'score every 250ms if the correct button is active, else reset the combo
+     * @param {*} lineNbr, the line's number of the long note
+     * @param {*} note, the long note containing the score 
+     * @param {*} instance, this
+     */
+    onLongNotePress(lineNbr, note, instance) {
+        if(instance.squareBtns[lineNbr].active) {
+            if (++note.score%4===0)
+                instance.incrementCombo();
+            instance.updateScore(note.score);
+        } else {
+            instance.resetCombo();
+            note.score = 1;
+        }
+    }
 
-    onEndLongFollower(lineNbr, note, intervalID, end, instance) {
-        clearInterval(intervalID)
+    /**
+     * clear and the remove the long note from the queue and increment the nbrHits if less than 30% of the note is missed
+     * @param {*} lineNbr, the line's number of the long note
+     * @param {*} note, the note to clear and remove
+     * @param {*} end, the time the long note stayed clickable  
+     * @param {*} instance, this
+     */
+    onEndLongFollower(lineNbr, note, end, instance) {
+        clearInterval(note.intervalID);
         instance.queuesTimestampToValidate[lineNbr].shift();
         if ((end/250)*0.70 < note.score)
             instance.nbrHits++;
     }
 
-    //incremente le score toutes les 250ms si la touche est enfoncée incremente le combo toutes les 0.5ms
-    onLongNotePress(lineNbr, note, instance) {
-        if(instance.squareBtns[lineNbr].active) {
-            note.score++;
-            if (note.score%4===0)
-                instance.incrementCombo();
-            instance.updateScore(note.score);
-        } else
-            instance.resetCombo();
-    }
-
+    //check if we clicked at the right time
     onKeypress (e) {
-        //check if we clicked at the right time
         if (this.isStarted) {
             let queueToShift;
             switch(e.key) {
@@ -323,9 +377,11 @@ export default class GameScene extends Phaser.Scene {
                     queueToShift = this.queuesTimestampToValidate[3];
                     break;
             }
-            if (typeof queueToShift!=="undefined" && queueToShift[0]==undefined) {
-                if (queueToShift.length!==0)
-                    this.onKeypressRightTime(queueToShift);
+            if (typeof queueToShift !== "undefined") {
+                if (queueToShift.length!==0) {
+                    if(typeof queueToShift[0].follower!== "undefined") //if the note is not long
+                        this.onKeypressRightTime(queueToShift);
+                }
             }
         }
     };
@@ -346,20 +402,6 @@ export default class GameScene extends Phaser.Scene {
                 break;          
         }
     }
-
-    //audio
-    playHitSound() {
-        this.sound.play("hitSound"+this.hitSoundSelect);
-        this.hitSoundSelect++;
-        if(this.hitSoundSelect > this.hitSoundMax){
-            this.hitSoundSelect = 1;
-        }
-    }
-
-    playFailSound() {
-        this.sound.play("failSound");
-    }
-
 
     endGame (instance) {
         instance.isStarted = false;
