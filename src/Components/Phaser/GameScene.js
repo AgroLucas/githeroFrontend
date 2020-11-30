@@ -21,9 +21,10 @@ export default class GameScene extends Phaser.Scene {
         super('game-scene');
         this.height = window.innerHeight;
         this.width = window.innerWidth;//hardcoded -> TODO to find in properties ?
-        this.noteTravelTime = 3000;
         this.setProportions();
-        this.leway = 170; //delay in ms
+
+        this.noteTravelTime = 12000;
+        this.leway = this.noteTravelTime/17,647; 
 
         this.lowestPoint = 50
         this.longNoteIncrease = 10; // score increase by 10 every 250ms holding long note
@@ -37,7 +38,7 @@ export default class GameScene extends Phaser.Scene {
         this.btnYOffset = 40;
 
         /**** TODO need to be given ****/
-        this.songDuration = 8000; //song duration -> to change
+        this.songDuration = 13000; //song duration -> to change
         this.arrayKeys = [];
         this.arrayKeys[0] = "d";
         this.arrayKeys[1] = "f";
@@ -330,7 +331,7 @@ export default class GameScene extends Phaser.Scene {
         let note = {follower:follower, intervalID:undefined, score:1, line:lineNbr};
         instance.queuesTimestampToValidate[lineNbr].push(note);
         console.log("push single");
-        let intervalID = setInterval(function() {note.score++}, 100);
+        let intervalID = setInterval(function() {note.score++; console.log(note.score)}, 100);
         note.intervalID = intervalID;
         instance.stackInterval.push(intervalID); 
     }
