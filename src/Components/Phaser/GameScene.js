@@ -10,9 +10,9 @@ import failSound from "../../audio/fail.mp3";
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 
-/*var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];*/
-var beatmap = [[0,0,1000,5500], [0,1,1500,5000]];
+const beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
+[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
+//const beatmap = [[1,0,3000,5500], [1,1,3500,5000]];
 
 
 export default class GameScene extends Phaser.Scene {
@@ -35,7 +35,14 @@ export default class GameScene extends Phaser.Scene {
         this.btns = [];
         this.lines = [];
 
-        this.btnYOffset = 40;
+        this.btnSize = 80; //sprite of 80px
+        this.btnYOffset = this.btnSize/2;
+        
+        //calc noteTravelTimeToBtnCenter
+        let noteSpeed = this.height/this.noteTravelTime;
+        let distanceToBtnCenter = this.height-this.btnYOffset;
+        this.noteTravelTimeToBtnCenter = distanceToBtnCenter/noteSpeed;
+
 
         /**** TODO need to be given ****/
         this.songDuration = 13000; //song duration -> to change
