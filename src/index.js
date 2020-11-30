@@ -1,6 +1,6 @@
 import {Router} from "./Components/Router.js";
-import NavBar from "./Components/NavBar.js";
 import stylesheet from "./stylesheet/style.css";
+import { setLayout } from "./utils/render.js";
 
-NavBar();
+setLayout()
 Router();

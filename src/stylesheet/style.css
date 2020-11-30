@@ -7,7 +7,7 @@ tbody td {
 }
 
 /*********************************On NavBar*********************************/
-#logo {
+#whiteLogo {
     width: 40px;
     cursor: pointer;
 }
@@ -24,15 +24,27 @@ li button {
     height: 60px;
 }
 
-.navbarButton {/**not used?**/
-    margin-left: 30px;
-    margin-right: 30px;
-}
-
 .button_bottom { /**not used?**/
     margin-left: 25px;
     margin-top: 25px;
     margin-bottom: 25px;
+}
+
+/*********************************On HomePage*********************************/
+#logo {
+    width: 150px;
+}
+
+.homepage_play_button {
+    height: 125px;
+    width: 250px;
+    margin-top: 20px;
+}
+
+.homepage_edit_button {
+    height: 75px;
+    width: 175px;
+    margin-top: 20px;
 }
 
 /*********************************On MusicListPage*********************************/
