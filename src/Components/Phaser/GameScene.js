@@ -38,6 +38,9 @@ export default class GameScene extends Phaser.Scene {
 
         this.btnSize = 80; //sprite of 80px TODO scale dynamicly to screen size
         this.btnYOffset = this.btnSize/2;
+
+        this.musicVolume = 0.5;
+        this.soundEffectVolume = 1;
         
         //calc noteTravelTimeToBtnCenter
         let noteSpeed = this.height/this.noteTravelTime;
@@ -97,23 +100,33 @@ export default class GameScene extends Phaser.Scene {
         this.scoreDisplay = this.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' });
         this.comboDisplay = this.add.text(this.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
 
-        let audioConfig = {
+        let soundEffectAudioConfig = {
             mute: false,
-            volume: 1,
+            volume: this.soundEffectVolume,
             rate: 1,
             detune: 0,
             seek: 0,
             loop: false,
             delay: 0
         }
+        let musicAudioConfig = {
+            mute: false,
+            volume: this.musicVolume,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: false,
+            delay: 0
+        }
+        
         this.hitSoundSelect=1;
         this.hitSoundMax=4;
-        this.sound.add("hitSound1", audioConfig);
-        this.sound.add("hitSound2", audioConfig);
-        this.sound.add("hitSound3", audioConfig);
-        this.sound.add("hitSound4", audioConfig);
-        this.sound.add("failSound", audioConfig);
-        this.music = this.sound.add("song", audioConfig);
+        this.sound.add("hitSound1", soundEffectAudioConfig);
+        this.sound.add("hitSound2", soundEffectAudioConfig);
+        this.sound.add("hitSound3", soundEffectAudioConfig);
+        this.sound.add("hitSound4", soundEffectAudioConfig);
+        this.sound.add("failSound", soundEffectAudioConfig);
+        this.music = this.sound.add("song", musicAudioConfig);
 
         //notes
         this.createNoteEvents(this);
