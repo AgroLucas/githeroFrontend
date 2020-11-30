@@ -44,10 +44,11 @@ export default class GameScene extends Phaser.Scene {
         
         //calc noteTravelTimeToBtnCenter
 
-        let distanceToBtnCenter = this.height-this.btnSize;  //fix
+        let tweak = 1.5;        
+        let distanceToBtnCenter = this.height-(tweak * this.btnSize/2);
         this.noteTravelTimeToBtnCenter = this.calcTimeToGetToY(distanceToBtnCenter); 
 
-        let distanceToBtn = this.height-2*this.btnSize; //fix
+        let distanceToBtn = this.height-(tweak * this.btnSize);
         this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn); 
         console.log(distanceToBtn);
         console.log(this.noteTravelTimeToBtn);
@@ -146,6 +147,9 @@ export default class GameScene extends Phaser.Scene {
         
         this.music.play();
     }
+
+    //const createNoteEvents = () => {}
+    //createNoteEvents = createNoteEnvents.bind(this);
 
     createNoteEvents(instance) {
         for (let n = 0; n < beatmap.length; n++) {
