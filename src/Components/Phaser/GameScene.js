@@ -46,7 +46,7 @@ export default class GameScene extends Phaser.Scene {
         this.btnSize = 80; //sprite of 80px TODO scale dynamicly to screen size
         this.btnYOffset = this.btnSize/2;
 
-        this.musicVolume = 0.2;
+        this.musicVolume = 0.75;
         this.soundEffectVolume = 1;
         
         //calc noteTravelTimeToBtnCenter
@@ -154,8 +154,11 @@ export default class GameScene extends Phaser.Scene {
         this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
         document.addEventListener("keypress", event => this.onKeypress(event));
         document.addEventListener("keyup", event => this.onKeyup(event));
+
         
-        this.music.play();
+        setTimeout(()=> {
+            this.music.play();
+        }, this.noteTravelTime);
     }
 
     //const createNoteEvents = () => {}
