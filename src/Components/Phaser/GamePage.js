@@ -6,7 +6,9 @@ let game;
 
 const hideExternalElements = () => {
   let navbar = document.querySelector("#navbar");
+  let footer = document.querySelector("#footer");
   navbar.className += " d-none";
+  footer.className += " d-none";
 }
 
 const PhaserGamePage = () => {
