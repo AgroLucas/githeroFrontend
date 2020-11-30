@@ -1,11 +1,19 @@
 import GamePage from "./Phaser/GamePage.js";
 import MusicListPage from "./MusicListPage.js";
 import HomePage from "./HomePage.js";
+import AboutUsPage from "./AboutUsPage.js";
+import HelpPage from "./HelpPage.js";
+import OptionsPage from "./OptionsPage.js";
+import RankingPage from "./RankingPage.js";
 
 const routes = {
     "/": HomePage,
     "/game": GamePage,
     "/list": MusicListPage,
+    "/aboutus": AboutUsPage,
+    "/help": HelpPage,
+    "/ranking": RankingPage,
+    "/options": OptionsPage,
 };
 
 let componentToRender;
