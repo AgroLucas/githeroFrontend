@@ -1,4 +1,4 @@
-import Phaser, { Game, Math, Time } from 'phaser';
+import Phaser, { Game, Time } from 'phaser';
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
@@ -11,10 +11,10 @@ import slideSound from "../../audio/slide.mp3";
 import song from "../../audio/ldd.mp3"; //TODO fetch from backend
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
-
+//import Math as PhaserMath from 'phaser';
 var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
-//var beatmap = [[0,0,1000,5500], [0,1,1000,5500], [0,2,1000,5500], [0,3,1000,5500]];
+[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];
+//var beatmap = [[0,3,3000,5500]];
 
 
 export default class GameScene extends Phaser.Scene {
@@ -26,7 +26,6 @@ export default class GameScene extends Phaser.Scene {
         this.setProportions();
 
         this.noteTravelTime = 3000;
-        this.leway = 300; 
 
         this.lowestPoint = 50
         this.longNoteIncrease = 10; // score increase by 10 every 250ms holding long note
@@ -40,20 +39,24 @@ export default class GameScene extends Phaser.Scene {
         this.btnSize = 80; //sprite of 80px TODO scale dynamicly to screen size
         this.btnYOffset = this.btnSize/2;
 
-        this.musicVolume = 0.5;
+        this.musicVolume = 0.2;
         this.soundEffectVolume = 1;
         
         //calc noteTravelTimeToBtnCenter
-        let noteSpeed = this.height/this.noteTravelTime;
 
-        let distanceToBtnCenter = this.height-this.btnYOffset;
-        this.noteTravelTimeToBtnCenter = distanceToBtnCenter/noteSpeed;
+        let distanceToBtnCenter = this.height-this.btnSize;  //fix
+        this.noteTravelTimeToBtnCenter = this.calcTimeToGetToY(distanceToBtnCenter); 
 
-        let distanceToBtn = this.height-this.btnSize;
-        this.noteTravelTimeToBtn = distanceToBtn/noteSpeed; 
+        let distanceToBtn = this.height-2*this.btnSize; //fix
+        this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn); 
+        console.log(distanceToBtn);
+        console.log(this.noteTravelTimeToBtn);
+        console.log(distanceToBtnCenter);
+        console.log(this.noteTravelTimeToBtnCenter);
+        
 
         /**** TODO need to be given ****/
-        this.songDuration = 13000; //song duration -> to change
+        this.songDuration = 35000; //song duration -> to change
         this.arrayKeys = [];
         this.arrayKeys[0] = "d";
         this.arrayKeys[1] = "f";
@@ -157,8 +160,7 @@ export default class GameScene extends Phaser.Scene {
 
     createSimpleNote(lineNbr, instance, time) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
-        let activationDelay = instance.noteTravelTime-instance.leway;
-        instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, activationDelay, lineNbr, follower, instance));
+        instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, follower, instance));
 
         follower.startFollow({
             positionOnPath: true,
@@ -177,8 +179,7 @@ export default class GameScene extends Phaser.Scene {
 
    createLongNote(lineNbr, instance, end) {
     let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_head");
-    let activationDelay = instance.noteTravelTime-instance.leway;
-    instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, activationDelay, lineNbr, instance, end));
+    instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, instance, end));
 
     follower.startFollow({
         positionOnPath: true,
@@ -229,7 +230,7 @@ export default class GameScene extends Phaser.Scene {
 
     calcTimeToGetToY(y) {
         let Y = y/this.height; // 0 <= Y <= 1
-        let coefficient = 2* Math.acos(1 - Y)/(Math.PI2/2);
+        let coefficient = 2* Math.acos(1 - Y)/(Math.PI);
         return this.noteTravelTime*coefficient;
     }
 
@@ -368,7 +369,7 @@ export default class GameScene extends Phaser.Scene {
         let note = {follower:follower, intervalID:undefined, score:1, line:lineNbr};
         instance.queuesTimestampToValidate[lineNbr].push(note);
         console.log("push single");
-        let intervalID = setInterval(function() {note.score++; console.log(note.score)}, 100);
+        let intervalID = setInterval(function() {note.score++; /*console.log(note.score)*/}, 100);
         note.intervalID = intervalID;
         instance.stackInterval.push(intervalID); 
     }
