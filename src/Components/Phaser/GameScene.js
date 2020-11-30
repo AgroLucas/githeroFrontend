@@ -7,6 +7,7 @@ import hitSound2 from "../../audio/hit2.mp3";
 import hitSound3 from "../../audio/hit3.mp3";
 import hitSound4 from "../../audio/hit4.mp3";
 import failSound from "../../audio/fail.mp3";
+import slideSound from "../../audio/slide.mp3";
 import song from "../../audio/ldd.mp3"; //TODO fetch from backend
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
@@ -48,7 +49,6 @@ export default class GameScene extends Phaser.Scene {
         this.noteTravelTimeToBtnCenter = distanceToBtnCenter/noteSpeed;
         this.noteTravelTimeToBtn = distanceToBtn/noteSpeed; 
 
-
         /**** TODO need to be given ****/
         this.songDuration = 12000; //song duration -> to change
         this.arrayKeys = [];
@@ -88,6 +88,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.audio("hitSound3", hitSound3);
         this.load.audio("hitSound4", hitSound4);
         this.load.audio("failSound", failSound);
+        this.load.audio("slideSound", slideSound);
         this.load.audio("song", song);
 	}
 
@@ -127,6 +128,7 @@ export default class GameScene extends Phaser.Scene {
         this.sound.add("hitSound3", soundEffectAudioConfig);
         this.sound.add("hitSound4", soundEffectAudioConfig);
         this.sound.add("failSound", soundEffectAudioConfig);
+        this.sound.add("slideSound", soundEffectAudioConfig);
         this.music = this.sound.add("song", musicAudioConfig);
 
         //notes
