@@ -17,11 +17,13 @@ import btnActive from "../../img/game_assets/btn_active.png";
 //var beatmap = [[0,1,800], [0,1,1000], [0,1,1200], [0,1,1400], [0,1,1600]];
 var beatmap = [[0,1,800]];
 
+var game;
 
 export default class GameScene extends Phaser.Scene {
     
 	constructor() {
         super('game-scene');
+        game = this.game;
         this.height = window.innerHeight;
         this.width = window.innerWidth;//hardcoded -> TODO to find in properties ?
         this.setProportions();

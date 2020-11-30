@@ -6,6 +6,8 @@ import HelpPage from "./HelpPage.js";
 import OptionsPage from "./OptionsPage.js";
 import RankingPage from "./RankingPage.js";
 
+import {stopMusic} from "./Phaser/GameScene.js";
+
 const routes = {
     "/": HomePage,
     "/game": GamePage,
@@ -43,8 +45,10 @@ const onLoadHandler = (e) => {
 
 //onNavigateHandler
 const onNavigateHandler = (e) => {
-    if (game)
+    if (game){
+        game.sound.stopAll();
         killGame();
+    }
     let uri;
     e.preventDefault();
     uri = e.target.dataset.uri;
@@ -70,8 +74,10 @@ const onNavigateHandler = (e) => {
 
 //onHistoryHandler (arrows <- -> )
 const onHistoryHandler = (e) => {
-    if (game)
+    if (game){
+        game.sound.stopAll();
         killGame();
+    }
     console.log("onHistory : ", window.location.pathname);
     removeModals();
     if (window.location.pathname==="/game") {
@@ -87,6 +93,10 @@ const onHistoryHandler = (e) => {
 };
 
 const RedirectUrl = (uri, data) => {
+    if (game){
+        game.sound.stopAll();
+        killGame();
+    }
     window.history.pushState({}, uri, window.location.origin + uri);
     componentToRender = routes[uri];
     if(!componentToRender){
