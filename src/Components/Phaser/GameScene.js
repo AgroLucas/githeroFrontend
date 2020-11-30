@@ -45,7 +45,7 @@ export default class GameScene extends Phaser.Scene {
         
         //calc noteTravelTimeToBtnCenter
         let noteSpeed = this.height/this.noteTravelTime;
-        
+
         let distanceToBtnCenter = this.height-this.btnYOffset;
         this.noteTravelTimeToBtnCenter = distanceToBtnCenter/noteSpeed;
 
@@ -224,6 +224,13 @@ export default class GameScene extends Phaser.Scene {
     calcLineXFromY(i, y){
         let deltaX = this.calcLineX(i, this.bottomSpacing) - this.calcLineX(i, this.topSpacing);
         return this.calcLineX(i, this.topSpacing) + (deltaX * y/this.height);
+    }
+
+
+    calcTimeToGetToY(y) {
+        let Y = y/this.height; // 0 <= Y <= 1
+        let coefficient = 2* Math.acos(1 - Y)/(Math.PI2/2);
+        return this.noteTravelTime*coefficient;
     }
 
     createBtns(){
