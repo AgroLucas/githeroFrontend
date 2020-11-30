@@ -11,6 +11,8 @@ import slideSound from "../../audio/slide.mp3";
 import song from "../../audio/ldd.mp3"; //TODO fetch from backend
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
+import flash from "../../img/game_assets/flash.png";
+
 /*var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
 [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];*/
 //var beatmap = [[0,0,1000], [0,0,1200]];
@@ -73,6 +75,8 @@ export default class GameScene extends Phaser.Scene {
         this.nbrHits = 0;
         this.score = 0;
         this.combo = 0;
+
+        this.flashLifeTime = 250;
     }
     
     setProportions() {
@@ -92,6 +96,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("long_note_head", long_note_head);
         this.load.image("long_note_body", long_note_body);
         this.load.image("btnInactive", btnInactive);
+        this.load.image("flash", flash);
         this.load.image("btnActive", btnActive);
         this.load.audio("hitSound1", hitSound1);
         this.load.audio("hitSound2", hitSound2);
@@ -299,7 +304,9 @@ export default class GameScene extends Phaser.Scene {
 
     displayPerfectFlash(i){
         console.log("perfect: "+i);
-        //TODO
+        let flash = this.add.sprite(this.calcLineXFromY(i, this.height-this.btnYOffset), this.height-this.btnYOffset, "flash");
+        flash.setScale(3,3);
+        setTimeout(()=>{flash.destroy()}, this.flashLifeTime);
     }
 
     drawAll() {
@@ -364,19 +371,14 @@ export default class GameScene extends Phaser.Scene {
         this.updateScore(this.lowestPoint*precisionMultiplier);
         switch(precisionMultiplier){
             case 1:
-                this.nbrHits += 0.5;
+                this.nbrHits += 0.5; // x1 -> 50%
                 break;
             case 2: 
-                this.nbrHits += 0.8;
-                break;
-            case 3:
-                this.nbrHits += 1;
+                this.nbrHits += 0.8; // x2 -> 80%
                 break;
             default:
-                this.nbrHits += 1;
-        }
-        if(precisionMultiplier === 3){
-            this.displayPerfectFlash(note.line);
+                this.nbrHits += 1; // x3+ -> 100% + flash animation
+                this.displayPerfectFlash(note.line);
         }
     }
 
