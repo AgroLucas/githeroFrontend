@@ -13,11 +13,13 @@ import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 import flash from "../../img/game_assets/flash.png";
 
-/*var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];*/
+const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], [0, 3, 7320], [0, 2, 7630], [0, 1, 7975], [0, 0, 8310], [0, 1, 8640], [0, 2, 8890], [1, 3, 9185, 9975]]
+
+//var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];
 //var beatmap = [[0,0,1000], [0,0,1200]];
 //var beatmap = [[0,1,800], [0,1,1000], [0,1,1200], [0,1,1400], [0,1,1600]];
-var beatmap = [[0,1,800]];
+//var beatmap = [[0,1,800]];
+var beatmap = ldd;
 
 var game;
 
@@ -62,7 +64,7 @@ export default class GameScene extends Phaser.Scene {
         
 
         /**** TODO need to be given ****/
-        this.songDuration = 6000; //song duration -> to change
+        this.songDuration = beatmap[beatmap.length-1][2] + this.noteTravelTime +  2000; //song duration -> to change
         this.arrayKeys = [];
         this.arrayKeys[0] = "d";
         this.arrayKeys[1] = "f";
