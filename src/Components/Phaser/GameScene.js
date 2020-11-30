@@ -148,6 +148,9 @@ export default class GameScene extends Phaser.Scene {
         this.music.play();
     }
 
+    //const createNoteEvents = () => {}
+    //createNoteEvents = createNoteEnvents.bind(this);
+
     createNoteEvents(instance) {
         for (let n = 0; n < beatmap.length; n++) {
             let lineNbr = beatmap[n][1];
