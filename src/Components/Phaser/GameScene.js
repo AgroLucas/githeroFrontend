@@ -35,7 +35,7 @@ export default class GameScene extends Phaser.Scene {
         this.btns = [];
         this.lines = [];
 
-        this.btnSize = 80; //sprite of 80px
+        this.btnSize = 80; //sprite of 80px TODO scale dynamicly to screen size
         this.btnYOffset = this.btnSize/2;
         
         //calc noteTravelTimeToBtnCenter
