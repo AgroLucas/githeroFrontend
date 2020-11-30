@@ -10,9 +10,9 @@ import failSound from "../../audio/fail.mp3";
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 
-const beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];
-//const beatmap = [[1,0,3000,5500], [1,1,3500,5000]];
+/*var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
+[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,7600]];*/
+var beatmap = [[0,0,1000,5500], [0,1,1000,5500], [0,2,1000,5500], [0,3,1000,5500]];
 
 
 export default class GameScene extends Phaser.Scene {
@@ -23,8 +23,8 @@ export default class GameScene extends Phaser.Scene {
         this.width = window.innerWidth;//hardcoded -> TODO to find in properties ?
         this.setProportions();
 
-        this.noteTravelTime = 12000;
-        this.leway = this.noteTravelTime/17,647; 
+        this.noteTravelTime = 3000;
+        this.leway = 300; 
 
         this.lowestPoint = 50
         this.longNoteIncrease = 10; // score increase by 10 every 250ms holding long note

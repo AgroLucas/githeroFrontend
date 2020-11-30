@@ -117,7 +117,6 @@ const killGame = () => {
     game.scene.scenes[0].stackInterval.forEach(intervalID => {
         clearInterval(intervalID);
     });
-    game.destroy(true);
     game = undefined;
     let navbar = document.querySelector("#navbar");
     navbar.className -= " d-none";
