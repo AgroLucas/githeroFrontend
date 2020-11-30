@@ -11,10 +11,10 @@ import slideSound from "../../audio/slide.mp3";
 import song from "../../audio/ldd.mp3"; //TODO fetch from backend
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
-//import Math as PhaserMath from 'phaser';
-var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
-[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];
-//var beatmap = [[0,3,3000,5500]];
+/*var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
+[0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];*/
+//var beatmap = [[0,0,1000], [0,0,1200]];
+var beatmap = [[0,1,800], [0,1,1000], [0,1,1200], [0,1,1400], [0,1,1600]];
 
 
 export default class GameScene extends Phaser.Scene {
@@ -239,7 +239,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createBtns(){
-        
         let y = this.endPathY - this.btnYOffset;
         for (let i = 0; i < 4; i++) {
             let x = this.calcLineXFromY(i, y);
@@ -287,10 +286,12 @@ export default class GameScene extends Phaser.Scene {
 
     setBtnActive(i) {
         this.btns[i].button.setTexture("btnActive");
+        this.btns[i].active = true;
     }
 
     setBtnInactive(i) {
         this.btns[i].button.setTexture("btnInactive");
+        this.btns[i].active = false;
     }
 
     displayPerfectFlash(i){
@@ -352,6 +353,7 @@ export default class GameScene extends Phaser.Scene {
         let note = queueToShift.shift();
         clearInterval(note.intervalID);
         note.follower.destroy();
+        console.log("destroyed");
         
         console.log("Well Done");
         this.incrementCombo();
@@ -365,32 +367,37 @@ export default class GameScene extends Phaser.Scene {
 
     /**
      * push into queuesTimestampToValidate[lineNbr] a new simple note and increment this note'score every 100ms
+     * only if the button wasn't active
      * @param {*} lineNbr, the line's number of the simple note 
      * @param {*} follower, the follower created 
      * @param {*} instance, this 
      */
     setFollowerToValidate(lineNbr, follower, instance) {
-        let note = {follower:follower, intervalID:undefined, score:1, line:lineNbr};
-        instance.queuesTimestampToValidate[lineNbr].push(note);
-        console.log("push single");
-        let intervalID = setInterval(function() {note.score++; /*console.log(note.score)*/}, 100);
-        note.intervalID = intervalID;
-        instance.stackInterval.push(intervalID); 
+        if (!instance.btns[lineNbr].active) {
+            let note = {follower:follower, intervalID:undefined, score:1, line:lineNbr};
+            instance.queuesTimestampToValidate[lineNbr].push(note);
+            console.log("push single");
+            let intervalID = setInterval(function() {note.score++; console.log(note.score)}, 100); //TODO GIVE MORE POINTS AT MIDDLE
+            note.intervalID = intervalID;
+            instance.stackInterval.push(intervalID); 
+        }
     }
 
     /**
      * push into queuesTimestampToValidate[lineNbr] a new long note 
-     * set the line's button inactive before setting the long note clickable
+     * if the button was active before push less point is given
      * @param {*} lineNbr, the line's number of the long note
      * @param {*} instance, this
      * @param {*} end, the time the long note should stay clickable
      */
     setLongFollowerToValidate(lineNbr, instance, end) {
-        instance.setBtnInactive(lineNbr);
+        let checkTime = 250;
+        if (instance.btns[lineNbr].active)
+            checkTime = 500;
         let note = {follower:undefined, intervalID:undefined, score:0};
         instance.queuesTimestampToValidate[lineNbr].push(note);
         console.log("push long");
-        let intervalID = setInterval(instance.onLongNotePress, 250, lineNbr, note, instance);
+        let intervalID = setInterval(instance.onLongNotePress, checkTime, lineNbr, note, instance);
         instance.stackInterval.push(intervalID); 
         note.intervalID = intervalID;
 
