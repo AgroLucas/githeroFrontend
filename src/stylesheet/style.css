@@ -8,66 +8,63 @@ tbody td {
 
 /*********************************On NavBar*********************************/
 #whiteLogo {
-    width: 40px;
+    width: 3.5em;
+    margin-right: 1.5em;
     cursor: pointer;
 }
 
 #profile {
-    width: 40px;
+    width: 3.5em;
     cursor: pointer;
 }
 
 li button {
-    margin-left: 15px;
-    margin-right: 15px;
-    width: 150px;
-    height: 60px;
+    margin-left: 1em;
+    margin-right: 1em;
+    width: 8em;
+    height: 3em;
 }
 
-.button_bottom { /**not used?**/
-    margin-left: 25px;
-    margin-top: 25px;
-    margin-bottom: 25px;
+.button_bottom {
+    margin-left: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
 
 /*********************************On HomePage*********************************/
 #logo {
-    width: 150px;
+    width: 10em;
 }
 
 .homepage_play_button {
-    height: 125px;
-    width: 250px;
-    margin-top: 20px;
+    height: 8em;
+    width: 15em;
+    margin-top: 1.5em;
 }
 
 .homepage_edit_button {
-    height: 75px;
-    width: 175px;
-    margin-top: 20px;
+    height: 4.5em;
+    width: 12em;
+    margin-top: 1.5em;
 }
 
 /*********************************On MusicListPage*********************************/
 .button_music {
-    height: 200px;
-    width: 300px;
-    margin-top: 50px;
-    margin-left: 65px;
-}
-
-.modal-backdrop { /**not used ?**/
-    background-color: black;
+    height: 13em;
+    width: 18em;
+    margin-top: 3em;
+    margin-left: 4.5em;
 }
 
 .music_info_leaderboard {
-    margin-left: 100px;
-    font-size: 20px;
+    margin-left: 5em;
+    font-size: 1.2em;
     font-weight: bold;
 }
 
 .music_info_play_button {
-    height: 150px;
-    width: 250px;
+    height: 9em;
+    width: 15em;
 }
 
 .modal-content {
@@ -77,6 +74,6 @@ li button {
 
 .modal-header .close {
     color: white;
-    font-size: 40px;
+    font-size: 2.5em;
     
 }
