@@ -25,7 +25,6 @@ export default class GameScene extends Phaser.Scene {
         this.setProportions();
 
         this.noteTravelTime = 3000;
-        this.leway = 300; 
 
         this.lowestPoint = 50
         this.longNoteIncrease = 10; // score increase by 10 every 250ms holding long note
@@ -45,11 +44,13 @@ export default class GameScene extends Phaser.Scene {
         //calc noteTravelTimeToBtnCenter
         let noteSpeed = this.height/this.noteTravelTime;
         let distanceToBtnCenter = this.height-this.btnYOffset;
+        let distanceToBtn = this.height-this.btnSize;
         this.noteTravelTimeToBtnCenter = distanceToBtnCenter/noteSpeed;
+        this.noteTravelTimeToBtn = distanceToBtn/noteSpeed; 
 
 
         /**** TODO need to be given ****/
-        this.songDuration = 13000; //song duration -> to change
+        this.songDuration = 12000; //song duration -> to change
         this.arrayKeys = [];
         this.arrayKeys[0] = "d";
         this.arrayKeys[1] = "f";
@@ -151,8 +152,7 @@ export default class GameScene extends Phaser.Scene {
 
     createSimpleNote(lineNbr, instance, time) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
-        let activationDelay = instance.noteTravelTime-instance.leway;
-        instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, activationDelay, lineNbr, follower, instance));
+        instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, follower, instance));
 
         follower.startFollow({
             positionOnPath: true,
@@ -171,8 +171,7 @@ export default class GameScene extends Phaser.Scene {
 
    createLongNote(lineNbr, instance, end) {
     let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_head");
-    let activationDelay = instance.noteTravelTime-instance.leway;
-    instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, activationDelay, lineNbr, instance, end));
+    instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, instance, end));
 
     follower.startFollow({
         positionOnPath: true,
