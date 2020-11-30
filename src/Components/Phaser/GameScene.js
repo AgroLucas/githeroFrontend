@@ -14,7 +14,8 @@ import btnActive from "../../img/game_assets/btn_active.png";
 /*var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], 
 [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];*/
 //var beatmap = [[0,0,1000], [0,0,1200]];
-var beatmap = [[0,1,800], [0,1,1000], [0,1,1200], [0,1,1400], [0,1,1600]];
+//var beatmap = [[0,1,800], [0,1,1000], [0,1,1200], [0,1,1400], [0,1,1600]];
+var beatmap = [[0,1,800]];
 
 
 export default class GameScene extends Phaser.Scene {
@@ -57,7 +58,7 @@ export default class GameScene extends Phaser.Scene {
         
 
         /**** TODO need to be given ****/
-        this.songDuration = 35000; //song duration -> to change
+        this.songDuration = 6000; //song duration -> to change
         this.arrayKeys = [];
         this.arrayKeys[0] = "d";
         this.arrayKeys[1] = "f";
@@ -359,7 +360,19 @@ export default class GameScene extends Phaser.Scene {
         this.incrementCombo();
         let precisionMultiplier = note.score;
         this.updateScore(this.lowestPoint*precisionMultiplier);
-        this.nbrHits += 1/3 * precisionMultiplier;
+        switch(precisionMultiplier){
+            case 1:
+                this.nbrHits += 0.5;
+                break;
+            case 2: 
+                this.nbrHits += 0.8;
+                break;
+            case 3:
+                this.nbrHits += 1;
+                break;
+            default:
+                this.nbrHits += 1;
+        }
         if(precisionMultiplier === 3){
             this.displayPerfectFlash(note.line);
         }
@@ -486,7 +499,7 @@ export default class GameScene extends Phaser.Scene {
 
     endGame (instance) {
         instance.isStarted = false;
-        let pourcent = Math.RoundTo(instance.nbrHits/beatmap.length*100,-2);
+        let pourcent = Math.round(instance.nbrHits/beatmap.length*10000)/100;
         console.log("Your precision is: " + pourcent + "%");
 
         instance.add.text(100, 300, "Game Over", { font: '48px Arial', fill: '#000000' });
