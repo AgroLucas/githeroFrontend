@@ -6,7 +6,7 @@ let navBarHtml = `
     <img id="whiteLogo" src="` + whiteLogo + `" alt="whiteLogo" href="#" data-uri="/">
     <ul class="navbar-nav">
         <li class="nav-item"><button type="button" class="btn btn-danger active" href="#" data-uri="/list">Jouer</button></li>
-        <li class="nav-item"><button type="button" class="btn btn-secondary active" href="#" data-uri="/">Editer</button></li>
+        <li class="nav-item"><button type="button" class="btn btn-secondary active" href="#" data-uri="/edit">Editer</button></li>
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item"><img id="profile" src="` + profile + `" alt="profil" href="#" data-uri="/"/></li>
