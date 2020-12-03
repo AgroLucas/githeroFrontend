@@ -202,7 +202,7 @@ export default class GameScene extends Phaser.Scene {
             rotateToPath: false,
             verticalAdjust: true,
             onComplete: () => {
-                follower.destroy(); console.log("fin");
+                follower.destroy();
                 instance.onNoKeypress(instance.queuesTimestampToValidate[lineNbr], lineNbr, time);
             },
         });       
@@ -378,7 +378,6 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} queueToShift, the queue containing the simple note to clear and remove 
      */
     onKeypressRightTime (queueToShift) {
-        console.log(queueToShift);
         this.playHitSound();
         let note = queueToShift.shift();
         clearInterval(note.intervalID);
@@ -448,6 +447,8 @@ export default class GameScene extends Phaser.Scene {
      */
     onLongNotePress(lineNbr, note, instance) {
         if(instance.btns[lineNbr].active) {
+            if (note.score==0)
+                instance.playHitSound();
             note.score += instance.longNoteIncrease
             instance.playSlideSound();
             if (note.score%4*instance.longNoteIncrease===0)
