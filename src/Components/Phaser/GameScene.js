@@ -188,7 +188,8 @@ export default class GameScene extends Phaser.Scene {
     createSimpleNote(lineNbr, instance, time) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
         instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, follower, instance));
-
+        let t = 0;
+        setInterval(function(){console.log("cpt " + ++t);}, 1000);
         follower.startFollow({
             positionOnPath: true,
             duration: instance.noteTravelTime,
@@ -198,7 +199,7 @@ export default class GameScene extends Phaser.Scene {
             rotateToPath: false,
             verticalAdjust: true,
             onComplete: () => {
-                follower.destroy();
+                follower.destroy(); console.log("fin");
                 instance.onNoKeypress(instance.queuesTimestampToValidate[lineNbr], lineNbr, time);
             },
         });       
@@ -374,11 +375,11 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} queueToShift, the queue containing the simple note to clear and remove 
      */
     onKeypressRightTime (queueToShift) {
+        console.log(queueToShift);
         this.playHitSound();
         let note = queueToShift.shift();
         clearInterval(note.intervalID);
         note.follower.destroy();
-        console.log("destroyed");
         
         console.log("Well Done");
         this.incrementCombo();
@@ -405,11 +406,11 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} instance, this 
      */
     setFollowerToValidate(lineNbr, follower, instance) {
+        let note = {follower:follower, intervalID:undefined, score:1, line:lineNbr};
+        instance.queuesTimestampToValidate[lineNbr].push(note);
         if (!instance.btns[lineNbr].active) {
-            let note = {follower:follower, intervalID:undefined, score:1, line:lineNbr};
-            instance.queuesTimestampToValidate[lineNbr].push(note);
             console.log("push single");
-            let intervalID = setInterval(function() {note.score++; console.log(note.score)}, 100); //TODO GIVE MORE POINTS AT MIDDLE
+            let intervalID = setInterval(function() {note.score++}, 100); //TODO GIVE MORE POINTS AT MIDDLE
             note.intervalID = intervalID;
             instance.stackInterval.push(intervalID); 
         }
