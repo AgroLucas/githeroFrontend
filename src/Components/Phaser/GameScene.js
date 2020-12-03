@@ -194,7 +194,7 @@ export default class GameScene extends Phaser.Scene {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
         instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, follower, instance));
         let t = 0;
-        setInterval(function(){console.log("cpt " + ++t);}, 1000);
+        //setInterval(function(){console.log("cpt " + ++t);}, 1000);
         follower.startFollow({
             positionOnPath: true,
             duration: instance.noteTravelTime,

@@ -5,6 +5,7 @@ import AboutUsPage from "./AboutUsPage.js";
 import HelpPage from "./HelpPage.js";
 import OptionsPage from "./OptionsPage.js";
 import RankingPage from "./RankingPage.js";
+import EditPage from "./EditPage.js";
 
 import {stopMusic} from "./Phaser/GameScene.js";
 
@@ -16,6 +17,7 @@ const routes = {
     "/help": HelpPage,
     "/ranking": RankingPage,
     "/options": OptionsPage,
+    "/edit": EditPage,
 };
 
 let componentToRender;
