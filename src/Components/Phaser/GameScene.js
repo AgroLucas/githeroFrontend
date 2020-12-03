@@ -193,8 +193,6 @@ export default class GameScene extends Phaser.Scene {
     createSimpleNote(lineNbr, instance, time) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
         instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, follower, instance));
-        let t = 0;
-        setInterval(function(){console.log("cpt " + ++t);}, 1000);
         follower.startFollow({
             positionOnPath: true,
             duration: instance.noteTravelTime,
@@ -451,6 +449,7 @@ export default class GameScene extends Phaser.Scene {
     onLongNotePress(lineNbr, note, instance) {
         if(instance.btns[lineNbr].active) {
             note.score += instance.longNoteIncrease
+            instance.playSlideSound();
             if (note.score%4*instance.longNoteIncrease===0)
                 instance.incrementCombo();
             instance.updateScore(note.score);

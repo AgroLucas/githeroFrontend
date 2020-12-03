@@ -138,6 +138,8 @@ const killGame = () => {
     game = undefined;
     let navbar = document.querySelector("#navbar");
     navbar.className -= " d-none";
+    let footer = document.querySelector("#footer");
+    footer.className -= " d-none";
 }
 
 export { Router, RedirectUrl, searchForPlayBtns};
