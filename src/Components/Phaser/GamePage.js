@@ -12,7 +12,9 @@ const hideExternalElements = () => {
 
 const PhaserGamePage = () => {
   hideExternalElements();
-  let phaserGame = `<div id="gameDiv" class="d-flex justify-content-center my-0"></div>`;
+  let phaserGame = `
+  <div id="gameDiv" class="d-flex justify-content-center my-0">
+  </div><div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>`;
 
   let page = document.querySelector("#page");
   page.innerHTML = phaserGame;
@@ -37,9 +39,19 @@ const PhaserGamePage = () => {
     parent: "gameDiv",
   };
 
-  // there could be issues when a game was quit (events no longer working)
-  // therefore destroy any started game prior to recreate it
-  return new Phaser.Game(config);
+  let beatmapID = 0;
+  fetch("/api/beatmaps/"+beatmapID)
+  .then((response) => {
+    if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
+    return response.json();
+  })
+  .then((data) => {
+    let game = new Phaser.Game(config);
+    game.noteList = data.noteList;
+    game.musicData = data.musicData;
+    return game;
+  })
+  .catch((err) => onError(err));
 };
 
 export default PhaserGamePage;

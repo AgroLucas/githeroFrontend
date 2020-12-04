@@ -47,6 +47,8 @@ export default class GameScene extends Phaser.Scene {
         this.width = window.innerWidth;//hardcoded -> TODO to find in properties ?
         this.setProportions();
 
+        console.log(this);
+
         this.noteTravelTime = 3000;
 
         this.lowestPoint = 50
