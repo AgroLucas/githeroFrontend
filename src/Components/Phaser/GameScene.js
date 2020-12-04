@@ -169,6 +169,8 @@ export default class GameScene extends Phaser.Scene {
         //notes
         this.createNoteEvents(this);
 
+        document.addEventListener("touchstart", event => this.onClick(event));
+        document.addEventListener("touchend", event => this.onEndClick(event));
         document.addEventListener("keypress", event => this.onKeypress(event));
         document.addEventListener("keyup", event => this.onKeyup(event));
 
@@ -211,7 +213,7 @@ export default class GameScene extends Phaser.Scene {
             rotateToPath: false,
             verticalAdjust: true,
             onComplete: () => {
-                follower.destroy(); console.log("fin");
+                follower.destroy();
                 instance.onNoKeypress(instance.queuesTimestampToValidate[lineNbr], lineNbr, time);
             },
         });       
@@ -387,7 +389,6 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} queueToShift, the queue containing the simple note to clear and remove 
      */
     onKeypressRightTime (queueToShift) {
-        console.log(queueToShift);
         this.playHitSound();
         let note = queueToShift.shift();
         clearInterval(note.intervalID);
@@ -481,6 +482,46 @@ export default class GameScene extends Phaser.Scene {
         if ((end/250)*0.70 < note.score)
             instance.nbrHits++;
     }
+
+    onClick(e) {
+        if (this.isStarted) {
+            let pos = e.changedTouches[0].clientX;
+            let quartTaille = window.innerWidth/4;
+            let queueToShift;
+
+            if (pos <= quartTaille) {
+                this.setBtnActive(0);
+                queueToShift = this.queuesTimestampToValidate[0];
+            } else if (pos <= quartTaille*2) {
+                this.setBtnActive(1);
+                queueToShift = this.queuesTimestampToValidate[1];
+            } else if (pos <= quartTaille*3) {
+                this.setBtnActive(2);
+                queueToShift = this.queuesTimestampToValidate[2];
+            } else {
+                this.setBtnActive(3);
+                queueToShift = this.queuesTimestampToValidate[3];
+            } 
+            if (typeof queueToShift !== "undefined") {
+                if (queueToShift.length!==0) {
+                    if(typeof queueToShift[0].follower!== "undefined") //if the note is not long
+                        this.onKeypressRightTime(queueToShift);
+                }
+            }
+        }
+    }
+
+    onEndClick(e) {
+        if (typeof this.queuesTimestampToValidate[0] === "undefined" || typeof this.queuesTimestampToValidate[0].follower === "undefined") //if there is no long note
+            this.setBtnInactive(0);
+        if (typeof this.queuesTimestampToValidate[1] === "undefined" || typeof this.queuesTimestampToValidate[1].follower === "undefined")
+            this.setBtnInactive(1);
+        if (typeof this.queuesTimestampToValidate[2] === "undefined" || typeof this.queuesTimestampToValidate[2].follower === "undefined") 
+            this.setBtnInactive(2);
+        if (typeof this.queuesTimestampToValidate[3] === "undefined" || typeof this.queuesTimestampToValidate[3].follower === "undefined") 
+            this.setBtnInactive(3);  
+    }
+
 
     //check if we clicked at the right time
     onKeypress (e) {
