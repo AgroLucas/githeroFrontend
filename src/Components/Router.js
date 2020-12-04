@@ -6,11 +6,24 @@ import HelpPage from "./HelpPage.js";
 import OptionsPage from "./OptionsPage.js";
 import RankingPage from "./RankingPage.js";
 import EditPage from "./EditPage.js";
+import UserListPage from "./UserListPage.js";
+import LoginPage from "./LoginPage.js";
+import RegisterPage from "./RegisterPage.js";
+import LogoutComponent from "./LogoutComponent.js";
+import ErrorPage from "./ErrorPage.js";
+import UserPage from "./UserPage.js";
+
 
 import {stopMusic} from "./Phaser/GameScene.js";
 
 const routes = {
     "/": HomePage,
+    "/users": UserListPage,
+    "/connected": UserPage,
+    "/login": LoginPage,
+    "/register": RegisterPage,
+    "/logout": LogoutComponent,
+    "/error": ErrorPage,
     "/game": GamePage,
     "/list": MusicListPage,
     "/aboutus": AboutUsPage,
