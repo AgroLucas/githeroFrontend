@@ -31,7 +31,7 @@ const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de 
 ]
 
 //var ldd = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];
-//var ldd = [[0,0,1000], [0,0,1200]];
+var ldd = [[0,0,1000], [0,0,1200]];
 //var ldd = [[0,1,800], [0,1,1000], [0,1,1200], [0,1,1400], [0,1,1600]];
 //var ldd = [[0,1,800]];
 var beatmap = ldd;
@@ -173,7 +173,7 @@ export default class GameScene extends Phaser.Scene {
         document.addEventListener("keyup", event => this.onKeyup(event));
 
         setTimeout(()=> {
-            this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
+            this.stackTimeout.push(setTimeout(this.endGame, 2, this.songDuration)); 
             this.music.play();
         }, this.noteTravelTime);
     }
@@ -571,12 +571,35 @@ export default class GameScene extends Phaser.Scene {
 
     endGame (instance) {
         instance.isStarted = false;
-        let pourcent = Math.round(instance.nbrHits/beatmap.length*10000)/100;
-        console.log("Your precision is: " + pourcent + "%");
+        let percent = Math.round(instance.nbrHits/beatmap.length*10000)/100;
+        console.log("Your precision is: " + percent + "%");
 
         instance.add.text(100, 300, "Game Over", { font: '48px Arial', fill: '#000000' });
-        instance.add.text(100, 350, "Précision: " + pourcent + "%", { font: '24px Arial', fill: '#000000' })
+        instance.add.text(100, 350, "Précision: " + percent + "%", { font: '24px Arial', fill: '#000000' })
 
         instance.music.stop();
+        let note;
+        if (percent == 100) {
+            note = "S++";
+        } else if (percent >= 95) {
+            note = "S+";
+        } else if (percent >= 90) {
+            note = "S";
+        } else if (percent >= 80) {
+            note = "A";
+        } else if (percent >= 60) {
+            note = "B";
+        } else if (percent >= 50) {
+            note = "C";
+        } else if (percent >= 35) {
+            note = "D";
+        } else if (percent >= 20) {
+            note = "E";
+        } else {
+            note = "F";
+        } 
+        $('#gameModal').modal({show:true});
+        let modalBody = document.querySelector("#contentGameModal");
+        modalBody.innerHTML = "Précision : " + percent +"%</br>Note : " + note;
     }
 }
