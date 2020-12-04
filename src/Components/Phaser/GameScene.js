@@ -75,10 +75,6 @@ export default class GameScene extends Phaser.Scene {
 
         let distanceToBtn = this.height-(tweak * this.btnSize);
         this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn); 
-        console.log(distanceToBtn);
-        console.log(this.noteTravelTimeToBtn);
-        console.log(distanceToBtnCenter);
-        console.log(this.noteTravelTimeToBtnCenter);
         
 
         /**** TODO need to be given ****/
@@ -95,6 +91,7 @@ export default class GameScene extends Phaser.Scene {
         this.nbrHits = 0;
         this.score = 0;
         this.combo = 0;
+        this.maxCombo = 0;
 
         this.flashLifeTime = 250;
     }
@@ -318,6 +315,8 @@ export default class GameScene extends Phaser.Scene {
     resetCombo(){
         if(this.combo > 10)
             this.playFailSound();
+        if(this.combo > this.maxCombo)
+            this.maxCombo = this.combo;
         this.combo = 0;
         this.comboDisplay.setText("X" +this.combo);
     }
@@ -573,12 +572,9 @@ export default class GameScene extends Phaser.Scene {
 
     endGame (instance) {
         instance.isStarted = false;
-        let percent = Math.round(instance.nbrHits/beatmap.length*10000)/100;
-        console.log("Your precision is: " + percent + "%");
-
-        instance.add.text(100, 300, "Game Over", { font: '48px Arial', fill: '#000000' });
-        instance.add.text(100, 350, "Précision: " + percent + "%", { font: '24px Arial', fill: '#000000' })
-
+        let percent = Math.round(instance.nbrHits/instance.beatmap.length*10000)/100;
+        if(instance.combo > instance.maxCombo)
+            instance.maxCombo = instance.combo;
         let note;
         if (percent == 100) {
             note = "S++";
@@ -601,6 +597,6 @@ export default class GameScene extends Phaser.Scene {
         } 
         $('#gameModal').modal({show:true});
         let modalBody = document.querySelector("#contentGameModal");
-        modalBody.innerHTML = "Précision : " + percent +"%</br>Note : " + note;
+        modalBody.innerHTML = "Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note;
     }
 }
