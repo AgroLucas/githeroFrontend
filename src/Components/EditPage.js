@@ -61,7 +61,6 @@ const EditPage = () => {
 
 const onSubmitHandler = (e) => {
     e.preventDefault();
-    console.log("post");
     let username = "baptiste";
     let noteList = ldd;
     let musicTitle = document.querySelector("#musicTitle").value;
@@ -74,7 +73,6 @@ const onSubmitHandler = (e) => {
     reader.readAsDataURL(file);
     reader.onload = function () {
         let musicData = reader.result;
-        console.log("mdata: ", musicData);
         let beatmap = {
             noteList: noteList,
             difficulty: difficulty,
@@ -103,7 +101,6 @@ const onSubmitHandler = (e) => {
         console.log('Error: ', error);
     };
 }
-
 const onBeatmapPublication = (data) => {
     console.log("Success: res = ", data);
 }
@@ -115,17 +112,5 @@ const onError = (err) => {
     // show the messageBoard div (add relevant Bootstrap class)
     messageBoard.classList.add("d-block");  
   };
-
-const getBase64 = (file) => {
-    var reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      console.log(reader.result);
-      return reader.result;
-    };
-    reader.onerror = function (error) {
-      console.log('Error: ', error);
-    };
- }
 
 export default EditPage;
