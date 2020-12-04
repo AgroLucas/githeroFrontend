@@ -13,6 +13,8 @@ const hideExternalElements = () => {
 const PhaserGamePage = () => {
   hideExternalElements();
   let phaserGame = `
+  
+  <div id="divAudio"></div>
   <div id="gameDiv" class="d-flex justify-content-center my-0">
     <!-- Modal -->
     <div class="modal fade" id="gameModal" data-backdrop="static">
@@ -27,9 +29,7 @@ const PhaserGamePage = () => {
       </div>
     </div>
   <div>
-  <div id="divAudio"></div>
-  <div id="gameDiv" class="d-flex justify-content-center my-0">
-  </div><div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>`;
+  <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>`;
 
   let page = document.querySelector("#page");
   page.innerHTML = phaserGame;
