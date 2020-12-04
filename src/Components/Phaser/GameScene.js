@@ -1,4 +1,4 @@
-import Phaser, { Game, Time } from 'phaser';
+import Phaser, { Game, Time ,Base64} from 'phaser';
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
@@ -8,7 +8,7 @@ import hitSound3 from "../../audio/hit3.mp3";
 import hitSound4 from "../../audio/hit4.mp3";
 import failSound from "../../audio/fail.mp3";
 import slideSound from "../../audio/slide.mp3";
-import song from "../../audio/ldd.mp3"; //TODO fetch from backend
+//import song from "../../audio/ldd.mp3"; //TODO fetch from backend
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 import flash from "../../img/game_assets/flash.png";
@@ -34,20 +34,21 @@ const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de 
 //var beatmap = [[0,0,1000], [0,0,1200]];
 //var beatmap = [[0,1,800], [0,1,1000], [0,1,1200], [0,1,1400], [0,1,1600]];
 //var beatmap = [[0,1,800]];
-var beatmap = ldd;
 
-var game;
+var beatmap;
 
 export default class GameScene extends Phaser.Scene {
     
-	constructor() {
+	constructor(beatmap, audioHtmlElement) {
         super('game-scene');
-        game = this.game;
+        this.beatmap = beatmap;
+        console.log(this.beatmap);
+        this.audioHtmlElement = audioHtmlElement;
         this.height = window.innerHeight;
-        this.width = window.innerWidth;//hardcoded -> TODO to find in properties ?
+        this.width = window.innerWidth;
         this.setProportions();
 
-        console.log(this);
+        console.log(this.game);
 
         this.noteTravelTime = 3000;
 
@@ -123,7 +124,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.audio("hitSound4", hitSound4);
         this.load.audio("failSound", failSound);
         this.load.audio("slideSound", slideSound);
-        this.load.audio("song", song);
+        //this.load.audio("song", this.song);
 	}
 
 	create() {
@@ -163,7 +164,7 @@ export default class GameScene extends Phaser.Scene {
         this.sound.add("hitSound4", soundEffectAudioConfig);
         this.sound.add("failSound", soundEffectAudioConfig);
         this.sound.add("slideSound", soundEffectAudioConfig);
-        this.music = this.sound.add("song", musicAudioConfig);
+        //this.music = this.sound.add("song", musicAudioConfig);
 
         //notes
         this.createNoteEvents(this);
@@ -173,14 +174,20 @@ export default class GameScene extends Phaser.Scene {
 
         setTimeout(()=> {
             this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
-            this.music.play();
+            this.playMusic();
         }, this.noteTravelTime);
+    }
+
+    playMusic(){
+        this.audioHtmlElement.play();
     }
 
     //const createNoteEvents = () => {}
     //createNoteEvents = createNoteEnvents.bind(this);
 
     createNoteEvents(instance) {
+        console.log(instance);
+        let beatmap = instance.beatmap;
         for (let n = 0; n < beatmap.length; n++) {
             //console.log(n, beatmap[n][2]);
             let lineNbr = beatmap[n][1];
@@ -525,7 +532,7 @@ export default class GameScene extends Phaser.Scene {
 
     endGame (instance) {
         instance.isStarted = false;
-        let pourcent = Math.round(instance.nbrHits/beatmap.length*10000)/100;
+        let pourcent = Math.round(instance.nbrHits/instance.beatmap.length*10000)/100;
         console.log("Your precision is: " + pourcent + "%");
 
         instance.add.text(100, 300, "Game Over", { font: '48px Arial', fill: '#000000' });
