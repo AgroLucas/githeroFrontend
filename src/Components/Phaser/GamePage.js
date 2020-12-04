@@ -2,7 +2,6 @@ import Phaser from "phaser";
 import GameScene from "./GameScene.js";
 import { setLayout } from "../../utils/render.js";
 
-let game;
 
 const hideExternalElements = () => {
   let navbar = document.querySelector("#navbar");
