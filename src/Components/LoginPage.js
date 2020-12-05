@@ -3,8 +3,8 @@ escaped using the escape character \ if they are to be included in their templat
 By default, all escape sequences in a template literal are ignored.*/
 import {getUserSessionData, setUserSessionData} from "./Session.js";
 import { RedirectUrl } from "./Router.js";
-import Navbar from " ./Navbar.js";
-import { setLayout } from "./utils/render.js";
+import Navbar from "./Navbar.js";
+import { setLayout } from "../utils/render.js";
 
 
 let loginPage = `<form>

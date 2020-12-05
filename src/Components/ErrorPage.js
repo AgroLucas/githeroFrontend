@@ -1,7 +1,5 @@
-import { setLayout } from "./utils/render.js";
-
+//TODO -> modify (use uri as param & use clearer code)
 const ErrorPage = (err) => {
-  setLayout("Error");
   let errorPage;
   if (!err) errorPage = `<p>There was an error.</p>`;
   else if (!err.message) errorPage = `<p>${err}</p>`;
