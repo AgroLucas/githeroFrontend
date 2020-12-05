@@ -11,6 +11,7 @@ import LoginPage from "./LoginPage.js";
 import RegisterPage from "./RegisterPage.js";
 import LogoutComponent from "./LogoutComponent.js";
 import ErrorPage from "./ErrorPage.js";
+import EditPage from "./EditPage.js";
 
 const routes = {
     "/": HomePage,
@@ -25,6 +26,7 @@ const routes = {
     "/ranking": RankingPage,
     "/options": OptionsPage,
     "/addBeatmap": AddMusicInfo,
+    "/edit": EditPage,
 };
 
 let componentToRender;
