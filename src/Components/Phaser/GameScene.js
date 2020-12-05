@@ -12,6 +12,7 @@ import slideSound from "../../audio/slide.mp3";
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 import flash from "../../img/game_assets/flash.png";
+import fail from "../../img/game_assets/fail.png";
 
 const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
     [0, 3, 7320], [0, 2, 7630], [0, 1, 7975], [0, 0, 8310], [0, 1, 8640], [0, 2, 8890], [1, 3, 9185, 9975], // générique libre de droiiits ...
@@ -114,6 +115,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("long_note_body", long_note_body);
         this.load.image("btnInactive", btnInactive);
         this.load.image("flash", flash);
+        this.load.image("fail", fail);
         this.load.image("btnActive", btnActive);
         this.load.audio("hitSound1", hitSound1);
         this.load.audio("hitSound2", hitSound2);
@@ -378,6 +380,7 @@ export default class GameScene extends Phaser.Scene {
     onNoKeypress (queueToShift, lineNbr, time) {
         if (queueToShift.length!==0) {
             this.resetCombo();
+            this.displayBtnEffect(lineNbr, "fail");
             clearInterval(queueToShift.shift().intervalID);
             console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
         }
