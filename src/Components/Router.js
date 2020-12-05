@@ -5,7 +5,7 @@ import AboutUsPage from "./AboutUsPage.js";
 import HelpPage from "./HelpPage.js";
 import OptionsPage from "./OptionsPage.js";
 import RankingPage from "./RankingPage.js";
-import EditPage from "./EditPage.js";
+import AddMusicInfo from "./AddMusicInfoPage.js";
 import UserListPage from "./UserListPage.js";
 import LoginPage from "./LoginPage.js";
 import RegisterPage from "./RegisterPage.js";
@@ -24,7 +24,7 @@ const routes = {
     "/help": HelpPage,
     "/ranking": RankingPage,
     "/options": OptionsPage,
-    "/edit": EditPage,
+    "/addBeatmap": AddMusicInfo,
 };
 
 let componentToRender;

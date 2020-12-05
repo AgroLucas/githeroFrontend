@@ -53,7 +53,7 @@ let ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de dr
     [0, 1, 41710], [0, 0, 41920] // de droits.
 ]
 
-const EditPage = () => {
+const AddMusicInfo = () => {
     page.innerHTML = pageHtml;
     let submitBtn = document.querySelector("#submit");
     submitBtn.addEventListener("click", onSubmitHandler)
@@ -123,4 +123,4 @@ const verifyInput = (input) => {
     return true;
 }
 
-export default EditPage;
+export default AddMusicInfo;

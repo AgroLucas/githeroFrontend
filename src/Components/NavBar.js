@@ -27,8 +27,9 @@ const Navbar = () => {
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><button type="button" class="btn btn-danger active" href="#" data-uri="/list">Jouer</button></li>
                 </ul>
-                <ul class="navbar-nav justify-content-end">
+                <ul class="navbar-nav">
                     <li class="nav-item"><button type="button" class="btn btn-secondary active" href="#" data-uri="/login">Se connecter</button></li>
+                    <li class="nav-item"><button type="button" class="btn btn-secondary active" href="#" data-uri="/register">S'inscrire</button></li>
                 </ul>
             </nav>`;
     }
