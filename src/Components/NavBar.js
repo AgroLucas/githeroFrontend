@@ -1,13 +1,15 @@
 "use strict"
 import whiteLogo from "../img/GitHero_logo_blanc.png";
 import profile from "../img/image_profil.png";
+import {getUserSessionData} from "./Session.js";
 
 
 let navBar = document.querySelector("#navBar");
 
-const Navbar = (userData) => { 
+const Navbar = () => { 
 let navbar;
-if(userData){ // connecté
+let user =getUserSessionData();
+if(user){ // connecté
     navbar = `
 <nav class="navbar navbar-expand-sm bg-primary navbar-dark" id="navbar">
     <img id="whiteLogo" src="` + whiteLogo + `" alt="whiteLogo" href="#" data-uri="/">
@@ -32,10 +34,10 @@ if(userData){ // connecté
     </ul>
 </nav>`;
 }
-Navbar.innerHTML = navbar;
+return (navBar.innerHTML = navbar);
 };
 
-export default { Navbar };
+export default Navbar;
 
 
 

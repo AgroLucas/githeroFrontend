@@ -11,7 +11,7 @@ import LoginPage from "./LoginPage.js";
 import RegisterPage from "./RegisterPage.js";
 import LogoutComponent from "./LogoutComponent.js";
 import ErrorPage from "./ErrorPage.js";
-import UserPage from "./UserPage.js";
+
 
 
 import {stopMusic} from "./Phaser/GameScene.js";
@@ -19,7 +19,6 @@ import {stopMusic} from "./Phaser/GameScene.js";
 const routes = {
     "/": HomePage,
     "/users": UserListPage,
-    "/connected": UserPage,
     "/login": LoginPage,
     "/register": RegisterPage,
     "/logout": LogoutComponent,
