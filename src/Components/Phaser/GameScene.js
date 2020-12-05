@@ -93,7 +93,7 @@ export default class GameScene extends Phaser.Scene {
         this.combo = 0;
         this.maxCombo = 0;
 
-        this.flashLifeTime = 250;
+        this.btnEffectLifeTime = 250;
     }
     
     setProportions() {
@@ -331,11 +331,11 @@ export default class GameScene extends Phaser.Scene {
         this.btns[i].active = false;
     }
 
-    displayPerfectFlash(i){
+    displayBtnEffect(i, spriteKey){
         console.log("perfect: "+i);
-        let flash = this.add.sprite(this.calcLineXFromY(i, this.height-this.btnYOffset), this.height-this.btnYOffset, "flash");
-        flash.setScale(3,3);
-        setTimeout(()=>{flash.destroy()}, this.flashLifeTime);
+        let sprite = this.add.sprite(this.calcLineXFromY(i, this.height-this.btnYOffset), this.height-this.btnYOffset, spriteKey);
+        sprite.setScale(3,3);
+        setTimeout(()=>{sprite.destroy()}, this.btnEffectLifeTime);
     }
 
     drawAll() {
@@ -406,7 +406,7 @@ export default class GameScene extends Phaser.Scene {
                 break;*/
             default:
                 this.nbrHits += 1; // x2+ -> 100% + flash animation
-                this.displayPerfectFlash(note.line);
+                this.displayBtnEffect(note.line, "flash");
         }
     }
 
