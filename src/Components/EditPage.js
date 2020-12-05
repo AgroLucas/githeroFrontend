@@ -69,41 +69,44 @@ const onSubmitHandler = (e) => {
     let file = document.querySelector("#musicFile").files[0];
     let leaderboard = [];
 
+    
     var reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = function () {
-        let musicData = reader.result;
-        let beatmap = {
-            noteList: noteList,
+    reader.onload = function () { //convert audio to base64
+        let userRawInput = {
             difficulty: difficulty,
-            musicTitle: musicTitle,
-            musicData: musicData,
-            musicArtist: musicArtist,
-            bmCreator: username,
-            leaderboard: leaderboard,
+            title: musicTitle,
+            file: file,
+            audioData: reader.result,
+            artist: musicArtist,
         }
-        
-        fetch("/api/beatmaps/",{
-            method: "POST",
-            body: JSON.stringify(beatmap),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
-                return response.json();
+    
+        if(verifyInput(userRawInput)){ //verify input validity
+            //then...
+            /* // goto -> /edit
+            fetch("/api/beatmaps/",{
+                method: "POST",
+                body: JSON.stringify(beatmap),
+                headers: {
+                    "Content-Type": "application/json",
+                },
             })
-            .then((data) => onBeatmapPublication(data))
-            .catch((err) => onError(err));
+                .then((response) => {
+                    if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
+                    return response.json();
+                })
+                .then((data) => onBeatmapPublication(data))
+                .catch((err) => onError(err));
+            */
+        }
     }
-    reader.onerror = function (error) {
-        console.log('Error: ', error);
-    };
+    reader.onerror = (err) => onError(err);
 }
+
+/*
 const onBeatmapPublication = (data) => {
     console.log("Success: res = ", data);
-}
+}*/
 
 const onError = (err) => {
     let messageBoard = document.querySelector("#messageBoard");
@@ -111,6 +114,13 @@ const onError = (err) => {
     messageBoard.innerText = errorMessage;
     // show the messageBoard div (add relevant Bootstrap class)
     messageBoard.classList.add("d-block");  
-  };
+};
+
+const verifyInput = (input) => {
+    if(input.title === undefined) return false;
+    if(input.artist === undefined) return false;
+    console.log(input.file);
+    return true;
+}
 
 export default EditPage;
