@@ -573,8 +573,16 @@ export default class GameScene extends Phaser.Scene {
     endGame (instance) {
         instance.isStarted = false;
         let percent = Math.round(instance.nbrHits/instance.beatmap.length*10000)/100;
+<<<<<<< HEAD
         if(instance.combo > instance.maxCombo)
             instance.maxCombo = instance.combo;
+=======
+        console.log("Your precision is: " + percent + "%");
+
+        instance.add.text(100, 300, "Game Over", { font: '48px Arial', fill: '#000000' });
+        instance.add.text(100, 350, "Précision: " + percent + "%", { font: '24px Arial', fill: '#000000' })
+
+>>>>>>> 079683d... remove ldd from audio files in frontend
         let note;
         if (percent == 100) {
             note = "S++";
