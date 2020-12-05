@@ -24,8 +24,11 @@ const Navbar = () => {
         navbarHtml = `
             <nav class="navbar navbar-expand-sm bg-primary navbar-dark" id="navbar">
                 <img id="whiteLogo" src="` + whiteLogo + `" alt="whiteLogo" href="#" data-uri="/">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><button type="button" class="btn btn-danger active" href="#" data-uri="/list">Jouer</button></li>
+                </ul>
+                <ul class="navbar-nav justify-content-end">
+                    <li class="nav-item"><button type="button" class="btn btn-secondary active" href="#" data-uri="/login">Se connecter</button></li>
                 </ul>
             </nav>`;
     }
