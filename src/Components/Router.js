@@ -12,17 +12,12 @@ import RegisterPage from "./RegisterPage.js";
 import LogoutComponent from "./LogoutComponent.js";
 import ErrorPage from "./ErrorPage.js";
 
-
-
-import {stopMusic} from "./Phaser/GameScene.js";
-
 const routes = {
     "/": HomePage,
     "/users": UserListPage,
     "/login": LoginPage,
     "/register": RegisterPage,
     "/logout": LogoutComponent,
-    "/error": ErrorPage,
     "/game": GamePage,
     "/list": MusicListPage,
     "/aboutus": AboutUsPage,
