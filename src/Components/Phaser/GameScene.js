@@ -53,6 +53,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.lowestPoint = 50
         this.longNoteIncrease = 10; // score increase by 10 every 250ms holding long note
+        this.shortNoteInterval = 50; 
 
         this.isStarted = true;
         this.stackTimeout = []; //contain all timeout -> useful if we need to clear them all
@@ -74,7 +75,9 @@ export default class GameScene extends Phaser.Scene {
         this.noteTravelTimeToBtnCenter = this.calcTimeToGetToY(distanceToBtnCenter); 
 
         let distanceToBtn = this.height-(tweak * this.btnSize);
-        this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn); 
+        this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn);
+        this.valueMiddleButton = (Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)/this.shortNoteInterval)); //the value the short note should get for having a perfect shot
+        this.valueToGive = Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)%this.shortNoteInterval); //the value given while doing a perfect shot
         
         this.songDuration = 45000 + this.noteTravelTime; //TODO: get song duration from audiofile (or /api/beatmaps ?)
 
@@ -385,18 +388,14 @@ export default class GameScene extends Phaser.Scene {
         
         console.log("Well Done");
         this.incrementCombo();
-        let precisionMultiplier = note.score;
-        this.updateScore(this.lowestPoint*precisionMultiplier);
-        switch(precisionMultiplier){
-            case 1:
-                this.nbrHits += 0.5; // x1 -> 50%
-                break;
-            /*case 2: 
-                this.nbrHits += 0.8; // x2 -> 80%
-                break;*/
-            default:
-                this.nbrHits += 1; // x2+ -> 100% + flash animation
-                this.displayBtnEffect(note.line, "flash");
+        let value = note.score;
+        if(value === Math.round(this.valueMiddleButton/2) || value === Math.round((this.valueMiddleButton)/2)-1) {
+            this.nbrHits += 1;
+            this.displayBtnEffect(note.line, "flash");
+            this.updateScore(this.valueToGive);
+        } else {
+            this.nbrHits += 0.5;
+            this.updateScore(this.valueToGive)/2;
         }
     }
 
@@ -408,11 +407,11 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} instance, this 
      */
     setFollowerToValidate(lineNbr, follower, instance) {
-        let note = {follower:follower, intervalID:undefined, score:1, line:lineNbr};
+        let note = {follower:follower, intervalID:undefined, score:0, line:lineNbr};
         instance.queuesTimestampToValidate[lineNbr].push(note);
         if (!instance.btns[lineNbr].active) {
             console.log("push single");
-            let intervalID = setInterval(function() {note.score++}, 100); //TODO GIVE MORE POINTS AT MIDDLE
+            let intervalID = setInterval(function() {note.score++}, instance.shortNoteInterval); //TODO GIVE MORE POINTS AT MIDDLE
             note.intervalID = intervalID;
             instance.stackInterval.push(intervalID); 
         }
@@ -590,10 +589,8 @@ export default class GameScene extends Phaser.Scene {
         $('#gameModal').modal({show:true});
         let modalBody = document.querySelector("#contentGameModal");
         modalBody.innerHTML = "<div class=\"d-flex justify-content-center my-0\">Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note
-         + "</div></br><button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/game\">Rejouer</button>"
-         + "<button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/list\">Retour à la liste de map</button> ";
-         page.querySelectorAll("button").forEach(button=> {
-            button.addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri))
-        })
+        + "</div></br><button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/game\">Rejouer</button>"
+        + "<button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/list\">Retour à la liste de map</button> ";
+        page.querySelectorAll("button").forEach( button => button.addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri)) )
     }
 }
