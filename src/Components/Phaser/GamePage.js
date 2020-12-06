@@ -61,7 +61,7 @@ const PhaserGamePage = async () => {
   };
 
   let beatmapID = 0;
-  let te = await fetch("/api/beatmaps/"+beatmapID)
+  let ret = await fetch("/api/beatmaps/"+beatmapID)
   .then((response) => {
     if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
     return response.json();
@@ -84,11 +84,10 @@ const PhaserGamePage = async () => {
     let game = new Phaser.Game(config);
     //game.noteList = data.noteList;
     //game.musicData = data.musicData;
-    console.log("finished");
     return game;
   })
   .catch((err) => onError(err));
-  return te;
+  return ret;
 };
 
 const onError = (err) => {

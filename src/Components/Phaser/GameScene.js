@@ -183,9 +183,8 @@ export default class GameScene extends Phaser.Scene {
             let lineNbr = beatmap[n][1];
              if (beatmap[n][0] == 0) //simple notes
                 instance.stackTimeout.push(setTimeout(instance.createSimpleNote, beatmap[n][2], lineNbr, instance, beatmap[n][2]));
-            else { //long notes
+            else //long notes
                 instance.stackTimeout.push(setTimeout(instance.createLongNote, beatmap[n][2], lineNbr, instance, beatmap[n][3]-beatmap[n][2]))
-            }
         }
     }
 
@@ -569,34 +568,32 @@ export default class GameScene extends Phaser.Scene {
         console.log("Your precision is: " + percent + "%");
 
         let note;
-        if (percent == 100) {
+        if (percent == 100)
             note = "S++";
-        } else if (percent >= 95) {
+        else if (percent >= 95)
             note = "S+";
-        } else if (percent >= 90) {
+        else if (percent >= 90)
             note = "S";
-        } else if (percent >= 80) {
+        else if (percent >= 80)
             note = "A";
-        } else if (percent >= 60) {
+        else if (percent >= 60)
             note = "B";
-        } else if (percent >= 50) {
+        else if (percent >= 50)
             note = "C";
-        } else if (percent >= 35) {
+        else if (percent >= 35)
             note = "D";
-        } else if (percent >= 20) {
+        else if (percent >= 20)
             note = "E";
-        } else {
+        else
             note = "F";
-        } 
+
         $('#gameModal').modal({show:true});
         let modalBody = document.querySelector("#contentGameModal");
         modalBody.innerHTML = "<div class=\"d-flex justify-content-center my-0\">Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note
          + "</div></br><button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/game\">Rejouer</button>"
          + "<button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/list\">Retour à la liste de map</button> ";
-         page.querySelectorAll("button").forEach(button=>{
-            button.addEventListener("click",(e)=>{
-                RedirectUrl(e.target.dataset.uri);
-            })
+         page.querySelectorAll("button").forEach(button=> {
+            button.addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri))
         })
     }
 }

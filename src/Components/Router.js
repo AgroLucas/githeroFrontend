@@ -56,9 +56,8 @@ const onLoadHandler = (e) => {
 
 //onNavigateHandler
 const onNavigateHandler = (e) => {
-    if (game){
+    if (game)
         killGame();
-    }
     let uri;
     e.preventDefault();
     uri = e.target.dataset.uri;
@@ -84,9 +83,8 @@ const onNavigateHandler = (e) => {
 
 //onHistoryHandler (arrows <- -> )
 const onHistoryHandler = (e) => {
-    if (game){
+    if (game)
         killGame();
-    }
     console.log("onHistory : ", window.location.pathname);
     removeModals();
     if (window.location.pathname==="/game") {
@@ -102,9 +100,8 @@ const onHistoryHandler = (e) => {
 };
 
 const RedirectUrl = (uri, data) => {
-    if (game){ //fonctionne pas
+    if (game)
         killGame();
-    }
     removeModals();
     window.history.pushState({}, uri, window.location.origin + uri);
     
@@ -119,11 +116,10 @@ const RedirectUrl = (uri, data) => {
         ErrorPage(uri);
         return;
     }
-    if(!data){
+    if(!data)
         componentToRender();
-    }else {
+    else 
         componentToRender(data);
-    }
 };
 
 
@@ -145,12 +141,8 @@ const removeModals = () => {
 }
 
 const killGame = () => {
-    game.scene.scenes[0].stackTimeout.forEach(timeoutID => {
-        clearTimeout(timeoutID);
-    });
-    game.scene.scenes[0].stackInterval.forEach(intervalID => {
-        clearInterval(intervalID);
-    });
+    game.scene.scenes[0].stackTimeout.forEach(timeoutID => clearTimeout(timeoutID));
+    game.scene.scenes[0].stackInterval.forEach(intervalID => clearInterval(intervalID));
     game = undefined;
     let navbar = document.querySelector("#navbar");
     navbar.className -= " d-none";
@@ -158,8 +150,6 @@ const killGame = () => {
     footer.className -= " d-none";
 }
 
-const createGame = async () => {
-    game = await GamePage();
-}
+const createGame = async () => game = await GamePage()
 
 export { Router, RedirectUrl, searchForPlayBtns};
