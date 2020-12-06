@@ -1,6 +1,6 @@
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./NavBar.js";
-import {removeSessionData} from "./Session.js";
+import {removeSessionData} from "../utils/Session.js";
 
 const Logout = () => {
   removeSessionData();

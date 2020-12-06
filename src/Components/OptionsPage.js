@@ -50,8 +50,8 @@ let pageHtml = `
                     </div>
                 </div>
             </div>
-            <button id="submit" type="submit" class="mt-3 btn btn-primary">Enregistrer</button>
-            <button id="submit" class="mt-3 btn btn-secondary">Défaut</button>
+            <button id="submitBtn" type="submit" class="mt-3 btn btn-primary">Enregistrer</button>
+            <button id="delaultBtn" class="mt-3 btn btn-secondary">Défaut</button>
         </form>
     </div>
 </div>`;
@@ -85,9 +85,9 @@ const defaultPreferences = {
         4: "k",
       },
       volume: {
-        master: 1,
-        bgm: 0.20,
-        effect: 1,
+        master: 0.5,
+        bgm: 0.5,
+        effect: 0.5,
       }
 }
 
@@ -113,9 +113,28 @@ const OptionsPage = () => {
         $('[data-toggle="popover"]').popover();
     });
 
+    let defaultBtn = document.querySelector("#delaultBtn");
+    defaultBtn.addEventListener("click", restoreDefault);
+    
+    let submitBtn = document.querySelector("#submitBtn");
+    submitBtn.addEventListener("submit", onSubmit);
+
     refreshKeyBindingBtn();
     addKeyBindingBtnListeners();
 }
+
+const restoreDefault = () => {
+    currentPreferences.volume.master = defaultPreferences.volume.master;
+    currentPreferences.volume.bgm = defaultPreferences.volume.bgm;
+    currentPreferences.volume.effect = defaultPreferences.volume.effect;
+
+    for(let i=1; i<=4; i++){
+        currentPreferences.keyBinding[i] = defaultPreferences.keyBinding[i];
+    }
+    refreshKeyBindingBtn();
+}
+
+// --- KEY BINDING ---
 
 const refreshKeyBindingBtn = () => {
     btnKey1.innerText = currentPreferences.keyBinding[1].toUpperCase();
@@ -125,18 +144,24 @@ const refreshKeyBindingBtn = () => {
 }
 
 const addKeyBindingBtnListeners = () => {
+    console.log("add BTN EE");
     btnKey1.addEventListener("click", onKeyBindingBtn1);
     btnKey2.addEventListener("click", onKeyBindingBtn2);
     btnKey3.addEventListener("click", onKeyBindingBtn3);
     btnKey4.addEventListener("click", onKeyBindingBtn4);
 }
 
-//remove key binding related EventListeners
-const removeKeyBindingListeners = () => {
+const removeBtnListeners = () => {
+    console.log("remove BTN EE");
     btnKey1.removeEventListener("click", onKeyBindingBtn1);
     btnKey2.removeEventListener("click", onKeyBindingBtn2);
     btnKey3.removeEventListener("click", onKeyBindingBtn3);
     btnKey4.removeEventListener("click", onKeyBindingBtn4);
+}
+
+//remove key binding related EventListeners
+const removeKeyBindingListeners = () => {
+    console.log("remove KB EE");
     window.removeEventListener("keypress", onKey1Binding);
     window.removeEventListener("keypress", onKey2Binding);
     window.removeEventListener("keypress", onKey3Binding);
@@ -160,8 +185,10 @@ const onKeyBindingBtn4 = () => {
 }
 
 const onKeyBindingBtn = (num) => {
-    removeKeyBindingListeners();
-    window.addEventListener("click", onClickOutside);
+    removeBtnListeners();
+    console.log("add CLICK EE");
+    setTimeout(() => window.addEventListener("click", onClickOutside), 100);
+    console.log("add KB EE");
     switch(num){
         case 1:
             window.addEventListener("keypress", onKey1Binding);
@@ -180,8 +207,8 @@ const onKeyBindingBtn = (num) => {
 
 //cancels key binding
 const onClickOutside = () => {
-    window.removeEventListener("keypress",onKeyBinding);
-    window.removeEventListener("click", onClickOutside);
+    removeKeyBindingListeners();
+    console.log("remove CLICK EE");
     addKeyBindingBtnListeners();
 }
 
@@ -202,8 +229,6 @@ const onKey4Binding = (e) => {
 }
 
 const onKeyBinding = (e, num) => {
-    window.removeEventListener("click", onClickOutside);
-    removeKeyBindingListeners();
     let keyValue = e.key;
     let other = isUsedByOther(num, keyValue);
     if(other === -1){
@@ -212,7 +237,6 @@ const onKeyBinding = (e, num) => {
         keySwap(num, other);
     }
     refreshKeyBindingBtn();
-    addKeyBindingBtnListeners();
 }
 
 const isUsedByOther = (keyNum, keyValue) => {
@@ -230,6 +254,12 @@ const keySwap = (keyNum1, keyNum2) => {
         currentPreferences.keyBinding[keyNum1] = currentPreferences.keyBinding[keyNum2];
         currentPreferences.keyBinding[keyNum2] = temp;
     }
+}
+
+// --- SUBMIT ---
+
+const onSubmit = (e) => {
+    e.preventDefault();
 }
 
 export default OptionsPage;

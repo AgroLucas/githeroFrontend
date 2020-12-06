@@ -1,7 +1,7 @@
 "use strict"
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./NavBar.js";
-import {setUserSessionData} from "./Session.js";
+import {setUserSessionData} from "../utils/Session.js";
 
 const registerPage=`
 <form>
