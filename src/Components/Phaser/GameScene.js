@@ -164,7 +164,7 @@ export default class GameScene extends Phaser.Scene {
         document.addEventListener("keyup", event => this.onKeyup(event));
 
         setTimeout(()=> {
-            this.stackTimeout.push(setTimeout(this.endGame, /*this.songDuration*/2000, this));
+            this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
             this.playMusic();
         }, this.noteTravelTime);
     }

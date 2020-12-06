@@ -43,7 +43,7 @@ const Router = () => {
 const onLoadHandler = (e) => {
     console.log("onLoad : ", window.location.pathname);
     if (window.location.pathname==="/game") {
-        game = GamePage();
+        createGame();
         return;
     }
     componentToRender = routes[window.location.pathname];
@@ -57,7 +57,6 @@ const onLoadHandler = (e) => {
 //onNavigateHandler
 const onNavigateHandler = (e) => {
     if (game){
-        game.sound.stopAll();
         killGame();
     }
     let uri;
@@ -69,7 +68,7 @@ const onNavigateHandler = (e) => {
             removeModals();
         if (uri==="/game") {
             window.history.pushState({}, uri, window.location.origin + uri);
-            game = GamePage();
+            createGame();
             return;
         }
         window.history.pushState({}, uri, window.location.origin + uri);
@@ -86,13 +85,12 @@ const onNavigateHandler = (e) => {
 //onHistoryHandler (arrows <- -> )
 const onHistoryHandler = (e) => {
     if (game){
-        game.sound.stopAll();
         killGame();
     }
     console.log("onHistory : ", window.location.pathname);
     removeModals();
     if (window.location.pathname==="/game") {
-        game = GamePage();
+        createGame();
         return;
     }
     componentToRender = routes[window.location.pathname];
@@ -105,7 +103,6 @@ const onHistoryHandler = (e) => {
 
 const RedirectUrl = (uri, data) => {
     if (game){ //fonctionne pas
-        game.sound.stopAll();
         killGame();
     }
     removeModals();
@@ -113,8 +110,7 @@ const RedirectUrl = (uri, data) => {
     
     console.log(window.location.pathname);
     if (window.location.pathname==="/game") {
-        game = GamePage();
-        console.log(game);
+        createGame();
         return;
     }
     componentToRender = routes[uri];
@@ -160,6 +156,10 @@ const killGame = () => {
     navbar.className -= " d-none";
     let footer = document.querySelector("#footer");
     footer.className -= " d-none";
+}
+
+const createGame = async () => {
+    game = await GamePage();
 }
 
 export { Router, RedirectUrl, searchForPlayBtns};
