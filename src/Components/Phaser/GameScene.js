@@ -13,6 +13,7 @@ import slideSound from "../../audio/slide.mp3";
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 import flash from "../../img/game_assets/flash.png";
+import fail from "../../img/game_assets/fail.png";
 
 const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
     [0, 3, 7320], [0, 2, 7630], [0, 1, 7975], [0, 0, 8310], [0, 1, 8640], [0, 2, 8890], [1, 3, 9185, 9975], // générique libre de droiiits ...
@@ -40,7 +41,7 @@ var beatmap;
 
 export default class GameScene extends Phaser.Scene {
     
-	constructor(beatmap, audioHtmlElement) {
+	constructor(beatmap, audioHtmlElement, userPreferences) {
         super('game-scene');
         this.beatmap = beatmap;
         this.audioHtmlElement = audioHtmlElement;
@@ -62,8 +63,9 @@ export default class GameScene extends Phaser.Scene {
         this.btnSize = 80; //sprite of 80px TODO scale dynamicly to screen size
         this.btnYOffset = this.btnSize/2;
 
-        this.musicVolume = 0.75;
-        this.soundEffectVolume = 1;
+
+        this.masterVolume = userPreferences.volume.master;
+        this.soundEffectVolume = userPreferences.volume.effect;
         
         //calc noteTravelTimeToBtnCenter
 
@@ -74,14 +76,14 @@ export default class GameScene extends Phaser.Scene {
         let distanceToBtn = this.height-(tweak * this.btnSize);
         this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn); 
         
+        this.songDuration = 45000 + this.noteTravelTime; //TODO: get song duration from audiofile (or /api/beatmaps ?)
 
-        /**** TODO need to be given ****/
-        this.songDuration = 45000 + this.noteTravelTime; //song duration -> to change
+
         this.arrayKeys = [];
-        this.arrayKeys[0] = "d";
-        this.arrayKeys[1] = "f";
-        this.arrayKeys[2] = "j";
-        this.arrayKeys[3] = "k";
+        this.arrayKeys[0] = userPreferences.keyBinding.key1;
+        this.arrayKeys[1] = userPreferences.keyBinding.key2;
+        this.arrayKeys[2] = userPreferences.keyBinding.key3;
+        this.arrayKeys[3] = userPreferences.keyBinding.key4;
         this.queuesTimestampToValidate = [];
         for (let i = 0; i < 4; i++)
             this.queuesTimestampToValidate[i] = [];
@@ -91,7 +93,7 @@ export default class GameScene extends Phaser.Scene {
         this.combo = 0;
         this.maxCombo = 0;
 
-        this.flashLifeTime = 250;
+        this.btnEffectLifeTime = 250;
     }
     
     setProportions() {
@@ -112,6 +114,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("long_note_body", long_note_body);
         this.load.image("btnInactive", btnInactive);
         this.load.image("flash", flash);
+        this.load.image("fail", fail);
         this.load.image("btnActive", btnActive);
         this.load.audio("hitSound1", hitSound1);
         this.load.audio("hitSound2", hitSound2);
@@ -134,16 +137,7 @@ export default class GameScene extends Phaser.Scene {
 
         let soundEffectAudioConfig = {
             mute: false,
-            volume: this.soundEffectVolume,
-            rate: 1,
-            detune: 0,
-            seek: 0,
-            loop: false,
-            delay: 0
-        }
-        let musicAudioConfig = {
-            mute: false,
-            volume: this.musicVolume,
+            volume: this.soundEffectVolume * this.masterVolume,
             rate: 1,
             detune: 0,
             seek: 0,
@@ -328,11 +322,10 @@ export default class GameScene extends Phaser.Scene {
         this.btns[i].active = false;
     }
 
-    displayPerfectFlash(i){
-        console.log("perfect: "+i);
-        let flash = this.add.sprite(this.calcLineXFromY(i, this.height-this.btnYOffset), this.height-this.btnYOffset, "flash");
-        flash.setScale(3,3);
-        setTimeout(()=>{flash.destroy()}, this.flashLifeTime);
+    displayBtnEffect(i, spriteKey){
+        let sprite = this.add.sprite(this.calcLineXFromY(i, this.height-this.btnYOffset), this.height-this.btnYOffset, spriteKey);
+        sprite.setScale(3,3);
+        setTimeout(()=>{sprite.destroy()}, this.btnEffectLifeTime);
     }
 
     drawAll() {
@@ -375,6 +368,7 @@ export default class GameScene extends Phaser.Scene {
     onNoKeypress (queueToShift, lineNbr, time) {
         if (queueToShift.length!==0) {
             this.resetCombo();
+            this.displayBtnEffect(lineNbr, "fail");
             clearInterval(queueToShift.shift().intervalID);
             console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
         }
@@ -403,7 +397,7 @@ export default class GameScene extends Phaser.Scene {
                 break;*/
             default:
                 this.nbrHits += 1; // x2+ -> 100% + flash animation
-                this.displayPerfectFlash(note.line);
+                this.displayBtnEffect(note.line, "flash");
         }
     }
 
@@ -572,6 +566,8 @@ export default class GameScene extends Phaser.Scene {
         let percent = Math.round(instance.nbrHits/instance.beatmap.length*10000)/100;
         if(instance.combo > instance.maxCombo)
             instance.maxCombo = instance.combo;
+        console.log("Your precision is: " + percent + "%");
+
         let note;
         if (percent == 100) {
             note = "S++";

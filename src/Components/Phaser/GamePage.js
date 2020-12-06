@@ -35,6 +35,21 @@ const PhaserGamePage = () => {
   page.innerHTML = phaserGame;
   let divAudio = document.querySelector("#divAudio");
 
+  //TODO: fetch from /api/users 
+  let userPreferences = {
+    keyBinding: {
+      key1: "d",
+      key2: "f",
+      key3: "j",
+      key4: "k",
+    },
+    volume: {
+      master: 1,
+      bgm: 0.20,
+      effect: 1,
+    }
+  }
+
   let config = {
     type: Phaser.AUTO,
     height: window.innerHeight,
@@ -54,7 +69,9 @@ const PhaserGamePage = () => {
   .then((data) => {
     divAudio.innerHTML = `<audio id="audio" src="${data.musicData}"/>`;
     let audioElement = document.querySelector("#audio");
-    let scene = new GameScene(data.noteList, audioElement);
+    let volumeBgm = userPreferences.volume.master * userPreferences.volume.bgm;
+    audioElement.volume = volumeBgm;
+    let scene = new GameScene(data.noteList, audioElement, userPreferences);
     
     let config = {
       type: Phaser.AUTO,

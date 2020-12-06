@@ -1,41 +1,10 @@
-let pageHtml = `
-<div class="row">
-    <div class="col-3"></div>
-    <div class="col-6">
-        <h2>Stub post beatmap</h2>
-        <p>In this example, we use <code>.was-validated</code> to indicate what's missing before submitting the form:</p>
-        <form action="/action_page.php">
-            <div class="form-group was-validated">
-                <label for="musicTitle">Titre de la musique:</label>
-                <input type="text" class="form-control" id="musicTitle" placeholder="Titre" name="musicTitle" required>
-                <div class="invalid-feedback">Ce champ est obligatoire.</div>
-            </div>
-            <div class="form-group was-validated">
-                <label for="musicArtist">Artiste:</label>
-                <input type="text" class="form-control" id="musicArtist" placeholder="Artiste" name="musicArtist" required>
-                <div class="invalid-feedback">Ce champ est obligatoire.</div>
-            </div>
-            <div class="form-group">
-                <label for="difficulty">Difficulté:</label>
-                <select class="form-control" id="difficulty">
-                    <option>Facile</option>
-                    <option>Moyen</option>
-                    <option>Difficile</option>
-                </select>
-            </div>
-            <div class="form-group was-validated">
-                <label for="musicFile">Musique:</label>
-                <input id="musicFile" type="file" class="form-control-file border" name="musicFile" required>
-                <div class="invalid-feedback">Ce champ est obligatoire.</div>
-            </div>
-            <button id="submit" type="submit" class="btn btn-primary">Post</button>
-        </form>
-        <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
-    </div>
-</div>`;
+import { RedirectUrl } from "./Router.js";
 
 let page = document.querySelector("#page");
- 
+
+let pageHtml = `Edit page (NOT IMPLEMENTED YET)
+<div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>`;
+
 let ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
     [0, 3, 7320], [0, 2, 7630], [0, 1, 7975], [0, 0, 8310], [0, 1, 8640], [0, 2, 8890], [1, 3, 9185, 9975], // générique libre de droiiits ...
     [0, 0, 10740], [0, 1, 11010], [0, 0, 11300], [0, 1, 11605], // (libre de droits...)
@@ -53,54 +22,31 @@ let ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de dr
     [0, 1, 41710], [0, 0, 41920] // de droits.
 ]
 
-const EditPage = () => {
-    page.innerHTML = pageHtml;
-    let submitBtn = document.querySelector("#submit");
-    submitBtn.addEventListener("click", onSubmitHandler)
-}
-
-const onSubmitHandler = (e) => {
-    e.preventDefault();
-    let username = "baptiste";
-    let noteList = ldd;
-    let musicTitle = document.querySelector("#musicTitle").value;
-    let musicArtist = document.querySelector("#musicArtist").value;
-    let difficulty = document.querySelector("#difficulty").value;
-    let file = document.querySelector("#musicFile").files[0];
-    let leaderboard = [];
-
-    var reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-        let musicData = reader.result;
-        let beatmap = {
-            noteList: noteList,
-            difficulty: difficulty,
-            musicTitle: musicTitle,
-            musicData: musicData,
-            musicArtist: musicArtist,
-            bmCreator: username,
-            leaderboard: leaderboard,
-        }
-        
-        fetch("/api/beatmaps/",{
-            method: "POST",
-            body: JSON.stringify(beatmap),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
-                return response.json();
-            })
-            .then((data) => onBeatmapPublication(data))
-            .catch((err) => onError(err));
+const EditPage = (data) => {
+    if(!data){
+        RedirectUrl("/addBeatmap");
+        return;
     }
-    reader.onerror = function (error) {
-        console.log('Error: ', error);
-    };
+    page.innerHTML = pageHtml;
 }
+
+const publish = (beatmap) => {
+    fetch("/api/beatmaps/",{
+        method: "POST",
+        body: JSON.stringify(beatmap),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then((response) => {
+            if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
+            return response.json();
+        })
+        .then((data) => onBeatmapPublication(data))
+        .catch((err) => onError(err));
+}
+
+
 const onBeatmapPublication = (data) => {
     console.log("Success: res = ", data);
 }
@@ -111,6 +57,6 @@ const onError = (err) => {
     messageBoard.innerText = errorMessage;
     // show the messageBoard div (add relevant Bootstrap class)
     messageBoard.classList.add("d-block");  
-  };
+};
 
 export default EditPage;

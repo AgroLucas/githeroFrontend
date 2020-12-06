@@ -6,7 +6,7 @@ let pageHtml = `
     <img id="logo" src="`+ logo +`" alt="logo">
     <h1>Bienvenue sur GitHero</h1>
     <button type="button" class="btn btn-danger homepage_play_button" href="#" data-uri="/list">Jouer</button></br>
-    <button type="button" class="btn btn-primary homepage_edit_button" href="#" data-uri="/edit">Editer</button>
+    
 </div>`;
 
 let page = document.querySelector("#page");

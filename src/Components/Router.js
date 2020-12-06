@@ -5,18 +5,27 @@ import AboutUsPage from "./AboutUsPage.js";
 import HelpPage from "./HelpPage.js";
 import OptionsPage from "./OptionsPage.js";
 import RankingPage from "./RankingPage.js";
+import AddMusicInfo from "./AddMusicInfoPage.js";
+import UserListPage from "./UserListPage.js";
+import LoginPage from "./LoginPage.js";
+import RegisterPage from "./RegisterPage.js";
+import LogoutComponent from "./LogoutComponent.js";
+import ErrorPage from "./ErrorPage.js";
 import EditPage from "./EditPage.js";
-
-import {stopMusic} from "./Phaser/GameScene.js";
 
 const routes = {
     "/": HomePage,
+    "/users": UserListPage,
+    "/login": LoginPage,
+    "/register": RegisterPage,
+    "/logout": LogoutComponent,
     "/game": GamePage,
     "/list": MusicListPage,
     "/aboutus": AboutUsPage,
     "/help": HelpPage,
     "/ranking": RankingPage,
     "/options": OptionsPage,
+    "/addBeatmap": AddMusicInfo,
     "/edit": EditPage,
 };
 
