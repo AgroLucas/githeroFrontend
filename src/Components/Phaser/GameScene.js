@@ -40,16 +40,13 @@ var beatmap;
 
 export default class GameScene extends Phaser.Scene {
     
-	constructor(beatmap, audioHtmlElement) {
+	constructor(beatmap, audioHtmlElement, userPreferences) {
         super('game-scene');
         this.beatmap = beatmap;
-        console.log(this.beatmap);
         this.audioHtmlElement = audioHtmlElement;
         this.height = window.innerHeight;
         this.width = window.innerWidth;
         this.setProportions();
-
-        console.log(this.game);
 
         this.noteTravelTime = 3000;
 
@@ -65,8 +62,9 @@ export default class GameScene extends Phaser.Scene {
         this.btnSize = 80; //sprite of 80px TODO scale dynamicly to screen size
         this.btnYOffset = this.btnSize/2;
 
-        this.musicVolume = 0.75;
-        this.soundEffectVolume = 1;
+
+        this.masterVolume = userPreferences.volume.master;
+        this.soundEffectVolume = userPreferences.volume.effect;
         
         //calc noteTravelTimeToBtnCenter
 
@@ -77,14 +75,14 @@ export default class GameScene extends Phaser.Scene {
         let distanceToBtn = this.height-(tweak * this.btnSize);
         this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn); 
         
+        this.songDuration = 45000 + this.noteTravelTime; //TODO: get song duration from audiofile (or /api/beatmaps ?)
 
-        /**** TODO need to be given ****/
-        this.songDuration = 45000 + this.noteTravelTime; //song duration -> to change
+
         this.arrayKeys = [];
-        this.arrayKeys[0] = "d";
-        this.arrayKeys[1] = "f";
-        this.arrayKeys[2] = "j";
-        this.arrayKeys[3] = "k";
+        this.arrayKeys[0] = userPreferences.keyBinding.key1;
+        this.arrayKeys[1] = userPreferences.keyBinding.key2;
+        this.arrayKeys[2] = userPreferences.keyBinding.key3;
+        this.arrayKeys[3] = userPreferences.keyBinding.key4;
         this.queuesTimestampToValidate = [];
         for (let i = 0; i < 4; i++)
             this.queuesTimestampToValidate[i] = [];
@@ -138,16 +136,7 @@ export default class GameScene extends Phaser.Scene {
 
         let soundEffectAudioConfig = {
             mute: false,
-            volume: this.soundEffectVolume,
-            rate: 1,
-            detune: 0,
-            seek: 0,
-            loop: false,
-            delay: 0
-        }
-        let musicAudioConfig = {
-            mute: false,
-            volume: this.musicVolume,
+            volume: this.soundEffectVolume * this.masterVolume,
             rate: 1,
             detune: 0,
             seek: 0,
@@ -187,7 +176,6 @@ export default class GameScene extends Phaser.Scene {
     //createNoteEvents = createNoteEnvents.bind(this);
 
     createNoteEvents(instance) {
-        console.log(instance);
         let beatmap = instance.beatmap;
         for (let n = 0; n < beatmap.length; n++) {
             //console.log(n, beatmap[n][2]);
@@ -334,7 +322,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     displayBtnEffect(i, spriteKey){
-        console.log("perfect: "+i);
         let sprite = this.add.sprite(this.calcLineXFromY(i, this.height-this.btnYOffset), this.height-this.btnYOffset, spriteKey);
         sprite.setScale(3,3);
         setTimeout(()=>{sprite.destroy()}, this.btnEffectLifeTime);
