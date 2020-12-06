@@ -77,3 +77,8 @@ li button {
     font-size: 2.5em;
     
 }
+/*********************************On MusicListPage*********************************/
+.modalGameButton {
+    width: 9em;
+    margin: 2.5em;
+}

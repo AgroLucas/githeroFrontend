@@ -22,7 +22,7 @@ const PhaserGamePage = () => {
           <div class="modal-content">
             <div class="modal-header"> </div>
             <div class="modal-body">
-              <p id="contentGameModal">hello</p>
+              <div id="contentGameModal"></div>
             </div>
             <div class="modal-footer"> </div>
           </div>

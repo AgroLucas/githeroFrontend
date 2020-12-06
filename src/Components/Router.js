@@ -95,12 +95,21 @@ const onHistoryHandler = (e) => {
 };
 
 const RedirectUrl = (uri, data) => {
-    if (game){
+    if (game){ //fonctionne pas
         game.sound.stopAll();
         killGame();
     }
+    removeModals();
     window.history.pushState({}, uri, window.location.origin + uri);
+    
+    console.log(window.location.pathname);
+    if (window.location.pathname==="/game") {
+        game = GamePage();
+        console.log(game);
+        return;
+    }
     componentToRender = routes[uri];
+    
     if(!componentToRender){
         ErrorPage(uri);
         return;

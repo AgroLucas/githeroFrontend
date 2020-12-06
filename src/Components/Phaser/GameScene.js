@@ -1,4 +1,5 @@
 import Phaser, { Game, Time ,Base64} from 'phaser';
+import { RedirectUrl } from "../Router.js";
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
@@ -42,13 +43,10 @@ export default class GameScene extends Phaser.Scene {
 	constructor(beatmap, audioHtmlElement) {
         super('game-scene');
         this.beatmap = beatmap;
-        console.log(this.beatmap);
         this.audioHtmlElement = audioHtmlElement;
         this.height = window.innerHeight;
         this.width = window.innerWidth;
         this.setProportions();
-
-        console.log(this.game);
 
         this.noteTravelTime = 3000;
 
@@ -172,7 +170,7 @@ export default class GameScene extends Phaser.Scene {
         document.addEventListener("keyup", event => this.onKeyup(event));
 
         setTimeout(()=> {
-            this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
+            this.stackTimeout.push(setTimeout(this.endGame, /*this.songDuration*/2000, this));
             this.playMusic();
         }, this.noteTravelTime);
     }
@@ -185,7 +183,6 @@ export default class GameScene extends Phaser.Scene {
     //createNoteEvents = createNoteEnvents.bind(this);
 
     createNoteEvents(instance) {
-        console.log(instance);
         let beatmap = instance.beatmap;
         for (let n = 0; n < beatmap.length; n++) {
             //console.log(n, beatmap[n][2]);
@@ -597,6 +594,13 @@ export default class GameScene extends Phaser.Scene {
         } 
         $('#gameModal').modal({show:true});
         let modalBody = document.querySelector("#contentGameModal");
-        modalBody.innerHTML = "Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note;
+        modalBody.innerHTML = "<div class=\"d-flex justify-content-center my-0\">Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note
+         + "</div></br><button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/game\">Rejouer</button>"
+         + "<button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/list\">Retour à la liste de map</button> ";
+         page.querySelectorAll("button").forEach(button=>{
+            button.addEventListener("click",(e)=>{
+                RedirectUrl(e.target.dataset.uri);
+            })
+        })
     }
 }
