@@ -27,7 +27,7 @@ const LoginPage = () => {
   if (user) {
     // re-render the navbar for the authenticated user
     Navbar();
-    RedirectUrl("/list");
+    RedirectUrl("/");
   } else loginForm.addEventListener("submit", onLogin);
 };
 
@@ -65,7 +65,7 @@ const onUserLogin = (userData) => {
   setUserSessionData(user);
   // re-render the navbar for the authenticated user
   Navbar();
-  RedirectUrl("/films");
+  RedirectUrl("/");
 };
 
 const onError = (err) => {
@@ -79,5 +79,6 @@ const onError = (err) => {
 };
 
 
-
 export default LoginPage;
+
+
