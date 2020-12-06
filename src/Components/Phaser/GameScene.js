@@ -83,10 +83,10 @@ export default class GameScene extends Phaser.Scene {
 
 
         this.arrayKeys = [];
-        this.arrayKeys[0] = userPreferences.keyBinding.key1;
-        this.arrayKeys[1] = userPreferences.keyBinding.key2;
-        this.arrayKeys[2] = userPreferences.keyBinding.key3;
-        this.arrayKeys[3] = userPreferences.keyBinding.key4;
+        this.arrayKeys[0] = userPreferences.keyBinding[1];
+        this.arrayKeys[1] = userPreferences.keyBinding[2];
+        this.arrayKeys[2] = userPreferences.keyBinding[3];
+        this.arrayKeys[3] = userPreferences.keyBinding[4];
         this.queuesTimestampToValidate = [];
         for (let i = 0; i < 4; i++)
             this.queuesTimestampToValidate[i] = [];

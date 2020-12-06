@@ -1,3 +1,4 @@
+import {RedirectUrl} from "./Router.js";
 let pageHtml = `
 <div class="row mt-3">
     <div class="col-md-3"></div>
@@ -50,8 +51,8 @@ let pageHtml = `
                     </div>
                 </div>
             </div>
-            <button id="submitBtn" type="submit" class="mt-3 btn btn-primary">Enregistrer</button>
-            <button id="delaultBtn" class="mt-3 btn btn-secondary">Défaut</button>
+            <button id="submitBtn" class="mt-3 btn btn-primary">Enregistrer</button>
+            <button id="defaultBtn" class="mt-3 btn btn-secondary">Défaut</button>
         </form>
     </div>
 </div>`;
@@ -63,19 +64,11 @@ let btnKey2;
 let btnKey3;
 let btnKey4;
 
-let currentPreferences = { //TODO: fetch from /api/users
-    keyBinding: {
-        1: "d",
-        2: "f",
-        3: "j",
-        4: "k",
-      },
-    volume: {
-      master: 1,
-      bgm: 0.20,
-      effect: 1,
-    }
-}
+let rangeEffect;
+let rangeMaster;
+let rangeBgm;
+
+let currentPreferences;
 
 const defaultPreferences = {
     keyBinding: {
@@ -94,36 +87,39 @@ const defaultPreferences = {
 const OptionsPage = () => {
     page.innerHTML = pageHtml;
 
+    currentPreferences = getUserPreferences(); //previously stored prefs. or default
+    console.log(currentPreferences);
+
     btnKey1 = document.querySelector("#btnKey1");
     btnKey2 = document.querySelector("#btnKey2");
     btnKey3 = document.querySelector("#btnKey3");
     btnKey4 = document.querySelector("#btnKey4");
 
-    let rangeMaster = document.querySelector("#masterVolume");
-    rangeMaster.value = currentPreferences.volume.master;
-
-    let rangeBgm = document.querySelector("#bgmVolume");
-    rangeBgm.value = currentPreferences.volume.bgm;
-
-    let rangeEffect = document.querySelector("#effectVolume");
-    rangeEffect.value = currentPreferences.volume.effect;
+    rangeMaster = document.querySelector("#masterVolume");
+    rangeBgm = document.querySelector("#bgmVolume");
+    rangeEffect = document.querySelector("#effectVolume");
 
     //bootstrap JQuery for popovers
     $(document).ready(function(){
         $('[data-toggle="popover"]').popover();
     });
 
-    let defaultBtn = document.querySelector("#delaultBtn");
+    let defaultBtn = document.querySelector("#defaultBtn");
     defaultBtn.addEventListener("click", restoreDefault);
     
     let submitBtn = document.querySelector("#submitBtn");
-    submitBtn.addEventListener("submit", onSubmit);
+    submitBtn.addEventListener("click", onSubmit);
 
-    refreshKeyBindingBtn();
+    rangeMaster.addEventListener("change", onVolumeChange);
+    rangeEffect.addEventListener("change", onVolumeChange);
+    rangeBgm.addEventListener("change", onVolumeChange);
+
+    refreshFormInfo();
     addKeyBindingBtnListeners();
 }
 
-const restoreDefault = () => {
+const restoreDefault = (e) => {
+    e.preventDefault();
     currentPreferences.volume.master = defaultPreferences.volume.master;
     currentPreferences.volume.bgm = defaultPreferences.volume.bgm;
     currentPreferences.volume.effect = defaultPreferences.volume.effect;
@@ -131,16 +127,25 @@ const restoreDefault = () => {
     for(let i=1; i<=4; i++){
         currentPreferences.keyBinding[i] = defaultPreferences.keyBinding[i];
     }
-    refreshKeyBindingBtn();
+    refreshFormInfo();
 }
 
 // --- KEY BINDING ---
 
-const refreshKeyBindingBtn = () => {
+const onVolumeChange = () => {
+    currentPreferences.volume.master = rangeMaster.value;
+    currentPreferences.volume.bgm = rangeBgm.value;
+    currentPreferences.volume.effect = rangeEffect.value;
+}
+
+const refreshFormInfo = () => {
     btnKey1.innerText = currentPreferences.keyBinding[1].toUpperCase();
     btnKey2.innerText = currentPreferences.keyBinding[2].toUpperCase();
     btnKey3.innerText = currentPreferences.keyBinding[3].toUpperCase();
     btnKey4.innerText = currentPreferences.keyBinding[4].toUpperCase();
+    rangeMaster.value = currentPreferences.volume.master;
+    rangeBgm.value = currentPreferences.volume.bgm;
+    rangeEffect.value = currentPreferences.volume.effect;
 }
 
 const addKeyBindingBtnListeners = () => {
@@ -187,7 +192,7 @@ const onKeyBindingBtn4 = () => {
 const onKeyBindingBtn = (num) => {
     removeBtnListeners();
     console.log("add CLICK EE");
-    setTimeout(() => window.addEventListener("click", onClickOutside), 100);
+    setTimeout(() => window.addEventListener("click", onClickOutside),100);
     console.log("add KB EE");
     switch(num){
         case 1:
@@ -209,6 +214,7 @@ const onKeyBindingBtn = (num) => {
 const onClickOutside = () => {
     removeKeyBindingListeners();
     console.log("remove CLICK EE");
+    window.removeEventListener("click", onClickOutside);
     addKeyBindingBtnListeners();
 }
 
@@ -236,7 +242,7 @@ const onKeyBinding = (e, num) => {
     }else{
         keySwap(num, other);
     }
-    refreshKeyBindingBtn();
+    refreshFormInfo();
 }
 
 const isUsedByOther = (keyNum, keyValue) => {
@@ -260,6 +266,23 @@ const keySwap = (keyNum1, keyNum2) => {
 
 const onSubmit = (e) => {
     e.preventDefault();
+    setUserPreferences();
+    RedirectUrl("/");
 }
 
-export default OptionsPage;
+// --- localStorage prefs. ---
+const STORAGE_NAME = "user preferences";
+
+const getUserPreferences = () => {
+    let prefs = localStorage.getItem(STORAGE_NAME);
+    if(prefs)
+        return JSON.parse(prefs);
+    return defaultPreferences;
+}
+
+const setUserPreferences = () => {
+    let prefs = JSON.stringify(currentPreferences);
+    localStorage.setItem(STORAGE_NAME, prefs);
+}
+
+export { OptionsPage, getUserPreferences };

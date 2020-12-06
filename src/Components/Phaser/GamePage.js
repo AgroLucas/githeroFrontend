@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import GameScene from "./GameScene.js";
 import { setLayout } from "../../utils/render.js";
+import {getUserPreferences} from "../OptionsPage.js";
 
 
 const hideExternalElements = () => {
@@ -34,8 +35,7 @@ const PhaserGamePage = async () => {
   let page = document.querySelector("#page");
   page.innerHTML = phaserGame;
   let divAudio = document.querySelector("#divAudio");
-
-  //TODO: fetch from /api/users 
+  /*
   let userPreferences = {
     keyBinding: {
       key1: "d",
@@ -48,7 +48,10 @@ const PhaserGamePage = async () => {
       bgm: 0.20,
       effect: 1,
     }
-  }
+  }*/
+
+  let userPreferences = getUserPreferences();
+  console.log(userPreferences);
 
   let config = {
     type: Phaser.AUTO,
