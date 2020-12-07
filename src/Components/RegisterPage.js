@@ -5,7 +5,12 @@ import {setUserSessionData} from "../utils/Session.js";
 
 const registerPage=`
 <form>
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
   <div class="form-group">
+  <h1> Inscription : </h1>
+  <br>
     <label for="email">Email</label>
     <input class="form-control" id="email" type="text" name="email" placeholder="Enter your email" required="" pattern="^\\w+([.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+\$" />
   </div>
@@ -16,7 +21,9 @@ const registerPage=`
   <button class="btn btn-primary" id="btn" type="submit">Submit</button>
   <!-- Create an alert component with bootstrap that is not displayed by default-->
   <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
-</form>`;
+  </div>
+</div>
+  </form>`;
 
 const RegisterPage = () => {
   let page = document.querySelector("#page");
