@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import GameScene from "./GameScene.js";
-import { setLayout } from "../../utils/render.js";
 import {getUserPreferences} from "../OptionsPage.js";
 
 
