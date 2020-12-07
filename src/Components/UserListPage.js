@@ -43,7 +43,7 @@ const onError = (err) => {
   let errorMessage;
   if (err.message) {
     if(err.message.includes("401")){
-      errorMessage = "Client . Unauthorized access to this ressource : you must firt login.";
+      errorMessage = "Client . Unauthorized access to this ressource : you must first login.";
     }else {
       errorMessage = err.message;
     }
