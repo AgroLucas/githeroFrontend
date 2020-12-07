@@ -4,7 +4,7 @@ let pageHtml = `
     <div class="col-md-3"></div>
     <div class="col-md-6">
         <h2>Options</h2>
-        <form action="#">
+        <form action="#" class="mb-5">
             <div class="border mt-5 pl-3 pt-2">
                 <h4>Volumes:</h4>
                 <div class="form-group">
@@ -51,7 +51,6 @@ let pageHtml = `
                     </div>
                 </div>
             </div>
-            <button id="submitBtn" class="mt-3 btn btn-primary">Enregistrer</button>
             <button id="defaultBtn" class="mt-3 btn btn-secondary">Défaut</button>
         </form>
     </div>
@@ -106,9 +105,6 @@ const OptionsPage = () => {
 
     let defaultBtn = document.querySelector("#defaultBtn");
     defaultBtn.addEventListener("click", restoreDefault);
-    
-    let submitBtn = document.querySelector("#submitBtn");
-    submitBtn.addEventListener("click", onSubmit);
 
     rangeMaster.addEventListener("change", onVolumeChange);
     rangeEffect.addEventListener("change", onVolumeChange);
@@ -136,6 +132,7 @@ const onVolumeChange = () => {
     currentPreferences.volume.master = rangeMaster.value;
     currentPreferences.volume.bgm = rangeBgm.value;
     currentPreferences.volume.effect = rangeEffect.value;
+    setUserPreferences();
 }
 
 const refreshFormInfo = () => {
@@ -242,6 +239,7 @@ const onKeyBinding = (e, num) => {
     }else{
         keySwap(num, other);
     }
+    setUserPreferences();
     refreshFormInfo();
 }
 
@@ -260,14 +258,6 @@ const keySwap = (keyNum1, keyNum2) => {
         currentPreferences.keyBinding[keyNum1] = currentPreferences.keyBinding[keyNum2];
         currentPreferences.keyBinding[keyNum2] = temp;
     }
-}
-
-// --- SUBMIT ---
-
-const onSubmit = (e) => {
-    e.preventDefault();
-    setUserPreferences();
-    RedirectUrl("/");
 }
 
 // --- localStorage prefs. ---
