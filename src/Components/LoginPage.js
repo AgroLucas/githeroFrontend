@@ -1,7 +1,7 @@
 /* In a template literal, the ` (backtick), \ (backslash), and $ (dollar sign) characters should be 
 escaped using the escape character \ if they are to be included in their template value. 
 By default, all escape sequences in a template literal are ignored.*/
-import {getUserSessionData, setUserSessionData} from "./Session.js";
+import {getUserSessionData, setUserSessionData} from "../utils/Session.js";
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./NavBar.js";
 
@@ -27,7 +27,7 @@ const LoginPage = () => {
   if (user) {
     // re-render the navbar for the authenticated user
     Navbar();
-    RedirectUrl("/list");
+    RedirectUrl("/");
   } else loginForm.addEventListener("submit", onLogin);
 };
 
@@ -65,7 +65,7 @@ const onUserLogin = (userData) => {
   setUserSessionData(user);
   // re-render the navbar for the authenticated user
   Navbar();
-  RedirectUrl("/films");
+  RedirectUrl("/");
 };
 
 const onError = (err) => {
@@ -79,5 +79,6 @@ const onError = (err) => {
 };
 
 
-
 export default LoginPage;
+
+

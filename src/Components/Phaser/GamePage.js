@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import GameScene from "./GameScene.js";
 import { setLayout } from "../../utils/render.js";
+import {getUserPreferences} from "../OptionsPage.js";
 
 
 const hideExternalElements = () => {
@@ -10,7 +11,7 @@ const hideExternalElements = () => {
   footer.className += " d-none";
 }
 
-const PhaserGamePage = () => {
+const PhaserGamePage = async () => {
   hideExternalElements();
   let phaserGame = `
   
@@ -22,7 +23,7 @@ const PhaserGamePage = () => {
           <div class="modal-content">
             <div class="modal-header"> </div>
             <div class="modal-body">
-              <p id="contentGameModal">hello</p>
+              <div id="contentGameModal"></div>
             </div>
             <div class="modal-footer"> </div>
           </div>
@@ -34,6 +35,23 @@ const PhaserGamePage = () => {
   let page = document.querySelector("#page");
   page.innerHTML = phaserGame;
   let divAudio = document.querySelector("#divAudio");
+  /*
+  let userPreferences = {
+    keyBinding: {
+      key1: "d",
+      key2: "f",
+      key3: "j",
+      key4: "k",
+    },
+    volume: {
+      master: 1,
+      bgm: 0.20,
+      effect: 1,
+    }
+  }*/
+
+  let userPreferences = getUserPreferences();
+  console.log(userPreferences);
 
   let config = {
     type: Phaser.AUTO,
@@ -46,7 +64,7 @@ const PhaserGamePage = () => {
   };
 
   let beatmapID = 0;
-  fetch("/api/beatmaps/"+beatmapID)
+  let ret = await fetch("/api/beatmaps/"+beatmapID)
   .then((response) => {
     if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
     return response.json();
@@ -54,7 +72,9 @@ const PhaserGamePage = () => {
   .then((data) => {
     divAudio.innerHTML = `<audio id="audio" src="${data.musicData}"/>`;
     let audioElement = document.querySelector("#audio");
-    let scene = new GameScene(data.noteList, audioElement);
+    let volumeBgm = userPreferences.volume.master * userPreferences.volume.bgm;
+    audioElement.volume = volumeBgm;
+    let scene = new GameScene(data.noteList, audioElement, userPreferences);
     
     let config = {
       type: Phaser.AUTO,
@@ -70,6 +90,7 @@ const PhaserGamePage = () => {
     return game;
   })
   .catch((err) => onError(err));
+  return ret;
 };
 
 const onError = (err) => {

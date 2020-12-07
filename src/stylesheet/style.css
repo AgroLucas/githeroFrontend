@@ -86,3 +86,8 @@ li button {
 .side_page_text {
     margin-left: 20em;
 }
+/*********************************On MusicListPage*********************************/
+.modalGameButton {
+    width: 9em;
+    margin: 2.5em;
+}

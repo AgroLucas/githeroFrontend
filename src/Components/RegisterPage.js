@@ -1,6 +1,7 @@
+"use strict"
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./NavBar.js";
-import {setUserSessionData} from "./Session.js";
+import {setUserSessionData} from "../utils/Session.js";
 
 const registerPage=`
 <form>
@@ -39,7 +40,8 @@ let onRegister = async (e) => {
       },
     });
     console.log(response); // HTTP reponse
-    if(!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
+    if(!response.ok) 
+    throw new Error("Error code : " + response.status + " , " + response.statusText);
     let jsonResponse = await response.json(); // return le body de la reponse parsed in JSON
     console.log("Response from server in JSON:", jsonResponse);
     setUserSessionData(jsonResponse);

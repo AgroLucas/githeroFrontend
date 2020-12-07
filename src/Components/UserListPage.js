@@ -1,6 +1,6 @@
 "use strict"
 import { RedirectUrl } from "./Router.js";
-import { getUserSessionData } from "./Session.js";
+import { getUserSessionData } from "../utils/Session.js";
 import Navbar from "./NavBar.js";
 
 let page = document.querySelector("#page");
