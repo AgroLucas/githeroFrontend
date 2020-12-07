@@ -1,7 +1,7 @@
 let pageHtml = `
-<div class="side_page">
-    <h1 class="text-center">Aide</h1>
-    <div class="side_page_text">
+<div class="side_page text-center">
+    <h1>Aide</h1>
+    <div>
         <h2>Règles du jeu</h2>
         <p>Une fois la musique sélectionnée, vous arriverez sur la page du jeu.</br>
         Sur celle-ci, vous verrez 4 lignes qui sont reliées à vos touches D, F, J et K </br>
