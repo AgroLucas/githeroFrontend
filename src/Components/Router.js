@@ -3,7 +3,7 @@ import MusicListPage from "./MusicListPage.js";
 import HomePage from "./HomePage.js";
 import AboutUsPage from "./AboutUsPage.js";
 import HelpPage from "./HelpPage.js";
-import OptionsPage from "./OptionsPage.js";
+import {OptionsPage} from "./OptionsPage.js";
 import RankingPage from "./RankingPage.js";
 import AddMusicInfo from "./AddMusicInfoPage.js";
 import UserListPage from "./UserListPage.js";
@@ -43,7 +43,7 @@ const Router = () => {
 const onLoadHandler = (e) => {
     console.log("onLoad : ", window.location.pathname);
     if (window.location.pathname==="/game") {
-        game = GamePage();
+        createGame();
         return;
     }
     componentToRender = routes[window.location.pathname];
@@ -56,10 +56,8 @@ const onLoadHandler = (e) => {
 
 //onNavigateHandler
 const onNavigateHandler = (e) => {
-    if (game){
-        game.sound.stopAll();
+    if (game)
         killGame();
-    }
     let uri;
     e.preventDefault();
     uri = e.target.dataset.uri;
@@ -69,7 +67,7 @@ const onNavigateHandler = (e) => {
             removeModals();
         if (uri==="/game") {
             window.history.pushState({}, uri, window.location.origin + uri);
-            game = GamePage();
+            createGame();
             return;
         }
         window.history.pushState({}, uri, window.location.origin + uri);
@@ -85,14 +83,12 @@ const onNavigateHandler = (e) => {
 
 //onHistoryHandler (arrows <- -> )
 const onHistoryHandler = (e) => {
-    if (game){
-        game.sound.stopAll();
+    if (game)
         killGame();
-    }
     console.log("onHistory : ", window.location.pathname);
     removeModals();
     if (window.location.pathname==="/game") {
-        game = GamePage();
+        createGame();
         return;
     }
     componentToRender = routes[window.location.pathname];
@@ -104,21 +100,26 @@ const onHistoryHandler = (e) => {
 };
 
 const RedirectUrl = (uri, data) => {
-    if (game){
-        game.sound.stopAll();
+    if (game)
         killGame();
-    }
+    removeModals();
     window.history.pushState({}, uri, window.location.origin + uri);
+    
+    console.log(window.location.pathname);
+    if (window.location.pathname==="/game") {
+        createGame();
+        return;
+    }
     componentToRender = routes[uri];
+    
     if(!componentToRender){
         ErrorPage(uri);
         return;
     }
-    if(!data){
+    if(!data)
         componentToRender();
-    }else {
+    else 
         componentToRender(data);
-    }
 };
 
 
@@ -140,17 +141,15 @@ const removeModals = () => {
 }
 
 const killGame = () => {
-    game.scene.scenes[0].stackTimeout.forEach(timeoutID => {
-        clearTimeout(timeoutID);
-    });
-    game.scene.scenes[0].stackInterval.forEach(intervalID => {
-        clearInterval(intervalID);
-    });
+    game.scene.scenes[0].stackTimeout.forEach(timeoutID => clearTimeout(timeoutID));
+    game.scene.scenes[0].stackInterval.forEach(intervalID => clearInterval(intervalID));
     game = undefined;
     let navbar = document.querySelector("#navbar");
     navbar.className -= " d-none";
     let footer = document.querySelector("#footer");
     footer.className -= " d-none";
 }
+
+const createGame = async () => game = await GamePage()
 
 export { Router, RedirectUrl, searchForPlayBtns};

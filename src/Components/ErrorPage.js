@@ -1,4 +1,3 @@
-//TODO -> modify (use uri as param & use clearer code)
 let page = document.querySelector("#page");
 
 const ErrorPage = (url) => {

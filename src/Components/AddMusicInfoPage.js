@@ -5,7 +5,7 @@ let pageHtml = `
     <div class="col-6">
         <h2>Stub post beatmap</h2>
         <p>In this example, we use <code>.was-validated</code> to indicate what's missing before submitting the form:</p>
-        <form action="/action_page.php">
+        <form action="#">
             <div class="form-group was-validated">
                 <label for="musicTitle">Titre de la musique:</label>
                 <input type="text" class="form-control" id="musicTitle" placeholder="Titre" name="musicTitle" required>

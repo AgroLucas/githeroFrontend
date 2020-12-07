@@ -1,4 +1,5 @@
 import Phaser, { Game, Time ,Base64} from 'phaser';
+import { RedirectUrl } from "../Router.js";
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
@@ -12,6 +13,7 @@ import slideSound from "../../audio/slide.mp3";
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 import flash from "../../img/game_assets/flash.png";
+import fail from "../../img/game_assets/fail.png";
 
 const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
     [0, 3, 7320], [0, 2, 7630], [0, 1, 7975], [0, 0, 8310], [0, 1, 8640], [0, 2, 8890], [1, 3, 9185, 9975], // générique libre de droiiits ...
@@ -39,21 +41,19 @@ var beatmap;
 
 export default class GameScene extends Phaser.Scene {
     
-	constructor(beatmap, audioHtmlElement) {
+	constructor(beatmap, audioHtmlElement, userPreferences) {
         super('game-scene');
         this.beatmap = beatmap;
-        console.log(this.beatmap);
         this.audioHtmlElement = audioHtmlElement;
         this.height = window.innerHeight;
         this.width = window.innerWidth;
         this.setProportions();
 
-        console.log(this.game);
-
         this.noteTravelTime = 3000;
 
         this.lowestPoint = 50
         this.longNoteIncrease = 10; // score increase by 10 every 250ms holding long note
+        this.shortNoteInterval = 50; 
 
         this.isStarted = true;
         this.stackTimeout = []; //contain all timeout -> useful if we need to clear them all
@@ -64,8 +64,9 @@ export default class GameScene extends Phaser.Scene {
         this.btnSize = 80; //sprite of 80px TODO scale dynamicly to screen size
         this.btnYOffset = this.btnSize/2;
 
-        this.musicVolume = 0.75;
-        this.soundEffectVolume = 1;
+
+        this.masterVolume = userPreferences.volume.master;
+        this.soundEffectVolume = userPreferences.volume.effect;
         
         //calc noteTravelTimeToBtnCenter
 
@@ -74,16 +75,18 @@ export default class GameScene extends Phaser.Scene {
         this.noteTravelTimeToBtnCenter = this.calcTimeToGetToY(distanceToBtnCenter); 
 
         let distanceToBtn = this.height-(tweak * this.btnSize);
-        this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn); 
+        this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn);
+        this.valueMiddleButton = (Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)/this.shortNoteInterval)); //the value the short note should get for having a perfect shot
+        this.valueToGive = Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)%this.shortNoteInterval); //the value given while doing a perfect shot
         
+        this.songDuration = 45000 + this.noteTravelTime; //TODO: get song duration from audiofile (or /api/beatmaps ?)
 
-        /**** TODO need to be given ****/
-        this.songDuration = 45000 + this.noteTravelTime; //song duration -> to change
+
         this.arrayKeys = [];
-        this.arrayKeys[0] = "d";
-        this.arrayKeys[1] = "f";
-        this.arrayKeys[2] = "j";
-        this.arrayKeys[3] = "k";
+        this.arrayKeys[0] = userPreferences.keyBinding[1];
+        this.arrayKeys[1] = userPreferences.keyBinding[2];
+        this.arrayKeys[2] = userPreferences.keyBinding[3];
+        this.arrayKeys[3] = userPreferences.keyBinding[4];
         this.queuesTimestampToValidate = [];
         for (let i = 0; i < 4; i++)
             this.queuesTimestampToValidate[i] = [];
@@ -93,7 +96,7 @@ export default class GameScene extends Phaser.Scene {
         this.combo = 0;
         this.maxCombo = 0;
 
-        this.flashLifeTime = 250;
+        this.btnEffectLifeTime = 250;
     }
     
     setProportions() {
@@ -114,6 +117,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("long_note_body", long_note_body);
         this.load.image("btnInactive", btnInactive);
         this.load.image("flash", flash);
+        this.load.image("fail", fail);
         this.load.image("btnActive", btnActive);
         this.load.audio("hitSound1", hitSound1);
         this.load.audio("hitSound2", hitSound2);
@@ -136,16 +140,7 @@ export default class GameScene extends Phaser.Scene {
 
         let soundEffectAudioConfig = {
             mute: false,
-            volume: this.soundEffectVolume,
-            rate: 1,
-            detune: 0,
-            seek: 0,
-            loop: false,
-            delay: 0
-        }
-        let musicAudioConfig = {
-            mute: false,
-            volume: this.musicVolume,
+            volume: this.soundEffectVolume * this.masterVolume,
             rate: 1,
             detune: 0,
             seek: 0,
@@ -185,16 +180,14 @@ export default class GameScene extends Phaser.Scene {
     //createNoteEvents = createNoteEnvents.bind(this);
 
     createNoteEvents(instance) {
-        console.log(instance);
         let beatmap = instance.beatmap;
         for (let n = 0; n < beatmap.length; n++) {
             //console.log(n, beatmap[n][2]);
             let lineNbr = beatmap[n][1];
              if (beatmap[n][0] == 0) //simple notes
                 instance.stackTimeout.push(setTimeout(instance.createSimpleNote, beatmap[n][2], lineNbr, instance, beatmap[n][2]));
-            else { //long notes
+            else //long notes
                 instance.stackTimeout.push(setTimeout(instance.createLongNote, beatmap[n][2], lineNbr, instance, beatmap[n][3]-beatmap[n][2]))
-            }
         }
     }
 
@@ -331,11 +324,10 @@ export default class GameScene extends Phaser.Scene {
         this.btns[i].active = false;
     }
 
-    displayPerfectFlash(i){
-        console.log("perfect: "+i);
-        let flash = this.add.sprite(this.calcLineXFromY(i, this.height-this.btnYOffset), this.height-this.btnYOffset, "flash");
-        flash.setScale(3,3);
-        setTimeout(()=>{flash.destroy()}, this.flashLifeTime);
+    displayBtnEffect(i, spriteKey){
+        let sprite = this.add.sprite(this.calcLineXFromY(i, this.height-this.btnYOffset), this.height-this.btnYOffset, spriteKey);
+        sprite.setScale(3,3);
+        setTimeout(()=>{sprite.destroy()}, this.btnEffectLifeTime);
     }
 
     drawAll() {
@@ -378,6 +370,7 @@ export default class GameScene extends Phaser.Scene {
     onNoKeypress (queueToShift, lineNbr, time) {
         if (queueToShift.length!==0) {
             this.resetCombo();
+            this.displayBtnEffect(lineNbr, "fail");
             clearInterval(queueToShift.shift().intervalID);
             console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
         }
@@ -395,18 +388,14 @@ export default class GameScene extends Phaser.Scene {
         
         console.log("Well Done");
         this.incrementCombo();
-        let precisionMultiplier = note.score;
-        this.updateScore(this.lowestPoint*precisionMultiplier);
-        switch(precisionMultiplier){
-            case 1:
-                this.nbrHits += 0.5; // x1 -> 50%
-                break;
-            /*case 2: 
-                this.nbrHits += 0.8; // x2 -> 80%
-                break;*/
-            default:
-                this.nbrHits += 1; // x2+ -> 100% + flash animation
-                this.displayPerfectFlash(note.line);
+        let value = note.score;
+        if(value === Math.round(this.valueMiddleButton/2) || value === Math.round((this.valueMiddleButton)/2)-1) {
+            this.nbrHits += 1;
+            this.displayBtnEffect(note.line, "flash");
+            this.updateScore(this.valueToGive);
+        } else {
+            this.nbrHits += 0.5;
+            this.updateScore(this.valueToGive)/2;
         }
     }
 
@@ -418,11 +407,11 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} instance, this 
      */
     setFollowerToValidate(lineNbr, follower, instance) {
-        let note = {follower:follower, intervalID:undefined, score:1, line:lineNbr};
+        let note = {follower:follower, intervalID:undefined, score:0, line:lineNbr};
         instance.queuesTimestampToValidate[lineNbr].push(note);
         if (!instance.btns[lineNbr].active) {
             console.log("push single");
-            let intervalID = setInterval(function() {note.score++}, 100); //TODO GIVE MORE POINTS AT MIDDLE
+            let intervalID = setInterval(function() {note.score++}, instance.shortNoteInterval); //TODO GIVE MORE POINTS AT MIDDLE
             note.intervalID = intervalID;
             instance.stackInterval.push(intervalID); 
         }
@@ -578,27 +567,30 @@ export default class GameScene extends Phaser.Scene {
         console.log("Your precision is: " + percent + "%");
 
         let note;
-        if (percent == 100) {
+        if (percent == 100)
             note = "S++";
-        } else if (percent >= 95) {
+        else if (percent >= 95)
             note = "S+";
-        } else if (percent >= 90) {
+        else if (percent >= 90)
             note = "S";
-        } else if (percent >= 80) {
+        else if (percent >= 80)
             note = "A";
-        } else if (percent >= 60) {
+        else if (percent >= 60)
             note = "B";
-        } else if (percent >= 50) {
+        else if (percent >= 50)
             note = "C";
-        } else if (percent >= 35) {
+        else if (percent >= 35)
             note = "D";
-        } else if (percent >= 20) {
+        else if (percent >= 20)
             note = "E";
-        } else {
+        else
             note = "F";
-        } 
+
         $('#gameModal').modal({show:true});
         let modalBody = document.querySelector("#contentGameModal");
-        modalBody.innerHTML = "Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note;
+        modalBody.innerHTML = "<div class=\"d-flex justify-content-center my-0\">Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note
+        + "</div></br><button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/game\">Rejouer</button>"
+        + "<button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/list\">Retour à la liste de map</button> ";
+        page.querySelectorAll("button").forEach( button => button.addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri)) )
     }
 }
