@@ -4,6 +4,7 @@ By default, all escape sequences in a template literal are ignored.*/
 import {getUserSessionData, setUserSessionData} from "../utils/Session.js";
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./NavBar.js";
+import logo from "../img/GitHero_logo.png";
 
 let loginPage = `<form>
 <div class="row">
@@ -22,6 +23,7 @@ let loginPage = `<form>
 <button class="btn btn-primary" id="btn" type="submit">Submit</button>
 <!-- Create an alert component with bootstrap that is not displayed by default-->
 <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div>
+<img id="logo" src="`+ logo +`" alt="logo">
 </div>
 </div>
 </form>`;
