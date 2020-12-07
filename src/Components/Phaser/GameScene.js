@@ -8,7 +8,10 @@ import hitSound2 from "../../audio/hit2.mp3";
 import hitSound3 from "../../audio/hit3.mp3";
 import hitSound4 from "../../audio/hit4.mp3";
 import failSound from "../../audio/fail.mp3";
-import slideSound from "../../audio/slide.mp3";
+import slideSound1 from "../../audio/slide1.mp3";
+import slideSound2 from "../../audio/slide2.mp3";
+import slideSound3 from "../../audio/slide3.mp3";
+import slideSound4 from "../../audio/slide4.mp3";
 //import song from "../../audio/ldd.mp3"; //TODO fetch from backend
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
@@ -124,7 +127,10 @@ export default class GameScene extends Phaser.Scene {
         this.load.audio("hitSound3", hitSound3);
         this.load.audio("hitSound4", hitSound4);
         this.load.audio("failSound", failSound);
-        this.load.audio("slideSound", slideSound);
+        this.load.audio("slideSound1", slideSound1);
+        this.load.audio("slideSound2", slideSound2);
+        this.load.audio("slideSound3", slideSound3);
+        this.load.audio("slideSound4", slideSound4);
         //this.load.audio("song", this.song);
 	}
 
@@ -149,13 +155,18 @@ export default class GameScene extends Phaser.Scene {
         }
         
         this.hitSoundSelect=1;
+        this.slideSoundSelect=1;
         this.hitSoundMax=4;
+        this.slideSoundMax=4;
         this.sound.add("hitSound1", soundEffectAudioConfig);
         this.sound.add("hitSound2", soundEffectAudioConfig);
         this.sound.add("hitSound3", soundEffectAudioConfig);
         this.sound.add("hitSound4", soundEffectAudioConfig);
         this.sound.add("failSound", soundEffectAudioConfig);
-        this.sound.add("slideSound", soundEffectAudioConfig);
+        this.sound.add("slideSound1", soundEffectAudioConfig);
+        this.sound.add("slideSound2", soundEffectAudioConfig);
+        this.sound.add("slideSound3", soundEffectAudioConfig);
+        this.sound.add("slideSound4", soundEffectAudioConfig);
         //this.music = this.sound.add("song", musicAudioConfig);
 
         //notes
@@ -352,7 +363,11 @@ export default class GameScene extends Phaser.Scene {
     }
 
     playSlideSound(){
-        this.sound.play("slideSound");
+        this.sound.play("slideSound"+this.slideSoundSelect);
+        this.slideSoundSelect++;
+        if(this.slideSoundSelect > this.slideSoundMax){
+            this.slideSoundSelect=1;
+        }
     }
 
     playFailSound() {
