@@ -18,7 +18,7 @@ let loginPage = `<form>
 </div>
 <div class="form-group">
   <label for="password">Password</label>
-  <input class="form-control" id="password" type="password" name="password" placeholder="Enter your password" required="" pattern=".*[A-Z]+.*" />
+  <input class="form-control" id="password" type="password" name="password" placeholder="Enter your password" required="" pattern="*" />
 </div>
 <button class="btn btn-primary" id="btn" type="submit">Submit</button>
 <!-- Create an alert component with bootstrap that is not displayed by default-->

@@ -1,8 +1,10 @@
 import { RedirectUrl } from "./Router.js";
+import { getUserSessionData } from "../utils/Session.js";
 
 let page = document.querySelector("#page");
 
-let pageHtml = `Edit page (NOT IMPLEMENTED YET)
+let pageHtml = `
+<button id="publish" class="mt-5 btn btn-primary">Publier</button>
 <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>`;
 
 let ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
@@ -27,14 +29,35 @@ const EditPage = (data) => {
         RedirectUrl("/addBeatmap");
         return;
     }
+    let user = getUserSessionData();
+    if(!user){
+        RedirectUrl("/");
+        return;
+    }
+    console.log(user);
+
+    let beatmap = {
+        noteList: ldd,
+        difficulty: data.difficulty,
+        musicTitle: data.title,
+        musicData: data.audioData,
+        musicArtist: data.artist,
+        musicDuration: data.duration,
+        bmCreator: /*user.username*/ "Baptiste",
+    }
+
     page.innerHTML = pageHtml;
+
+    let btn = document.querySelector("#publish");
+    btn.addEventListener("click", () => {publish(beatmap, user)});
 }
 
-const publish = (beatmap) => {
+const publish = (beatmap, user) => {
     fetch("/api/beatmaps/",{
         method: "POST",
         body: JSON.stringify(beatmap),
         headers: {
+            Authorization: user.token,
             "Content-Type": "application/json",
         },
     })

@@ -1,4 +1,6 @@
 import {RedirectUrl} from "./Router.js";
+import { getUserSessionData } from "../utils/Session.js";
+
 let pageHtml = `
 <div class="row">
     <div class="col-3"></div>
@@ -41,6 +43,12 @@ let formErrMsg = "Soumission invalide";
 
 
 const AddMusicInfo = () => {
+    let user = getUserSessionData();
+    if(!user){
+        RedirectUrl("/");
+        return;
+    }
+    console.log(user);
     page.innerHTML = pageHtml;
     let submitBtn = document.querySelector("#submit");
     submitBtn.addEventListener("click", onSubmitHandler)
@@ -70,18 +78,16 @@ const onSubmitHandler = (e) => {
 
         audioElement.onloadedmetadata = function() { //wait for the metadata to be loaded
             let duration = Math.floor(1000*audioElement.duration); //convert in ms
-            alert(duration);
             let input = {
                 difficulty: difficulty,
                 title: musicTitle,
-                file: file,
                 audioData: audioData,
                 artist: musicArtist,
                 duration: duration,
             }
             
-            if(verifyInput(userRawInput)){ //verify input validity
-                RedirectUrl("/edit", userRawInput);
+            if(verifyInput(input)){ //verify input validity
+                RedirectUrl("/edit", input);
             }else{
                 onError(formErrMsg);
             }
@@ -101,7 +107,7 @@ const onError = (text) => {
 const verifyInput = (input) => {
     if(!input.title) return false;
     if(!input.artist) return false;
-    console.log(input.file);
+    //TODO: verify the ext. & mime type of audio file
     return true;
 }
 

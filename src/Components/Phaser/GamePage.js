@@ -34,20 +34,6 @@ const PhaserGamePage = async () => {
   let page = document.querySelector("#page");
   page.innerHTML = phaserGame;
   let divAudio = document.querySelector("#divAudio");
-  /*
-  let userPreferences = {
-    keyBinding: {
-      key1: "d",
-      key2: "f",
-      key3: "j",
-      key4: "k",
-    },
-    volume: {
-      master: 1,
-      bgm: 0.20,
-      effect: 1,
-    }
-  }*/
 
   let userPreferences = getUserPreferences();
   console.log(userPreferences);
@@ -62,7 +48,7 @@ const PhaserGamePage = async () => {
     parent: "gameDiv",
   };
 
-  let beatmapID = 0;
+  let beatmapID = -1;
   let ret = await fetch("/api/beatmaps/"+beatmapID)
   .then((response) => {
     if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
