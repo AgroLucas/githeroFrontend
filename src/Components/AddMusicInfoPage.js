@@ -32,7 +32,7 @@ let pageHtml = `
             <button id="submit" type="submit" class="btn btn-primary">Editer</button>
             <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
         </form>
-        
+        <div id="audioDiv"></div>
     </div>
 </div>`;
 
@@ -48,7 +48,6 @@ const AddMusicInfo = () => {
 
 const onSubmitHandler = (e) => {
     e.preventDefault();
-    let username = "baptiste"; //TODO - stub -> get from session
     let musicTitle = document.querySelector("#musicTitle").value;
     let musicArtist = document.querySelector("#musicArtist").value;
     let difficulty = document.querySelector("#difficulty").value;
@@ -61,23 +60,35 @@ const onSubmitHandler = (e) => {
     var reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = function () { //convert audio to base64
-        let userRawInput = {
-            difficulty: difficulty,
-            title: musicTitle,
-            file: file,
-            audioData: reader.result,
-            artist: musicArtist,
-        }
-    
-        if(verifyInput(userRawInput)){ //verify input validity
-            RedirectUrl("/edit", userRawInput);
-        }else{
-            onError(formErrMsg);
-        }
+        
+        let audioData = reader.result;
+
+        //get duration from audioData
+        let audioDiv = document.querySelector("#audioDiv");
+        audioDiv.innerHTML = `<audio id="audio" src="`+audioData+`"/>`
+        let audioElement = document.querySelector("#audio");
+
+        audioElement.onloadedmetadata = function() { //wait for the metadata to be loaded
+            let duration = Math.floor(1000*audioElement.duration); //convert in ms
+            alert(duration);
+            let input = {
+                difficulty: difficulty,
+                title: musicTitle,
+                file: file,
+                audioData: audioData,
+                artist: musicArtist,
+                duration: duration,
+            }
+            
+            if(verifyInput(userRawInput)){ //verify input validity
+                RedirectUrl("/edit", userRawInput);
+            }else{
+                onError(formErrMsg);
+            }
+        };
     }
     reader.onerror = (err) => onError(err.message);
 }
-
 
 const onError = (text) => {
     let messageBoard = document.querySelector("#messageBoard");

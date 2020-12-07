@@ -2,6 +2,7 @@
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./NavBar.js";
 import {setUserSessionData} from "../utils/Session.js";
+import logo from "../img/GitHero_logo.png";
 
 const registerPage=`
 <form>
@@ -21,6 +22,8 @@ const registerPage=`
   <button class="btn btn-primary" id="btn" type="submit">Submit</button>
   <!-- Create an alert component with bootstrap that is not displayed by default-->
   <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
+  <img id="logo" src="`+ logo +`" alt="logo">
+  
   </div>
 </div>
   </form>`;
