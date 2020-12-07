@@ -59,7 +59,8 @@ const PhaserGamePage = async () => {
     let audioElement = document.querySelector("#audio");
     let volumeBgm = userPreferences.volume.master * userPreferences.volume.bgm;
     audioElement.volume = volumeBgm;
-    let scene = new GameScene(data.noteList, audioElement, userPreferences);
+
+    let scene = new GameScene(data.noteList, audioElement, userPreferences, data.musicDuration);
     
     let config = {
       type: Phaser.AUTO,

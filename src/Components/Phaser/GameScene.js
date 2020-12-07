@@ -15,7 +15,7 @@ import btnActive from "../../img/game_assets/btn_active.png";
 import flash from "../../img/game_assets/flash.png";
 import fail from "../../img/game_assets/fail.png";
 
-const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
+/*const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
     [0, 3, 7320], [0, 2, 7630], [0, 1, 7975], [0, 0, 8310], [0, 1, 8640], [0, 2, 8890], [1, 3, 9185, 9975], // générique libre de droiiits ...
     [0, 0, 10740], [0, 1, 11010], [0, 0, 11300], [0, 1, 11605], // (libre de droits...)
     [0, 2, 12300], [0, 3, 12300], [0, 0, 12650], [0, 1, 12650], [0, 2, 13065], [0, 3, 13065], [0, 0, 13395], [0, 3, 13395], [0,1,13675], [0,2,13675], [0, 0, 13960], [0, 3, 13960], //cette chanson est à moi ... (double)
@@ -30,7 +30,7 @@ const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de 
     [0, 0, 36810], [0, 2, 36810], [0, 1, 37100], [0, 3, 37100], [0, 0, 37420], [0, 2, 37420], [0, 1, 37700], [0, 3, 37700], [1, 0, 38020, 38840], [1, 2, 38020, 38840], // c'est libre de droits.
     [0, 1, 40665], //Libre ...
     [0, 1, 41710], [0, 0, 41920] // de droits.
-]
+]*/
 
 //var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];
 //var beatmap = [[0,0,1000], [0,0,1200]];
@@ -41,7 +41,7 @@ var beatmap;
 
 export default class GameScene extends Phaser.Scene {
     
-	constructor(beatmap, audioHtmlElement, userPreferences) {
+	constructor(beatmap, audioHtmlElement, userPreferences, audioFileDuration) {
         super('game-scene');
         this.beatmap = beatmap;
         this.audioHtmlElement = audioHtmlElement;
@@ -79,7 +79,7 @@ export default class GameScene extends Phaser.Scene {
         this.valueMiddleButton = (Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)/this.shortNoteInterval)); //the value the short note should get for having a perfect shot
         this.valueToGive = Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)%this.shortNoteInterval); //the value given while doing a perfect shot
         
-        this.songDuration = 45000 + this.noteTravelTime; //TODO: get song duration from audiofile (or /api/beatmaps ?)
+        this.songDuration = audioFileDuration;
 
 
         this.arrayKeys = [];
