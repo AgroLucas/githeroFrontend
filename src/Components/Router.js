@@ -6,7 +6,6 @@ import HelpPage from "./HelpPage.js";
 import {OptionsPage} from "./OptionsPage.js";
 import RankingPage from "./RankingPage.js";
 import AddMusicInfo from "./AddMusicInfoPage.js";
-import UserListPage from "./UserListPage.js";
 import LoginPage from "./LoginPage.js";
 import RegisterPage from "./RegisterPage.js";
 import LogoutComponent from "./LogoutComponent.js";
@@ -15,7 +14,6 @@ import EditPage from "./EditPage.js";
 
 const routes = {
     "/": HomePage,
-    "/users": UserListPage,
     "/login": LoginPage,
     "/register": RegisterPage,
     "/logout": LogoutComponent,
