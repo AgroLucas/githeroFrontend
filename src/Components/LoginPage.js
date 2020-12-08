@@ -14,7 +14,7 @@ let loginPage = `<form>
 <h1> Connexion : </h1>
 <br>
   <label for="username">Username</label>
-  <input class="form-control" id="username" type="text" name="username" placeholder="Enter your username"  />
+  <input class="form-control" id="username" type="text" name="username" placeholder="Enter your username" minlength="4" required   />
 </div>
 <div class="form-group">
   <label for="password">Password</label>
