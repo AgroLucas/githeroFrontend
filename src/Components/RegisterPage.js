@@ -3,7 +3,7 @@ import { RedirectUrl } from "./Router.js";
 import Navbar from "./NavBar.js";
 import {setUserSessionData} from "../utils/Session.js";
 import logo from "../img/GitHero_logo.png";
-
+// rajouter cdtions pour username
 const registerPage=`
 <form>
 <div class="row">
@@ -12,6 +12,8 @@ const registerPage=`
   <div class="form-group">
   <h1> Inscription : </h1>
   <br>
+    <label for="username">Username</label>
+    <input class="form-control" id="username" type="text" name="username" placeholder="Enter your username"  /> 
     <label for="email">Email</label>
     <input class="form-control" id="email" type="text" name="email" placeholder="Enter your email" required="" pattern="^\\w+([.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+\$" />
   </div>
@@ -38,7 +40,7 @@ const RegisterPage = () => {
 let onRegister = async (e) => {
   e.preventDefault();
   let user = {
-    email: document.getElementById("email").value,
+    username: document.getElementById("username").value,
     password: document.getElementById("password").value,
   };
   try{
