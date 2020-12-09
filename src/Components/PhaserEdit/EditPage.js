@@ -1,5 +1,7 @@
-import { RedirectUrl } from "./Router.js";
-import { getUserSessionData } from "../utils/Session.js";
+import { RedirectUrl } from "../Router.js";
+import { getUserSessionData } from "../../utils/Session.js";
+import EditScene from "./EditScene.js";
+import Phaser from "phaser";
 
 let page = document.querySelector("#page");
 
@@ -11,7 +13,7 @@ let pageHtml = `
     </div>
 </div>
 <div class="row mt-5 ml-5 mr-2">
-    <div class="col-10 editScreen bg-secondary">
+    <div id="editScreen" class="col-10">
     </div>
     <div class="col-1"></div>
     <div class="col-1 pr-2 my-5">
@@ -23,7 +25,7 @@ let pageHtml = `
 </div>
 <div class="row mt-5 ml-5 mr-2">
     <div class="col-10">
-        <input type="range" class="form-control-range" min="0" max="100" step="0.1" value="0"/>
+        <input id="timeLine" type="range" class="form-control-range" min="0" max="1" step="0.001" value="0"/>
     </div>
     <div class="col-1">
         <button class="btn btn-secondary">Play/Pause</button>
@@ -82,11 +84,39 @@ const EditPage = (data) => {
         bmCreator: user.username "Baptiste",
     }
     */
+
     page.innerHTML = pageHtml;
+
+    const editScreenWidth = 4/5 * window.innerWidth; 
+    const editScreenHeight = 1/2 * window.innerHeight;
+    const duration = 45000;
+
+    let scene = new EditScene(editScreenWidth, editScreenHeight, duration)
+
+    let config = {
+        type: Phaser.AUTO,
+        width: editScreenWidth,
+        height: editScreenHeight,
+        backgroundColor: '#FFFFFF',
+        scene: [scene],
+        parent: "editScreen",
+    }
+
+    let game = new Phaser.Game(config);
+    
+    let timeLine = document.querySelector("#timeLine");
+    timeLine.addEventListener("change", ()=> {
+        let time = duration * timeLine.value;
+        console.log("update time to "+time);
+        scene.updateCurrentTime(time);
+    })
+
     /*
     let btn = document.querySelector("#publish");
     btn.addEventListener("click", () => {publish(beatmap, user)});
     */
+
+    return game;
 }
 
 const publish = (beatmap, user) => {

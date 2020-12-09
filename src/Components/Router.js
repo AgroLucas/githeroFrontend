@@ -10,7 +10,7 @@ import LoginPage from "./LoginPage.js";
 import RegisterPage from "./RegisterPage.js";
 import LogoutComponent from "./LogoutComponent.js";
 import ErrorPage from "./ErrorPage.js";
-import EditPage from "./EditPage.js";
+import EditPage from "./PhaserEdit/EditPage.js";
 
 const routes = {
     "/": HomePage,
