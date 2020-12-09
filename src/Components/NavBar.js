@@ -1,6 +1,6 @@
 import whiteLogo from "../img/GitHero_logo_blanc.png";
 import profile from "../img/image_profil.png";
-import {getUserSessionData} from "./Session.js";
+import {getUserSessionData} from "../utils/Session.js";
 
 
 let navBar = document.querySelector("#navbar");

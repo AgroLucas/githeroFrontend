@@ -1,4 +1,6 @@
 import {RedirectUrl} from "./Router.js";
+import { getUserSessionData } from "../utils/Session.js";
+
 let pageHtml = `
 <div class="row">
     <div class="col-3"></div>
@@ -32,7 +34,7 @@ let pageHtml = `
             <button id="submit" type="submit" class="btn btn-primary">Editer</button>
             <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
         </form>
-        
+        <div id="audioDiv"></div>
     </div>
 </div>`;
 
@@ -41,6 +43,12 @@ let formErrMsg = "Soumission invalide";
 
 
 const AddMusicInfo = () => {
+    let user = getUserSessionData();
+    if(!user){
+        RedirectUrl("/");
+        return;
+    }
+    console.log(user);
     page.innerHTML = pageHtml;
     let submitBtn = document.querySelector("#submit");
     submitBtn.addEventListener("click", onSubmitHandler)
@@ -48,7 +56,6 @@ const AddMusicInfo = () => {
 
 const onSubmitHandler = (e) => {
     e.preventDefault();
-    let username = "baptiste"; //TODO - stub -> get from session
     let musicTitle = document.querySelector("#musicTitle").value;
     let musicArtist = document.querySelector("#musicArtist").value;
     let difficulty = document.querySelector("#difficulty").value;
@@ -61,23 +68,33 @@ const onSubmitHandler = (e) => {
     var reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = function () { //convert audio to base64
-        let userRawInput = {
-            difficulty: difficulty,
-            title: musicTitle,
-            file: file,
-            audioData: reader.result,
-            artist: musicArtist,
-        }
-    
-        if(verifyInput(userRawInput)){ //verify input validity
-            RedirectUrl("/edit", userRawInput);
-        }else{
-            onError(formErrMsg);
-        }
+        
+        let audioData = reader.result;
+
+        //get duration from audioData
+        let audioDiv = document.querySelector("#audioDiv");
+        audioDiv.innerHTML = `<audio id="audio" src="`+audioData+`"/>`
+        let audioElement = document.querySelector("#audio");
+
+        audioElement.onloadedmetadata = function() { //wait for the metadata to be loaded
+            let duration = Math.floor(1000*audioElement.duration); //convert in ms
+            let input = {
+                difficulty: difficulty,
+                title: musicTitle,
+                audioData: audioData,
+                artist: musicArtist,
+                duration: duration,
+            }
+            
+            if(verifyInput(input)){ //verify input validity
+                RedirectUrl("/edit", input);
+            }else{
+                onError(formErrMsg);
+            }
+        };
     }
     reader.onerror = (err) => onError(err.message);
 }
-
 
 const onError = (text) => {
     let messageBoard = document.querySelector("#messageBoard");
@@ -90,7 +107,7 @@ const onError = (text) => {
 const verifyInput = (input) => {
     if(!input.title) return false;
     if(!input.artist) return false;
-    console.log(input.file);
+    //TODO: verify the ext. & mime type of audio file
     return true;
 }
 

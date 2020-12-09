@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import GameScene from "./GameScene.js";
-import { setLayout } from "../../utils/render.js";
+import {getUserPreferences} from "../OptionsPage.js";
 
 
 const hideExternalElements = () => {
@@ -35,20 +35,8 @@ const PhaserGamePage = async () => {
   page.innerHTML = phaserGame;
   let divAudio = document.querySelector("#divAudio");
 
-  //TODO: fetch from /api/users 
-  let userPreferences = {
-    keyBinding: {
-      key1: "d",
-      key2: "f",
-      key3: "j",
-      key4: "k",
-    },
-    volume: {
-      master: 1,
-      bgm: 0.20,
-      effect: 1,
-    }
-  }
+  let userPreferences = getUserPreferences();
+  console.log(userPreferences);
 
   let config = {
     type: Phaser.AUTO,
@@ -60,7 +48,7 @@ const PhaserGamePage = async () => {
     parent: "gameDiv",
   };
 
-  let beatmapID = 0;
+  let beatmapID = -1;
   let ret = await fetch("/api/beatmaps/"+beatmapID)
   .then((response) => {
     if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
@@ -71,7 +59,8 @@ const PhaserGamePage = async () => {
     let audioElement = document.querySelector("#audio");
     let volumeBgm = userPreferences.volume.master * userPreferences.volume.bgm;
     audioElement.volume = volumeBgm;
-    let scene = new GameScene(data.noteList, audioElement, userPreferences);
+
+    let scene = new GameScene(data.noteList, audioElement, userPreferences, data.musicDuration);
     
     let config = {
       type: Phaser.AUTO,

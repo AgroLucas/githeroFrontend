@@ -77,6 +77,12 @@ li button {
     font-size: 2.5em;
     
 }
+
+/*********************************On side pages*********************************/
+.side_page {
+    margin-top: 5em;
+}
+
 /*********************************On MusicListPage*********************************/
 .modalGameButton {
     width: 9em;

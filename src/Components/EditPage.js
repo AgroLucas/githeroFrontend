@@ -1,10 +1,46 @@
 import { RedirectUrl } from "./Router.js";
+import { getUserSessionData } from "../utils/Session.js";
 
 let page = document.querySelector("#page");
 
-let pageHtml = `Edit page (NOT IMPLEMENTED YET)
-<div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>`;
+let pageHtml = `
+<div class="row mt-5 mr-2">
+    <div class="col-11"></div>
+    <div class="col-1 pr-2">
+        <button class="btn btn-danger p-3">Publier</button>
+    </div>
+</div>
+<div class="row mt-5 ml-5 mr-2">
+    <div class="col-10 editScreen bg-secondary">
+    </div>
+    <div class="col-1"></div>
+    <div class="col-1 pr-2 my-5">
+        <div class="btn-group-vertical">
+            <button type="button" class="btn btn-primary py-3 active">Simple</button>
+            <button type="button" class="btn btn-primary py-3">Longues</button>
+        </div>
+    </div>
+</div>
+<div class="row mt-5 ml-5 mr-2">
+    <div class="col-10">
+        <input type="range" class="form-control-range" min="0" max="100" step="0.1" value="0"/>
+    </div>
+    <div class="col-1">
+        <button class="btn btn-secondary">Play/Pause</button>
+    </div>
+    <div class="col-1">
+        <p><span id="currentTime">00:00</span>/<span>00:45</span></p>
+    </div>
+</div>
+<div class="row mt-5">
+    <div class="col-3"></div>
+    <div class="col-6">
+        <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
+    </div>
+</div>
+`;
 
+/*
 let ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
     [0, 3, 7320], [0, 2, 7630], [0, 1, 7975], [0, 0, 8310], [0, 1, 8640], [0, 2, 8890], [1, 3, 9185, 9975], // générique libre de droiiits ...
     [0, 0, 10740], [0, 1, 11010], [0, 0, 11300], [0, 1, 11605], // (libre de droits...)
@@ -21,20 +57,44 @@ let ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de dr
     [0, 1, 40665], //Libre ...
     [0, 1, 41710], [0, 0, 41920] // de droits.
 ]
+*/
 
 const EditPage = (data) => {
+    /*
     if(!data){
         RedirectUrl("/addBeatmap");
         return;
     }
+    let user = getUserSessionData();
+    if(!user){
+        RedirectUrl("/");
+        return;
+    }
+    console.log(user);
+
+    let beatmap = {
+        noteList: ldd,
+        difficulty: data.difficulty,
+        musicTitle: data.title,
+        musicData: data.audioData,
+        musicArtist: data.artist,
+        musicDuration: data.duration,
+        bmCreator: user.username "Baptiste",
+    }
+    */
     page.innerHTML = pageHtml;
+    /*
+    let btn = document.querySelector("#publish");
+    btn.addEventListener("click", () => {publish(beatmap, user)});
+    */
 }
 
-const publish = (beatmap) => {
+const publish = (beatmap, user) => {
     fetch("/api/beatmaps/",{
         method: "POST",
         body: JSON.stringify(beatmap),
         headers: {
+            Authorization: user.token,
             "Content-Type": "application/json",
         },
     })

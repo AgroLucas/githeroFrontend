@@ -3,7 +3,7 @@ import MusicListPage from "./MusicListPage.js";
 import HomePage from "./HomePage.js";
 import AboutUsPage from "./AboutUsPage.js";
 import HelpPage from "./HelpPage.js";
-import OptionsPage from "./OptionsPage.js";
+import {OptionsPage} from "./OptionsPage.js";
 import RankingPage from "./RankingPage.js";
 import AddMusicInfo from "./AddMusicInfoPage.js";
 import LoginPage from "./LoginPage.js";
