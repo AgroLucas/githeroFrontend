@@ -138,6 +138,7 @@ export default class GameScene extends Phaser.Scene {
         this.graphics = this.add.graphics();
         this.createLines();
         this.createBtns();
+        this.createBtnLabels();
         this.drawAll();
 
         //text display
@@ -289,6 +290,15 @@ export default class GameScene extends Phaser.Scene {
         for (let i = 0; i < 4; i++) {
             this.lines[i] = this.add.path(this.calcLineX(i, this.topSpacing), 0);
             this.lines[i].lineTo(this.calcLineX(i, this.bottomSpacing), this.endPathY+(this.btnYOffset));
+        }
+    }
+
+    createBtnLabels(){
+        let fntSize = 30; 
+        let y = this.endPathY - this.btnYOffset -fntSize/2 ; //same y as btns
+        for(let i=0; i<4; i++){
+            let x = this.calcLineXFromY(i, y) -fntSize/3;
+            this.add.text(x, y, this.arrayKeys[i].toUpperCase(), { font: '30px Arial', fill: '#FFFFFF' }); //set font size at the same value as fntSize
         }
     }
 
