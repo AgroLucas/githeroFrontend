@@ -1,5 +1,6 @@
 import Phaser, { Game, Time ,Base64} from 'phaser';
 import { RedirectUrl } from "../Router.js";
+import { getUserSessionData } from "../Session.js";
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
@@ -167,7 +168,7 @@ export default class GameScene extends Phaser.Scene {
         document.addEventListener("keyup", event => this.onKeyup(event));
 
         setTimeout(()=> {
-            this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
+            this.stackTimeout.push(setTimeout(this.endGame, /*this.songDuration*/1000, this));
             this.playMusic();
         }, this.noteTravelTime);
     }
@@ -559,7 +560,7 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
-    endGame (instance) {
+    async endGame (instance) {
         instance.isStarted = false;
         let percent = Math.round(instance.nbrHits/instance.beatmap.length*10000)/100;
         if(instance.combo > instance.maxCombo)
@@ -586,11 +587,43 @@ export default class GameScene extends Phaser.Scene {
         else
             note = "F";
 
+        let scoreMessage = "";
+        if (getUserSessionData()) {
+            let toSend = {beatmapId: 3, username: 'cookie@gmail.com', score: 110}; //TODO 
+            await fetch("/api/users/score", {
+                method: "POST", 
+                body: JSON.stringify(toSend), 
+                headers: {
+                "Content-Type": "application/json",
+                }
+            })
+            .then((response) => {
+             if (!response.ok)
+                throw new Error("Error code : " + response.status + " : " + response.statusText);
+             return response.json();
+            })
+            .then((data) => {
+                let oldHighscore = data.oldHighscore;
+                if (oldHighscore>instance.score)
+                    scoreMessage = "Highscore : " + oldHighscore
+                else
+                    scoreMessage = "New highscore : " + instance.score;
+            })
+            .catch((err) => onError(err));
+        }
+
+
         $('#gameModal').modal({show:true});
         let modalBody = document.querySelector("#contentGameModal");
-        modalBody.innerHTML = "<div class=\"d-flex justify-content-center my-0\">Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note
+        modalBody.innerHTML = "<div class=\"d-flex justify-content-center my-0\">" + scoreMessage + "</br>Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note
         + "</div></br><button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/game\">Rejouer</button>"
         + "<button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/list\">Retour à la liste de map</button> ";
         page.querySelectorAll("button").forEach( button => button.addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri)) )
+
+
     }
+}
+
+const onError = (e) => {
+    console.log(e.message);
 }
