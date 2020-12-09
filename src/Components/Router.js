@@ -1,4 +1,4 @@
-import GamePage from "./Phaser/GamePage.js";
+import GamePage from "./PhaserGame/GamePage.js";
 import MusicListPage from "./MusicListPage.js";
 import HomePage from "./HomePage.js";
 import AboutUsPage from "./AboutUsPage.js";
