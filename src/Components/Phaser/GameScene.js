@@ -1,6 +1,6 @@
 import Phaser, { Game, Time ,Base64} from 'phaser';
 import { RedirectUrl } from "../Router.js";
-import { getUserSessionData } from "../Session.js";
+//import { getUserSessionData } from "../Session.js";
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
@@ -180,7 +180,7 @@ export default class GameScene extends Phaser.Scene {
         document.addEventListener("keyup", event => this.onKeyup(event));
 
         setTimeout(()=> {
-            this.stackTimeout.push(setTimeout(this.endGame, /*this.songDuration*/1000, this));
+            this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
             this.playMusic();
         }, this.noteTravelTime);
     }
@@ -613,7 +613,7 @@ export default class GameScene extends Phaser.Scene {
             note = "F";
 
         let scoreMessage = "";
-        if (getUserSessionData()) {
+        if (/*getUserSessionData()*/1 === 1) { //TODO
             let toSend = {beatmapId: 3, username: 'cookie@gmail.com', score: 110}; //TODO 
             await fetch("/api/users/score", {
                 method: "POST", 
