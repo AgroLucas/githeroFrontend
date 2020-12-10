@@ -24,6 +24,9 @@ export default class EditScene extends Phaser.Scene {
 
         //notes
         this.beatmap = []; //contains notes & sprites
+
+        //state
+        this.preventAddNote = false;
     }
 
     preload() {
@@ -42,6 +45,7 @@ export default class EditScene extends Phaser.Scene {
         this.sNoteGhost.setTint(0x34eb3d);
 
         this.input.on("pointermove", this.ghostFollow);
+        this.input.on("pointerdown", this.addSimpleNote);
 
         this.createSimpleNote(1, 1000);
         this.createSimpleNote(2, 1500);
@@ -51,8 +55,28 @@ export default class EditScene extends Phaser.Scene {
     ghostFollow(pointer) {
         let sprite = this.scene.sNoteGhost;
         sprite.setX(pointer.x);
-        let lineNum = this.scene.getLineNumFromY(this.scene.mapWindowYToSceneY(pointer.y));
+        let lineNum = this.scene.getLineNumFromY(pointer.y);
         sprite.setY(this.scene.getYFromLineNum(lineNum));
+    }
+
+    preventAdd() {
+        this.sNoteGhost.visible = false;
+        this.preventAddNote = true;
+    }
+
+    allowAdd() {
+        this.sNoteGhost.visible = true;
+        this.preventAddNote = false;
+    }
+
+    addSimpleNote(pointer) {
+        let scene = this.scene;
+        if(!scene.preventAddNote){
+            console.log("add");
+            let time = scene.getTimeFromX(pointer.x);
+            let lineNbr = scene.getLineNumFromY(pointer.y);
+            scene.createSimpleNote(lineNbr, time);
+        }
     }
 
     //lines
@@ -72,8 +96,13 @@ export default class EditScene extends Phaser.Scene {
     }
 
     getXFromTime(time) {
-        let pxPerMs = this.width / this.screenTimeSpan //number of pixels/ms
+        let pxPerMs = this.width / this.screenTimeSpan; //number of pixels/ms
         return (time - this.currentTime) * pxPerMs;
+    }
+
+    getTimeFromX(x) {
+        let msPerPx = this.screenTimeSpan / this.width;
+        return this.currentTime + (x*msPerPx);
     }
 
     //changes currentTime and updates display (to be called by EditPage)
@@ -92,7 +121,10 @@ export default class EditScene extends Phaser.Scene {
     }
 
     getLineNumFromY(y) {
-        return Math.floor(y/this.width * 4); //4 = line cnt
+        let res = Math.floor(y*(4/this.height));
+        if(res < 0) res = 0;
+        if(res > 3) res = 3;
+        return res;
     }
 
     //lineNum integer between 0 and 3
@@ -125,20 +157,22 @@ export default class EditScene extends Phaser.Scene {
     }
 
     deleteNote(sprite) {
-        console.log(this.beatmap);
+        console.log("del");
         let i = this.findBMIndexFromSprite(sprite);
         if(i===-1) return;
         this.beatmap.splice(i, 1);
         sprite.destroy();
-        console.log(this.beatmap);
+        this.allowAdd();
     }
 
     highlightNote(sprite) {
         sprite.setTint(0xD12B4E);
+        this.preventAdd();
     }
 
     removeNoteHighlight(sprite){
         sprite.clearTint();
+        this.allowAdd();
     }
 
     findBMIndexFromSprite(sprite) {
@@ -148,11 +182,6 @@ export default class EditScene extends Phaser.Scene {
             }
         }
         return -1;
-    }
-
-    mapWindowYToSceneY(windowY) {
-        let ratio = window.innerHeight/this.height;
-        return (windowY)*ratio;
     }
 
 }
