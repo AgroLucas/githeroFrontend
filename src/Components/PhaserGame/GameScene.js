@@ -43,7 +43,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.noteTravelTime = 3000;
         this.lowestPoint = 50
-        this.longNoteIncrease = 10; // score increase by 10 every 250ms holding long note
+        this.longNoteValueIncreaseTime = 10; // score increase by 10 every 250ms holding long note
         this.shortNoteInterval = 50; 
         this.longNoteIntervalTime = 250;
         this.longNoteIntervalTimeMalus = 500;
@@ -67,17 +67,14 @@ export default class GameScene extends Phaser.Scene {
         let tweak = 1.5;        
         let distanceToBtnCenter = this.height-(tweak * this.btnSize/2);
         this.noteTravelTimeToBtnCenter = this.calcTimeToGetToY(distanceToBtnCenter); 
-        console.log(this.noteTravelTimeToBtnCenter)
 
         let distanceToBtn = this.height-(tweak * this.btnSize);
         this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn);
-        console.log(this.noteTravelTimeToBtn)
         this.valueMiddleButton = (Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)/this.shortNoteInterval)); //the value the short note should get for having a perfect shot
         this.valueToGive = Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)%this.shortNoteInterval); //the value given while doing a perfect shot
         
         this.songDuration = audioFileDuration;
 
-        this.offset = this.noteTravelTimeToBtn - (this.noteTravelTimeToBtnCenter-this.noteTravelTimeToBtn)
 
         this.arrayKeys = [];
         this.arrayKeys[0] = userPreferences.keyBinding[1];
@@ -202,7 +199,7 @@ export default class GameScene extends Phaser.Scene {
 
     createSimpleNote(lineNbr, instance, time) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
-        instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.offset, lineNbr, follower, instance));
+        instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, follower, instance));
         follower.startFollow({
             positionOnPath: true,
             duration: instance.noteTravelTime,
@@ -220,7 +217,7 @@ export default class GameScene extends Phaser.Scene {
 
    createLongNote(lineNbr, instance, end) {
     let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_head");
-    instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, instance.offset, lineNbr, instance, end));
+    instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, instance, end));
 
     follower.startFollow({
         positionOnPath: true,
