@@ -32,7 +32,7 @@ export default class GameScene extends Phaser.Scene {
 	constructor(beatmap, audioHtmlElement, userPreferences, audioFileDuration, beatmapId) {
         super('game-scene');
         this.beatmap = beatmap;
-        this.beatmapId = this.beatmapId;
+        this.beatmapId = beatmapId;
         this.audioHtmlElement = audioHtmlElement;
         this.height = window.innerHeight;
         this.width = window.innerWidth;
@@ -153,6 +153,9 @@ export default class GameScene extends Phaser.Scene {
         this.sound.add("slideSound2", soundEffectAudioConfig);
         this.sound.add("slideSound3", soundEffectAudioConfig);
         this.sound.add("slideSound4", soundEffectAudioConfig);
+
+        let sprite = this.add.sprite(this.width/30, this.height/20, "flash");
+        sprite.setScale(3,3);
 
         //notes
         this.createNoteEvents(this);
