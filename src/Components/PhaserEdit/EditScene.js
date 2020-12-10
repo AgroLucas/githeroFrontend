@@ -206,6 +206,10 @@ export default class EditScene extends Phaser.Scene {
         });
     }
 
+    createLongNote() {
+        //TODO
+    }
+
     deleteNote(sprite) {
         console.log("del");
         let i = this.findBMIndexFromSprite(sprite);
