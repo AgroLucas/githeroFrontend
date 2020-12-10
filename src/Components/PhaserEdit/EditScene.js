@@ -21,11 +21,6 @@ export default class EditScene extends Phaser.Scene {
 
         //lines
         this.lines = [];
-        this.primaryGradationLines = [] //dark vertical line
-        this.primarySpacing = 1000; //ms
-        this.pGradLinesNbr = 0;
-        this.secondaryGraduationLines = [] //light vertical line every 1/4 second
-        this.sGradLinesNbr = 0;
 
         //notes
         this.beatmap = []; //contains notes & sprites
@@ -43,9 +38,21 @@ export default class EditScene extends Phaser.Scene {
         this.createLines();
         this.drawLines();
 
+        this.sNoteGhost = this.add.sprite(150,150,sNoteKey);
+        this.sNoteGhost.setTint(0x34eb3d);
+
+        this.input.on("pointermove", this.ghostFollow);
+
         this.createSimpleNote(1, 1000);
         this.createSimpleNote(2, 1500);
-        this.createSimpleNote(3, 2000)
+        this.createSimpleNote(3, 2000);
+    }
+
+    ghostFollow(pointer) {
+        let sprite = this.scene.sNoteGhost;
+        sprite.setX(pointer.x);
+        let lineNum = this.scene.getLineNumFromY(this.scene.mapWindowYToSceneY(pointer.y));
+        sprite.setY(this.scene.getYFromLineNum(lineNum));
     }
 
     //lines
@@ -82,6 +89,10 @@ export default class EditScene extends Phaser.Scene {
                 noteBundle.sprite.setX(this.getXFromTime(time));
             }
         });
+    }
+
+    getLineNumFromY(y) {
+        return Math.floor(y/this.width * 4); //4 = line cnt
     }
 
     //lineNum integer between 0 and 3
@@ -137,6 +148,11 @@ export default class EditScene extends Phaser.Scene {
             }
         }
         return -1;
+    }
+
+    mapWindowYToSceneY(windowY) {
+        let ratio = window.innerHeight/this.height;
+        return (windowY)*ratio;
     }
 
 }
