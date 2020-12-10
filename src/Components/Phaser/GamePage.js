@@ -55,12 +55,12 @@ const PhaserGamePage = async () => {
     return response.json();
   })
   .then((data) => {
-    divAudio.innerHTML = `<audio id="audio" src="${data.musicData}"/>`;
+    divAudio.innerHTML = `<audio id="audio" crossOrigin="anonymous" src="${data.musicData}"/>`;
     let audioElement = document.querySelector("#audio");
     let volumeBgm = userPreferences.volume.master * userPreferences.volume.bgm;
     audioElement.volume = volumeBgm;
 
-    let scene = new GameScene(data.noteList, audioElement, userPreferences, data.musicDuration);
+    let scene = new GameScene(data.noteList, audioElement, userPreferences, data.musicDuration, beatmapID);
     
     let config = {
       type: Phaser.AUTO,

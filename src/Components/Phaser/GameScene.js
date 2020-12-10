@@ -1,6 +1,6 @@
 import Phaser, { Game, Time ,Base64} from 'phaser';
 import { RedirectUrl } from "../Router.js";
-//import { getUserSessionData } from "../Session.js";
+import {getUserSessionData} from "../../utils/Session.js";
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
@@ -18,6 +18,14 @@ import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 import flash from "../../img/game_assets/flash.png";
 import fail from "../../img/game_assets/fail.png";
+import NoteF from "../../img/game_assets/NoteF.png";
+import NoteE from "../../img/game_assets/NoteE.png";
+import NoteD from "../../img/game_assets/NoteD.png";
+import NoteC from "../../img/game_assets/NoteC.png";
+import NoteB from "../../img/game_assets/NoteB.png";
+import NoteA from "../../img/game_assets/NoteA.png";
+import NoteS from "../../img/game_assets/NoteS.png";
+import NoteS1 from "../../img/game_assets/NoteS+.png";
 
 /*const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
     [0, 3, 7320], [0, 2, 7630], [0, 1, 7975], [0, 0, 8310], [0, 1, 8640], [0, 2, 8890], [1, 3, 9185, 9975], // générique libre de droiiits ...
@@ -45,14 +53,14 @@ var beatmap;
 
 export default class GameScene extends Phaser.Scene {
     
-	constructor(beatmap, audioHtmlElement, userPreferences, audioFileDuration) {
+	constructor(beatmap, audioHtmlElement, userPreferences, audioFileDuration, beatmapId) {
         super('game-scene');
         this.beatmap = beatmap;
+        this.beatmapId = this.beatmapId;
         this.audioHtmlElement = audioHtmlElement;
         this.height = window.innerHeight;
         this.width = window.innerWidth;
         this.setProportions();
-
         this.noteTravelTime = 3000;
 
         this.lowestPoint = 50
@@ -123,6 +131,15 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("flash", flash);
         this.load.image("fail", fail);
         this.load.image("btnActive", btnActive);
+        this.load.image("NoteF", NoteF);
+        this.load.image("NoteE", NoteE);
+        this.load.image("NoteD", NoteD);
+        this.load.image("NoteC", NoteC);
+        this.load.image("NoteB", NoteB);
+        this.load.image("NoteA", NoteA);
+        this.load.image("NoteS", NoteS);
+        this.load.image("NoteS1", NoteS1);
+
         this.load.audio("hitSound1", hitSound1);
         this.load.audio("hitSound2", hitSound2);
         this.load.audio("hitSound3", hitSound3);
@@ -179,14 +196,14 @@ export default class GameScene extends Phaser.Scene {
         document.addEventListener("keypress", event => this.onKeypress(event));
         document.addEventListener("keyup", event => this.onKeyup(event));
 
-        setTimeout(()=> {
+        this.stackTimeout.push(setTimeout(()=> {
             this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
             this.playMusic();
-        }, this.noteTravelTime);
+        }, this.noteTravelTime));
     }
 
     playMusic(){
-        this.audioHtmlElement.play();
+       this.audioHtmlElement.play(); 
     }
 
     //const createNoteEvents = () => {}
@@ -243,8 +260,8 @@ export default class GameScene extends Phaser.Scene {
    }
 
    createLongNoteBodySprite(lineNbr, instance) {
-       let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_body");
-       follower.startFollow({
+    let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_body");
+    follower.startFollow({
         positionOnPath: true,
         duration: instance.noteTravelTime,
         yoyo: false,
@@ -593,34 +610,44 @@ export default class GameScene extends Phaser.Scene {
         console.log("Your precision is: " + percent + "%");
 
         let note;
-        if (percent == 100)
+        if (percent == 100) {
             note = "S++";
-        else if (percent >= 95)
+        }else if (percent >= 95) {
             note = "S+";
-        else if (percent >= 90)
+            //instance.add.sprite(300, 150, instance.NoteS1);
+        }else if (percent >= 90) {
             note = "S";
-        else if (percent >= 80)
+            //this.add.sprite(50, 50, instance.NoteS);
+        }else if (percent >= 80) {
             note = "A";
-        else if (percent >= 60)
+            //this.add.sprite(50, 50, instance.NoteA);
+        }else if (percent >= 60) {
             note = "B";
-        else if (percent >= 50)
+            //this.add.sprite(50, 50, instance.NoteB);
+        }else if (percent >= 50) {
             note = "C";
-        else if (percent >= 35)
+            //this.add.sprite(50, 50, instance.NoteC);
+        }else if (percent >= 35) {
             note = "D";
-        else if (percent >= 20)
+            //this.add.sprite(50, 50, instance.NoteD);
+        }else if (percent >= 20) {
             note = "E";
-        else
+            //this.add.sprite(50, 50, instance.NoteE);
+        }else {
             note = "F";
-
+            //this.add.sprite(50, 50, instance.NoteF);
+        }
         let scoreMessage = "";
-        if (/*getUserSessionData()*/1 === 1) { //TODO
-            let toSend = {beatmapId: 3, username: 'cookie@gmail.com', score: 110}; //TODO 
+        let user = getUserSessionData();
+        if (user) {
+            let toSend = {beatmapId: 3, username: user.username, score: instance.score};
             await fetch("/api/users/score", {
                 method: "POST", 
                 body: JSON.stringify(toSend), 
                 headers: {
-                "Content-Type": "application/json",
-                }
+                    Authorization: user.token,
+                    "Content-Type": "application/json",
+                },
             })
             .then((response) => {
              if (!response.ok)
