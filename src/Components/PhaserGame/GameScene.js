@@ -25,6 +25,7 @@ import NoteB from "../../img/game_assets/NoteB.png";
 import NoteA from "../../img/game_assets/NoteA.png";
 import NoteS from "../../img/game_assets/NoteS.png";
 import NoteS1 from "../../img/game_assets/NoteS+.png";
+import arrow from "../../img/game_assets/arrow.png";
 
 
 export default class GameScene extends Phaser.Scene {
@@ -106,6 +107,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("btnInactive", btnInactive);
         this.load.image("flash", flash);
         this.load.image("fail", fail);
+        this.load.image("arrow", arrow);
         this.load.image("btnActive", btnActive);
 
         this.load.audio("hitSound1", hitSound1);
@@ -155,7 +157,7 @@ export default class GameScene extends Phaser.Scene {
         this.sound.add("slideSound4", soundEffectAudioConfig);
 
         
-        let returnImage = this.add.sprite(this.width/30, this.height/20, "flash").setInteractive({useHandCursor: true});
+        let returnImage = this.add.sprite(this.width/30, this.height/20, "arrow").setInteractive({useHandCursor: true});
         returnImage.on("pointerdown", () => RedirectUrl("/list"));
 
         //notes
