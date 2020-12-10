@@ -7,7 +7,7 @@ let page = document.querySelector("#page");
 
 let pageHtml = `
 <div class="row pt-5 pr-2 jumbotron">
-    <div class="col-11 text-center"><h1>STUB Title</h1></div>
+    <div class="col-11 text-center"><h1 id="mapTitle"></h1></div>
     <div class="col-1 pr-2">
         <button id="publish" class="btn btn-danger p-3">Publier</button>
     </div>
@@ -40,9 +40,10 @@ let pageHtml = `
         <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
     </div>
 </div>
+<audio id="audio"/>
 `;
 
-let duration;
+
 let timeLine;
 let playBtn;
 let simpleBtn;
@@ -50,8 +51,15 @@ let longBtn;
 let publishBtn;
 let currentTimer;
 let endTimer;
+let title;
 let scene;
 let refreshIntervalID;
+
+let difficulty;
+let musicTitle;
+let musicData;
+let musicArtist;
+let duration;
 
 let state = 0; //0 = pause; 1 = play
 
@@ -65,7 +73,7 @@ let currentTime = 0;
 const refreshTime = 25; //ms between frames while playing
 
 const EditPage = (data) => {
-    /*
+    
     if(!data){
         RedirectUrl("/addBeatmap");
         return;
@@ -75,20 +83,12 @@ const EditPage = (data) => {
         RedirectUrl("/");
         return;
     }
-    console.log(user);
-
-    let beatmap = {
-        noteList: ldd,
-        difficulty: data.difficulty,
-        musicTitle: data.title,
-        musicData: data.audioData,
-        musicArtist: data.artist,
-        musicDuration: data.duration,
-        bmCreator: user.username "Baptiste",
-    }
-    */
-
-    duration = 45000; //TODO STUB (get from data)
+    
+    difficulty = data.difficulty;
+    musicTitle = data.title;
+    musicData = data.audioData;
+    musicArtist = data.artist;
+    duration = data.duration;
 
     page.innerHTML = pageHtml;
 
@@ -99,6 +99,8 @@ const EditPage = (data) => {
     simpleBtn = document.querySelector("#btnSimple");
     longBtn = document.querySelector("#btnLong");
     publishBtn = document.querySelector("#publish");
+    title = document.querySelector("#mapTitle")
+    title.innerText = data.title;
 
     initTimer(); //sets timer (time display) to 0
 
@@ -124,14 +126,25 @@ const EditPage = (data) => {
     simpleBtn.addEventListener("click", onClickSimpleNotesBtn);
     longBtn.addEventListener("click", onClickLongNotesBtn);
 
-    /*
-    btnPublish.addEventListener("click", () => {publish(beatmap, user)});
-    */
+    
+    publishBtn.addEventListener("click", () => {publish(scene, user)});
+    
 
     return game;
 }
 
-const publish = (beatmap, user) => {
+const publish = (scene, user) => {
+    console.log("publish");
+    let noteList = scene.getBeatmap(); //TODO method EditScene
+    /*let beatmap = {
+        noteList: noteList,
+        difficulty: difficulty,
+        musicTitle: musicTitle,
+        musicData: musicData,
+        musicArtist: musicArtist,
+        musicDuration: duration,
+        bmCreator: user.username,
+    }
     fetch("/api/beatmaps/",{
         method: "POST",
         body: JSON.stringify(beatmap),
@@ -145,7 +158,7 @@ const publish = (beatmap, user) => {
             return response.json();
         })
         .then((data) => onBeatmapPublication(data))
-        .catch((err) => onError(err));
+        .catch((err) => onError(err));*/
 }
 
 const onClickSimpleNotesBtn = () => {
@@ -173,6 +186,7 @@ const resestTypeBtns = () => {
 
 const onBeatmapPublication = (data) => {
     console.log("Success: res = ", data);
+    RedirectUrl("/");
 }
 
 //returns current time in ms

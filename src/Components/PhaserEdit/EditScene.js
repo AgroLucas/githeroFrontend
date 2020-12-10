@@ -367,4 +367,12 @@ export default class EditScene extends Phaser.Scene {
         return -1;
     }
 
+    getBeatmap(){
+        let res = [];
+        this.beatmap.forEach(noteBundle => {
+            res.push(noteBundle.note);            
+        });
+        return res;
+    }
+
 }
