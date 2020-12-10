@@ -5,9 +5,11 @@ let pageHtml = `
     <p>Nous avons dû créer ce site dans le cadre de notre cours de Javascript.</p>
     <p>Si vous avez des questions à propos du site en général ou du jeu, veuillez contacter l'un de nous par mail :</p>
     <p>Lucas Agrò : lucas.y.agro@student.vinci.be</p>
-    <p>Anis Assaidi : annis.assaidi@student.vinci.be</p>
+    <p>Anis Assaidi : anis.assaidi@student.vinci.be</p>
     <p>Bastien Boutte : bastien.boutte@student.vinci.be</p>
     <p>Baptiste Honnay : baptiste.honnay@student.vinci.be</p>    
+    <p></p>
+    <p>Note : notre logo est dérivé du logo de GIT de Jason Long.</p>
 </div>`;
 
 let page = document.querySelector("#page");

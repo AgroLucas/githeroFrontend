@@ -1,6 +1,7 @@
-import {searchForPlayBtns} from "./Router.js";
-
 "use strict";
+import {searchForPlayBtns} from "./Router.js";
+import {getUserSessionData} from "../utils/Session.js";
+
 
 let page = document.querySelector("#page");
 
@@ -12,8 +13,9 @@ const loadBeatmap = () => {
 
     let buttonHtml = "";
     let modalHtml = "";
-
-    fetch("/api/beatmaps").then(response => {
+    let user = getUserSessionData();
+    user = user ? user : {username: null};
+    fetch("/api/beatmaps/list/" + user.username).then(response => {
         if(!response.ok){
             throw new Error(response.status + " " + response.statusText);
         }
@@ -69,10 +71,10 @@ const loadBeatmap = () => {
                             </div>
                             <div class="music_info_leaderboard">
                                 <p><h4>` + ELEMENT.musicTitle + `</h4></p>
-                                <p>Durée : xx secondes</p>
+                                <p>Durée : ` + (ELEMENT.musicDuration/1000).toFixed(0) + ` secondes</p>
                                 <p>Auteur : ` + ELEMENT.musicArtist + `</p>
                                 <p>Créateur du niveau : ` + ELEMENT.creator + `</p>
-                                <p>Votre meilleur score : monMeilleurScore</p>
+                                <p>Votre meilleur score : ` + ELEMENT.highscore + ` points</p>
                                 <p>Vous êtes classé placeClassement</p>
                             </div>
                         </div>
