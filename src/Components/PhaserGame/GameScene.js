@@ -162,16 +162,15 @@ export default class GameScene extends Phaser.Scene {
 
         
         let returnImage = this.add.sprite(this.width/30, this.height/20, "arrow").setInteractive({useHandCursor: true});
-        returnImage.on("pointerdown", () => RedirectUrl("/list"));
+        returnImage.on("pointerdown", () => this.quitPage());
 
-        //notes
         this.createNoteEvents(this);
 
         document.addEventListener("touchstart", event => this.onClick(event));
         document.addEventListener("touchend", event => this.onEndClick(event));
         document.addEventListener("keypress", event => this.onKeypress(event));
         document.addEventListener("keyup", event => this.onKeyup(event));
-        window.addEventListener("blur",  () => RedirectUrl("/list", "Vous avez quitté la page de jeu, retour dans la page de liste des musiques"))
+        window.addEventListener("blur",  event => this.quitPage(event));
 
         this.stackTimeout.push(setTimeout(()=> {
             this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
@@ -183,8 +182,12 @@ export default class GameScene extends Phaser.Scene {
        this.audioHtmlElement.play(); 
     }
 
-    //const createNoteEvents = () => {}
-    //createNoteEvents = createNoteEnvents.bind(this);
+    quitPage() {
+        if (this.isStarted) {
+            this.isStarted = false;
+            RedirectUrl("/list", "Vous avez quitté la page de jeu, retour dans la page de liste des musiques");
+        }
+    }
 
     createNoteEvents(instance) {
         let beatmap = instance.beatmap;
@@ -424,7 +427,7 @@ export default class GameScene extends Phaser.Scene {
             this.updateScore(this.valueToGive);
         } else {
             this.nbrHits += 0.5;
-            this.updateScore(this.valueToGive)/2;
+            this.updateScore(Math.floor(this.valueToGive*0.5));
         }
     }
 
@@ -475,10 +478,10 @@ export default class GameScene extends Phaser.Scene {
      */
     onLongNotePress(lineNbr, note, instance) {
         if(instance.btns[lineNbr].active) {
-            note.score += instance.longNoteIncrease
+            note.score += instance.longNoteValueIncreaseTime
             instance.destroySlideSounds();
             instance.playSlideSound();
-            if (note.score%4*instance.longNoteIncrease===0)
+            if (note.score%4*instance.longNoteValueIncreaseTime===0)
                 instance.incrementCombo();
             instance.updateScore(note.score);
         } else {
