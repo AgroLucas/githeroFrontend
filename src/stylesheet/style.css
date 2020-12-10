@@ -88,3 +88,8 @@ li button {
     width: 9em;
     margin: 2.5em;
 }
+
+/*********************************On GameScene*********************************/
+#modalGameOverText {
+    margin-left: 2em;
+}

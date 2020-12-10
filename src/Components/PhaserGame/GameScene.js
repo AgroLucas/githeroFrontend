@@ -1,4 +1,4 @@
-import Phaser, { Game, Time ,Base64} from 'phaser';
+import Phaser, {Game, Time ,Base64} from 'phaser';
 import { RedirectUrl } from "../Router.js";
 import {getUserSessionData} from "../../utils/Session.js";
 import simple_note from "../../img/game_assets/note_simple.png";
@@ -13,7 +13,6 @@ import slideSound1 from "../../audio/slide1.mp3";
 import slideSound2 from "../../audio/slide2.mp3";
 import slideSound3 from "../../audio/slide3.mp3";
 import slideSound4 from "../../audio/slide4.mp3";
-//import song from "../../audio/ldd.mp3"; //TODO fetch from backend
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 import flash from "../../img/game_assets/flash.png";
@@ -27,29 +26,6 @@ import NoteA from "../../img/game_assets/NoteA.png";
 import NoteS from "../../img/game_assets/NoteS.png";
 import NoteS1 from "../../img/game_assets/NoteS+.png";
 
-/*const ldd = [[0, 0, 3500], [0, 1, 3780], [0, 0, 4100], [0, 1, 4420], //libre de droits ... 
-    [0, 3, 7320], [0, 2, 7630], [0, 1, 7975], [0, 0, 8310], [0, 1, 8640], [0, 2, 8890], [1, 3, 9185, 9975], // générique libre de droiiits ...
-    [0, 0, 10740], [0, 1, 11010], [0, 0, 11300], [0, 1, 11605], // (libre de droits...)
-    [0, 2, 12300], [0, 3, 12300], [0, 0, 12650], [0, 1, 12650], [0, 2, 13065], [0, 3, 13065], [0, 0, 13395], [0, 3, 13395], [0,1,13675], [0,2,13675], [0, 0, 13960], [0, 3, 13960], //cette chanson est à moi ... (double)
-    [0, 3, 15190], [0, 2, 15435], [0, 3, 15790], [0, 2, 16100], [0, 3, 16410], // YouTube l'enlève pas ...
-    [0, 0, 17615], [0, 1, 17890], [0, 0, 18195], [0, 1, 18496], [0, 0, 18738], // c'est libre de doits ...
-    [1, 3, 19550, 20000], [1, 2, 20000, 20600], [1, 1, 20600, 21230], [1, 0, 21230, 22100], // liiiiiibreuuuuuuuh deuuuuuuuuuh droiiiiiiiits ...
-    [0, 2, 22650], [0, 0, 22990], [0, 3, 23255], [0, 1, 23565], // libre de droits ...
-    [0, 0, 26540], [0, 1, 26750], [0, 0, 27135], [0, 1, 27455], [0, 0, 27810], [0, 1, 28095], [1, 0, 28395, 29185], [1, 1, 28395, 29185], //générique libre de droiiits ...
-    [0, 3, 29930], [0, 2, 30200], [0, 1, 30630], [0, 0, 30845],  //(libre de droiiits ...)
-    [0, 0, 31670], [0, 1, 31985], [0, 2, 32280], [0, 3, 32530], [0, 3, 32875], [0, 2, 33210],   //cette chanson est à moi ... (double) 
-    [0, 0, 34385], [0, 1, 34650], [0, 0, 35015], [0, 1, 35300], [0, 0, 35610], //YouTube l'enlèves pas ...
-    [0, 0, 36810], [0, 2, 36810], [0, 1, 37100], [0, 3, 37100], [0, 0, 37420], [0, 2, 37420], [0, 1, 37700], [0, 3, 37700], [1, 0, 38020, 38840], [1, 2, 38020, 38840], // c'est libre de droits.
-    [0, 1, 40665], //Libre ...
-    [0, 1, 41710], [0, 0, 41920] // de droits.
-]*/
-
-//var beatmap = [[1,0,3000, 5000], [0,1,3400], [0,1,3600], [0,1,3800], [0,1,4200], [0,1,4600], [0,1,4800], [0,1,5000], [0,0,5400], [0, 0, 6000], [0,1,6000], [0,2,6000], [0,3,6000], [0,0,6400], [0,1,6800], [0,1,7000], [0,1,7200], [0,1,7400], [0,1,10000]];
-//var beatmap = [[0,0,1000], [0,0,1200]];
-//var beatmap = [[0,1,800], [0,1,1000], [0,1,1200], [0,1,1400], [0,1,1600]];
-//var beatmap = [[0,1,800]];
-
-var beatmap;
 
 export default class GameScene extends Phaser.Scene {
     
@@ -131,14 +107,6 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("flash", flash);
         this.load.image("fail", fail);
         this.load.image("btnActive", btnActive);
-        this.load.image("NoteF", NoteF);
-        this.load.image("NoteE", NoteE);
-        this.load.image("NoteD", NoteD);
-        this.load.image("NoteC", NoteC);
-        this.load.image("NoteB", NoteB);
-        this.load.image("NoteA", NoteA);
-        this.load.image("NoteS", NoteS);
-        this.load.image("NoteS1", NoteS1);
 
         this.load.audio("hitSound1", hitSound1);
         this.load.audio("hitSound2", hitSound2);
@@ -149,7 +117,6 @@ export default class GameScene extends Phaser.Scene {
         this.load.audio("slideSound2", slideSound2);
         this.load.audio("slideSound3", slideSound3);
         this.load.audio("slideSound4", slideSound4);
-        //this.load.audio("song", this.song);
 	}
 
 	create() {
@@ -186,7 +153,6 @@ export default class GameScene extends Phaser.Scene {
         this.sound.add("slideSound2", soundEffectAudioConfig);
         this.sound.add("slideSound3", soundEffectAudioConfig);
         this.sound.add("slideSound4", soundEffectAudioConfig);
-        //this.music = this.sound.add("song", musicAudioConfig);
 
         //notes
         this.createNoteEvents(this);
@@ -212,7 +178,6 @@ export default class GameScene extends Phaser.Scene {
     createNoteEvents(instance) {
         let beatmap = instance.beatmap;
         for (let n = 0; n < beatmap.length; n++) {
-            //console.log(n, beatmap[n][2]);
             let lineNbr = beatmap[n][1];
              if (beatmap[n][0] == 0) //simple notes
                 instance.stackTimeout.push(setTimeout(instance.createSimpleNote, beatmap[n][2], lineNbr, instance, beatmap[n][2]));
@@ -256,7 +221,9 @@ export default class GameScene extends Phaser.Scene {
 
     let intervalID = setInterval(instance.createLongNoteBodySprite, 1, lineNbr, instance);
     instance.stackInterval.push(intervalID);
-    setTimeout(function() {clearInterval(intervalID)}, end);
+    setTimeout(function() {
+        clearInterval(intervalID)
+    }, end);
    }
 
    createLongNoteBodySprite(lineNbr, instance) {
@@ -366,7 +333,7 @@ export default class GameScene extends Phaser.Scene {
     displayBtnEffect(i, spriteKey){
         let sprite = this.add.sprite(this.calcLineXFromY(i, this.height-this.btnYOffset), this.height-this.btnYOffset, spriteKey);
         sprite.setScale(3,3);
-        setTimeout(()=>{sprite.destroy()}, this.btnEffectLifeTime);
+        setTimeout(()=>sprite.destroy(), this.btnEffectLifeTime);
     }
 
     drawAll() {
@@ -381,25 +348,35 @@ export default class GameScene extends Phaser.Scene {
     }
 
 
-    //audio
+    //play a short note'sound
     playHitSound() {
         this.sound.play("hitSound"+this.hitSoundSelect);
         this.hitSoundSelect++;
-        if(this.hitSoundSelect > this.hitSoundMax){
+        if (this.hitSoundSelect > this.hitSoundMax)
             this.hitSoundSelect = 1;
-        }
     }
 
+    //play a long note'sound
     playSlideSound(){
-        this.sound.play("slideSound"+this.slideSoundSelect);
+        let songToPlay = "slideSound"+this.slideSoundSelect;
+        this.sound.play(songToPlay);
         this.slideSoundSelect++;
-        if(this.slideSoundSelect > this.slideSoundMax){
+        if (this.slideSoundSelect > this.slideSoundMax)
             this.slideSoundSelect=1;
-        }
     }
 
+    //play a fail'sound
     playFailSound() {
         this.sound.play("failSound");
+    }
+
+    destroySlideSounds() {
+        for (let i = 0; i <= this.slideSoundMax; i++) {
+            let soundName = "slideSound"+i;
+            let sound = this.sound.get(soundName);
+            if (sound) 
+                sound.destroy()
+        }
     }
 
     //algorithm methods
@@ -454,7 +431,7 @@ export default class GameScene extends Phaser.Scene {
         instance.queuesTimestampToValidate[lineNbr].push(note);
         if (!instance.btns[lineNbr].active) {
             console.log("push single");
-            let intervalID = setInterval(function() {note.score++}, instance.shortNoteInterval); //TODO GIVE MORE POINTS AT MIDDLE
+            let intervalID = setInterval(function() {note.score++}, instance.shortNoteInterval);
             note.intervalID = intervalID;
             instance.stackInterval.push(intervalID); 
         }
@@ -490,6 +467,7 @@ export default class GameScene extends Phaser.Scene {
     onLongNotePress(lineNbr, note, instance) {
         if(instance.btns[lineNbr].active) {
             note.score += instance.longNoteIncrease
+            instance.destroySlideSounds();
             instance.playSlideSound();
             if (note.score%4*instance.longNoteIncrease===0)
                 instance.incrementCombo();
@@ -510,8 +488,10 @@ export default class GameScene extends Phaser.Scene {
     onEndLongFollower(lineNbr, note, end, instance) {
         clearInterval(note.intervalID);
         instance.queuesTimestampToValidate[lineNbr].shift();
+        instance.destroySlideSounds();
         if ((end/250)*0.70 < note.score)
             instance.nbrHits++;
+            
     }
 
     onClick(e) {
@@ -610,37 +590,38 @@ export default class GameScene extends Phaser.Scene {
         console.log("Your precision is: " + percent + "%");
 
         let note;
-        if (percent == 100) {
+        let imgNote;
+        if (percent === 100) {
             note = "S++";
         }else if (percent >= 95) {
             note = "S+";
-            //instance.add.sprite(300, 150, instance.NoteS1);
+            imgNote = NoteS1;
         }else if (percent >= 90) {
             note = "S";
-            //this.add.sprite(50, 50, instance.NoteS);
+            imgNote = NoteS;
         }else if (percent >= 80) {
             note = "A";
-            //this.add.sprite(50, 50, instance.NoteA);
+            imgNote = NoteA;
         }else if (percent >= 60) {
             note = "B";
-            //this.add.sprite(50, 50, instance.NoteB);
+            imgNote = NoteB;
         }else if (percent >= 50) {
             note = "C";
-            //this.add.sprite(50, 50, instance.NoteC);
+            imgNote = NoteC;
         }else if (percent >= 35) {
             note = "D";
-            //this.add.sprite(50, 50, instance.NoteD);
+            imgNote = NoteD;
         }else if (percent >= 20) {
             note = "E";
-            //this.add.sprite(50, 50, instance.NoteE);
+            imgNote = NoteE;
         }else {
             note = "F";
-            //this.add.sprite(50, 50, instance.NoteF);
+            imgNote = NoteF;
         }
         let scoreMessage = "";
         let user = getUserSessionData();
         if (user) {
-            let toSend = {beatmapId: 3, username: user.username, score: instance.score};
+            let toSend = {beatmapId: instance.beatmapId, username: user.username, score: instance.score};
             await fetch("/api/users/score", {
                 method: "POST", 
                 body: JSON.stringify(toSend), 
@@ -667,8 +648,8 @@ export default class GameScene extends Phaser.Scene {
 
         $('#gameModal').modal({show:true});
         let modalBody = document.querySelector("#contentGameModal");
-        modalBody.innerHTML = "<div class=\"d-flex justify-content-center my-0\">" + scoreMessage + "</br>Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note
-        + "</div></br><button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/game\">Rejouer</button>"
+        modalBody.innerHTML = "<div class=\"d-flex justify-content-center my-0\" id=\"modalGameOverText\">" + scoreMessage + "</br>Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note
+        + "</div><div class=\"d-flex justify-content-center my-0\"></br><img id=" + imgNote + " class=mt-3 src="+ imgNote +" alt=" + imgNote + "></div></br><button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/game\">Rejouer</button>"
         + "<button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/list\">Retour à la liste de map</button> ";
         page.querySelectorAll("button").forEach( button => button.addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri)) )
 

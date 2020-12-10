@@ -13,7 +13,6 @@ const hideExternalElements = () => {
 const PhaserGamePage = async () => {
   hideExternalElements();
   let phaserGame = `
-  
   <div id="divAudio"></div>
   <div id="gameDiv" class="d-flex justify-content-center my-0">
     <!-- Modal -->
