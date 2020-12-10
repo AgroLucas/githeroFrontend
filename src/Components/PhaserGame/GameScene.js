@@ -1,18 +1,10 @@
 import Phaser, {Game, Time ,Base64} from 'phaser';
 import { RedirectUrl } from "../Router.js";
 import {getUserSessionData} from "../../utils/Session.js";
+
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
-import hitSound1 from "../../audio/hit1.mp3";
-import hitSound2 from "../../audio/hit2.mp3";
-import hitSound3 from "../../audio/hit3.mp3";
-import hitSound4 from "../../audio/hit4.mp3";
-import failSound from "../../audio/fail.mp3";
-import slideSound1 from "../../audio/slide1.mp3";
-import slideSound2 from "../../audio/slide2.mp3";
-import slideSound3 from "../../audio/slide3.mp3";
-import slideSound4 from "../../audio/slide4.mp3";
 import btnInactive from "../../img/game_assets/btn_inactive.png";
 import btnActive from "../../img/game_assets/btn_active.png";
 import flash from "../../img/game_assets/flash.png";
@@ -27,6 +19,16 @@ import NoteS from "../../img/game_assets/NoteS.png";
 import NoteS1 from "../../img/game_assets/NoteS+.png";
 import arrow from "../../img/game_assets/arrow.png";
 
+import hitSound1 from "../../audio/hit1.mp3";
+import hitSound2 from "../../audio/hit2.mp3";
+import hitSound3 from "../../audio/hit3.mp3";
+import hitSound4 from "../../audio/hit4.mp3";
+import failSound from "../../audio/fail.mp3";
+import slideSound1 from "../../audio/slide1.mp3";
+import slideSound2 from "../../audio/slide2.mp3";
+import slideSound3 from "../../audio/slide3.mp3";
+import slideSound4 from "../../audio/slide4.mp3";
+
 
 export default class GameScene extends Phaser.Scene {
     
@@ -38,15 +40,18 @@ export default class GameScene extends Phaser.Scene {
         this.height = window.innerHeight;
         this.width = window.innerWidth;
         this.setProportions();
-        this.noteTravelTime = 3000;
 
+        this.noteTravelTime = 3000;
         this.lowestPoint = 50
         this.longNoteIncrease = 10; // score increase by 10 every 250ms holding long note
         this.shortNoteInterval = 50; 
+        this.longNoteIntervalTime = 250;
+        this.longNoteIntervalTimeMalus = 500;
+        this.btnEffectLifeTime = 250;
 
         this.isStarted = true;
-        this.stackTimeout = []; //contain all timeout -> useful if we need to clear them all
-        this.stackInterval = []; //contain all interval -> useful if we need to clear them all
+        this.stackTimeout = []; //contain all timeout -> useful for clearing them all
+        this.stackInterval = []; //contain all interval -> useful for clearing them all
         this.btns = [];
         this.lines = [];
 
@@ -62,14 +67,17 @@ export default class GameScene extends Phaser.Scene {
         let tweak = 1.5;        
         let distanceToBtnCenter = this.height-(tweak * this.btnSize/2);
         this.noteTravelTimeToBtnCenter = this.calcTimeToGetToY(distanceToBtnCenter); 
+        console.log(this.noteTravelTimeToBtnCenter)
 
         let distanceToBtn = this.height-(tweak * this.btnSize);
         this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn);
+        console.log(this.noteTravelTimeToBtn)
         this.valueMiddleButton = (Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)/this.shortNoteInterval)); //the value the short note should get for having a perfect shot
         this.valueToGive = Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)%this.shortNoteInterval); //the value given while doing a perfect shot
         
         this.songDuration = audioFileDuration;
 
+        this.offset = this.noteTravelTimeToBtn - (this.noteTravelTimeToBtnCenter-this.noteTravelTimeToBtn)
 
         this.arrayKeys = [];
         this.arrayKeys[0] = userPreferences.keyBinding[1];
@@ -85,7 +93,6 @@ export default class GameScene extends Phaser.Scene {
         this.combo = 0;
         this.maxCombo = 0;
 
-        this.btnEffectLifeTime = 250;
     }
     
     setProportions() {
@@ -195,7 +202,7 @@ export default class GameScene extends Phaser.Scene {
 
     createSimpleNote(lineNbr, instance, time) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
-        instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, follower, instance));
+        instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.offset, lineNbr, follower, instance));
         follower.startFollow({
             positionOnPath: true,
             duration: instance.noteTravelTime,
@@ -213,7 +220,7 @@ export default class GameScene extends Phaser.Scene {
 
    createLongNote(lineNbr, instance, end) {
     let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_head");
-    instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, instance, end));
+    instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, instance.offset, lineNbr, instance, end));
 
     follower.startFollow({
         positionOnPath: true,
@@ -228,9 +235,7 @@ export default class GameScene extends Phaser.Scene {
 
     let intervalID = setInterval(instance.createLongNoteBodySprite, 1, lineNbr, instance);
     instance.stackInterval.push(intervalID);
-    setTimeout(function() {
-        clearInterval(intervalID)
-    }, end);
+    setTimeout(() => clearInterval(intervalID), end);
    }
 
    createLongNoteBodySprite(lineNbr, instance) {
@@ -452,9 +457,9 @@ export default class GameScene extends Phaser.Scene {
      * @param {*} end, the time the long note should stay clickable
      */
     setLongFollowerToValidate(lineNbr, instance, end) {
-        let checkTime = 250;
+        let checkTime = instance.longNoteIntervalTime;
         if (instance.btns[lineNbr].active)
-            checkTime = 500;
+            checkTime = instance.longNoteIntervalTimeMalus;
         let note = {follower:undefined, intervalID:undefined, score:0};
         instance.queuesTimestampToValidate[lineNbr].push(note);
         console.log("push long");
