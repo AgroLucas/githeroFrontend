@@ -24,9 +24,11 @@ export default class EditScene extends Phaser.Scene {
 
         //notes
         this.beatmap = []; //contains notes & sprites
+        console.log(this.beatmap);
 
         //state
         this.preventAddNote = false;
+        this.noteType = 0; //0 = simple; 1 = long
     }
 
     preload() {
@@ -41,41 +43,73 @@ export default class EditScene extends Phaser.Scene {
         this.createLines();
         this.drawLines();
 
-        this.sNoteGhost = this.add.sprite(150,150,sNoteKey);
+        this.sNoteGhost = this.add.sprite(-150,-150,sNoteKey);
         this.sNoteGhost.setTint(0x34eb3d);
 
-        this.input.on("pointermove", this.ghostFollow);
-        this.input.on("pointerdown", this.addSimpleNote);
+        this.lNoteGhost = this.add.sprite(-150, -150, lNoteHeadKey);
+        this.lNoteGhost.setTint(0x34eb3d);
+        this.lNoteGhost.visible = false;
 
-        this.createSimpleNote(1, 1000);
-        this.createSimpleNote(2, 1500);
-        this.createSimpleNote(3, 2000);
+        this.input.on("pointermove", this.ghostFollow);
+        this.input.on("pointerdown", this.addNote);
     }
 
     ghostFollow(pointer) {
-        let sprite = this.scene.sNoteGhost;
-        sprite.setX(pointer.x);
+        let simpleSprite = this.scene.sNoteGhost;
+        let longSprite = this.scene.lNoteGhost;
         let lineNum = this.scene.getLineNumFromY(pointer.y);
-        sprite.setY(this.scene.getYFromLineNum(lineNum));
+
+        simpleSprite.setX(pointer.x);
+        simpleSprite.setY(this.scene.getYFromLineNum(lineNum));
+
+        longSprite.setX(pointer.x);
+        longSprite.setY(this.scene.getYFromLineNum(lineNum));
+    }
+
+    setGhostVisible() {
+        switch(this.noteType) {
+            case 0:
+                this.sNoteGhost.visible = true;
+                this.lNoteGhost.visible = false;
+                break;
+            case 1:
+                this.sNoteGhost.visible = false;
+                this.lNoteGhost.visible = true;
+        }
+    }
+
+    setGhostInvisible() {
+        this.sNoteGhost.visible = false;
+        this.lNoteGhost.visible = false;
     }
 
     preventAdd() {
-        this.sNoteGhost.visible = false;
+        this.setGhostInvisible();
         this.preventAddNote = true;
     }
 
     allowAdd() {
-        this.sNoteGhost.visible = true;
+        this.setGhostVisible();
         this.preventAddNote = false;
     }
 
-    addSimpleNote(pointer) {
+    addNote(pointer) {
         let scene = this.scene;
-        if(!scene.preventAddNote){
+        switch(scene.noteType) {
+            case 0:
+                scene.addSimpleNote(pointer);
+                break;
+            case 1:
+                console.log("add L");
+        }
+    }
+
+    addSimpleNote(pointer) {
+        if(!this.preventAddNote){
             console.log("add");
-            let time = scene.getTimeFromX(pointer.x);
-            let lineNbr = scene.getLineNumFromY(pointer.y);
-            scene.createSimpleNote(lineNbr, time);
+            let time = this.getTimeFromX(pointer.x);
+            let lineNbr = this.getLineNumFromY(pointer.y);
+            this.createSimpleNote(lineNbr, time);
         }
     }
 
@@ -135,6 +169,22 @@ export default class EditScene extends Phaser.Scene {
 
     setToLineStyle() {
         this.graphics.lineStyle(3, 0x000000);
+    }
+
+    setNoteType(type){
+        console.log("SCENE set type: ", type)
+        if(type === 0 || type === 1){
+            this.noteType = type;
+            switch(type) {
+                case 0:
+                    this.sNoteGhost.visible = true;
+                    this.lNoteGhost.visible = false;
+                    break;
+                case 1:
+                    this.sNoteGhost.visible = false;
+                    this.lNoteGhost.visible = true;
+            }
+        }
     }
 
     createSimpleNote(lineNum, time){
