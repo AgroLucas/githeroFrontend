@@ -125,7 +125,10 @@ const searchForPlayBtns = () => {
     let playBtnArray = document.querySelectorAll(".playBtn");
     for (let index = 0; index < playBtnArray.length; index++) {
         let playBtn = playBtnArray[index];
-        playBtn.addEventListener("click", onNavigateHandler);
+        let beatmapID = playBtn.id;
+        playBtn.addEventListener("click", ()=> {
+            RedirectUrl("/game", beatmapID);
+        });
     }
 }
 
