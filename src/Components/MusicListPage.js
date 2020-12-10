@@ -75,7 +75,6 @@ const loadBeatmap = () => {
                                 <p>Auteur : ` + ELEMENT.musicArtist + `</p>
                                 <p>Créateur du niveau : ` + ELEMENT.creator + `</p>
                                 <p>Votre meilleur score : ` + ELEMENT.highscore + ` points</p>
-                                <p>Vous êtes classé placeClassement</p>
                             </div>
                         </div>
                     </div>
