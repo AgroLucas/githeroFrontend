@@ -10,14 +10,14 @@ const MusicListPage = (message) => {
     loadBeatmap(message);
 }
 
-const loadBeatmap = (message) => {
+const loadBeatmap = async (message) => {
     if (!message)
         message=""
     let buttonHtml = "<div class=\"text-center font-weight-bold\">" + message + "</div>";
     let modalHtml = "";
     let user = getUserSessionData();
     user = user ? user : {username: null};
-    fetch("/api/beatmaps/list/" + user.username).then(response => {
+    await fetch("/api/beatmaps/list/" + user.username).then(response => {
         if(!response.ok){
             throw new Error(response.status + " " + response.statusText);
         }

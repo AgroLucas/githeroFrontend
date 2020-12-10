@@ -105,7 +105,10 @@ const RedirectUrl = (uri, data) => {
     
     console.log(window.location.pathname);
     if (window.location.pathname==="/game") {
-        createGame();
+        if (!data)  
+            createGame();
+        else
+            createGame(data);
         return;
     }
     componentToRender = routes[uri];
@@ -126,8 +129,7 @@ const searchForPlayBtns = () => {
     for (let index = 0; index < playBtnArray.length; index++) {
         let playBtn = playBtnArray[index];
         let beatmapID = playBtn.id;
-        playBtn.addEventListener("click", ()=> {
-            console.log("before game: ", {bmID: beatmapID});
+        playBtn.addEventListener("click", () => {
             RedirectUrl("/game", beatmapID);
         });
     }
@@ -152,6 +154,8 @@ const killGame = () => {
     footer.className -= " d-none";
 }
 
-const createGame = async () => game = await GamePage()
+const createGame = async (data) => {
+    game = await GamePage(data);
+}
 
 export { Router, RedirectUrl, searchForPlayBtns};

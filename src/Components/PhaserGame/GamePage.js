@@ -13,14 +13,13 @@ const hideExternalElements = () => {
 
 var beatmapID;
 
-const PhaserGamePage = async (data) => {
-  beatmapID = data.bmID;
-  console.log("game: ", beatmapID, data);
-
-  hideExternalElements();
+const GamePage = async (data) => {
+  beatmapID = data;
   if(!beatmapID) {
     RedirectUrl("/list");
+    return;
   }
+  hideExternalElements();
   let phaserGame = `
   <div id="divAudio"></div>
   <div id="gameDiv" class="d-flex justify-content-center my-0">
@@ -44,7 +43,6 @@ const PhaserGamePage = async (data) => {
   let divAudio = document.querySelector("#divAudio");
 
   let userPreferences = getUserPreferences();
-  console.log(userPreferences);
 
   let config = {
     type: Phaser.AUTO,
@@ -93,4 +91,4 @@ const onError = (err) => {
   messageBoard.classList.add("d-block");  
 };
 
-export default PhaserGamePage;
+export default GamePage;
