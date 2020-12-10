@@ -83,6 +83,12 @@ li button {
     margin-top: 5em;
 }
 
+/*********************************On RankingPage*********************************/
+.ranking {
+    width: 50em;
+    height: 50em;
+}
+
 /*********************************On MusicListPage*********************************/
 .modalGameButton {
     width: 9em;

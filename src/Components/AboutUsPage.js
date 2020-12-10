@@ -8,6 +8,8 @@ let pageHtml = `
     <p>Anis Assaidi : annis.assaidi@student.vinci.be</p>
     <p>Bastien Boutte : bastien.boutte@student.vinci.be</p>
     <p>Baptiste Honnay : baptiste.honnay@student.vinci.be</p>    
+    <p></p>
+    <p>Note : notre logo est dérivé du logo de GIT de Jason Long.</p>
 </div>`;
 
 let page = document.querySelector("#page");
