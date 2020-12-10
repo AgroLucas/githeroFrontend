@@ -6,10 +6,10 @@ import Phaser from "phaser";
 let page = document.querySelector("#page");
 
 let pageHtml = `
-<div class="row mt-5 mr-2">
-    <div class="col-11"></div>
+<div class="row pt-5 pr-2 jumbotron">
+    <div class="col-11 text-center"><h1>STUB Title</h1></div>
     <div class="col-1 pr-2">
-        <button class="btn btn-danger p-3">Publier</button>
+        <button id="publish" class="btn btn-danger p-3">Publier</button>
     </div>
 </div>
 <div class="row mt-5 ml-5 mr-2">
@@ -18,8 +18,8 @@ let pageHtml = `
     <div class="col-1"></div>
     <div class="col-1 pr-2 my-5">
         <div class="btn-group-vertical">
-            <button type="button" class="btn btn-primary py-3 active">Simple</button>
-            <button type="button" class="btn btn-primary py-3">Longues</button>
+            <button id="btnSimple" type="button" class="btn btn-primary py-3 active">Simple</button>
+            <button id="btnLong" type="button" class="btn btn-primary py-3">Longues</button>
         </div>
     </div>
 </div>
@@ -28,10 +28,10 @@ let pageHtml = `
         <input id="timeLine" type="range" class="form-control-range" min="0" max="1" step="0.001" value="0"/>
     </div>
     <div class="col-1">
-        <button id="playBtn" class="btn btn-secondary">Play</button>
+        <p><span id="currentTimer">00:00</span>/<span id="endTimer">00:45</span></p>
     </div>
     <div class="col-1">
-        <p><span id="currentTimer">00:00</span>/<span id="endTimer">00:45</span></p>
+        <button id="playBtn" class="btn btn-secondary">Play</button>
     </div>
 </div>
 <div class="row mt-5">
@@ -45,14 +45,24 @@ let pageHtml = `
 let duration;
 let timeLine;
 let playBtn;
+let simpleBtn;
+let longBtn;
+let publishBtn;
 let currentTimer;
 let endTimer;
 let scene;
 let refreshIntervalID;
-let state = 0; //0 = pause; 1 = play
-let currentTime = 0;
 
-const refreshTime = 25; //ms
+let state = 0; //0 = pause; 1 = play
+
+const possibleNoteTypes = {
+    simple: 0,
+    long: 1,
+}
+let noteType = possibleNoteTypes.simple;
+
+let currentTime = 0;
+const refreshTime = 25; //ms between frames while playing
 
 const EditPage = (data) => {
     /*
@@ -78,7 +88,7 @@ const EditPage = (data) => {
     }
     */
 
-    duration = 45000; //STUB (get from data)
+    duration = 45000; //TODO STUB (get from data)
 
     page.innerHTML = pageHtml;
 
@@ -86,8 +96,11 @@ const EditPage = (data) => {
     currentTimer = document.querySelector("#currentTimer");
     endTimer = document.querySelector("#endTimer");
     playBtn = document.querySelector("#playBtn");
+    simpleBtn = document.querySelector("#btnSimple");
+    longBtn = document.querySelector("#btnLong");
+    publishBtn = document.querySelector("#publish");
 
-    initTimer();
+    initTimer(); //sets timer (time display) to 0
 
     const editScreenWidth = 4/5 * window.innerWidth; 
     const editScreenHeight = 1/2 * window.innerHeight;
@@ -108,10 +121,11 @@ const EditPage = (data) => {
     
     timeLine.addEventListener("change", onTimeChange);
     playBtn.addEventListener("click", togglePlay);
+    simpleBtn.addEventListener("click", onClickSimpleNotesBtn);
+    longBtn.addEventListener("click", onClickLongNotesBtn);
 
     /*
-    let btn = document.querySelector("#publish");
-    btn.addEventListener("click", () => {publish(beatmap, user)});
+    btnPublish.addEventListener("click", () => {publish(beatmap, user)});
     */
 
     return game;
@@ -134,6 +148,28 @@ const publish = (beatmap, user) => {
         .catch((err) => onError(err));
 }
 
+const onClickSimpleNotesBtn = () => {
+    resestTypeBtns();
+    console.log("simple");
+    simpleBtn.className += " active";
+    noteType = possibleNoteTypes.simple;
+    scene.setNoteType(noteType);
+}
+
+const onClickLongNotesBtn = () => {
+    resestTypeBtns();
+    console.log("long");
+    longBtn.className += " active";
+    noteType = possibleNoteTypes.long;
+    scene.setNoteType(noteType);
+}
+
+const resestTypeBtns = () => {
+    console.log("reset");
+    let idleClass = "btn btn-primary py-3";
+    simpleBtn.className = idleClass;
+    longBtn.className = idleClass;
+}
 
 const onBeatmapPublication = (data) => {
     console.log("Success: res = ", data);
@@ -235,4 +271,4 @@ const onError = (err) => {
     messageBoard.classList.add("d-block");  
 };
 
-export default EditPage;
+export default EditPage ;
