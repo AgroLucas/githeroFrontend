@@ -5,6 +5,9 @@ import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
 const sNoteKey = "simple_note";
 const lNoteHeadKey = "long_note_head";
 const lNoteBodyKey = "long_note_body";
+const addColor = 0x34EB3D;
+const delColor = 0xD12B4E;
+const visualizeColor = 0xFFFF00;
 
 export default class EditScene extends Phaser.Scene {
     constructor(width, height, duration) {
@@ -44,16 +47,27 @@ export default class EditScene extends Phaser.Scene {
         this.createLines();
         this.drawLines();
 
+        //for adding notes
         this.sNoteGhost = this.add.sprite(-150,-150,sNoteKey);
-        this.sNoteGhost.setTint(0x34eb3d);
+        this.sNoteGhost.setTint(addColor);
 
-        this.lNoteGhost = this.add.sprite(-150, -150, lNoteHeadKey);
-        this.lNoteGhost.setTint(0x34eb3d);
+        //for adding long notes
+        this.headGhost = this.add.sprite(0, 0, lNoteHeadKey);
+        this.headGhost.setTint(visualizeColor);
+        this.headGhost.visible = false;
+        this.tailGhost = this.add.sprite(0, 0, lNoteBodyKey);
+        this.tailGhost.setTint(visualizeColor);
+        this.tailGhost.visible = false;
+        this.currentLongNoteLine = 0;
+
+        this.lNoteGhost = this.add.sprite(0, 0, lNoteHeadKey);
+        this.lNoteGhost.setTint(addColor);
         this.lNoteGhost.visible = false;
 
         this.createLongNote(0, 1000, 2000);
 
         this.input.on("pointermove", this.ghostFollow);
+        this.input.on("pointermove", this.tailGhostFollow);
         this.input.on("pointerdown", this.addNote);
     }
 
@@ -103,17 +117,56 @@ export default class EditScene extends Phaser.Scene {
                 scene.addSimpleNote(pointer);
                 break;
             case 1:
-                console.log("add L");
+                scene.addLongNote(pointer);
         }
     }
 
     addSimpleNote(pointer) {
         if(!this.preventAddNote){
-            console.log("add");
+            console.log("add s");
             let time = this.getTimeFromX(pointer.x);
             let lineNbr = this.getLineNumFromY(pointer.y);
             this.createSimpleNote(lineNbr, time);
         }
+    }
+
+    addLongNote(pointer) {
+        if(!this.preventAddNote){
+            console.log("add L");
+            this.preventAdd();
+            let timeStart = this.getTimeFromX(pointer.x);
+            let lineNum = this.getLineNumFromY(pointer.y);
+            this.currentLongNoteLine = lineNum;
+            this.headGhost.setX(this.getXFromTime(timeStart));
+            this.headGhost.setY(this.getYFromLineNum(lineNum));
+            this.headGhost.visible = true;
+            this.tailGhost.visible = true;
+            this.input.once("pointerdown", (pointer) =>this.completeLongNote(pointer, timeStart));
+        }
+    }
+
+    completeLongNote(pointer, timeStart){
+        console.log("complete");
+        let scene = this.scene.scene;
+        console.log(scene);
+        let timeEnd = scene.getTimeFromX(pointer.x);
+        scene.headGhost.visible = false;
+        scene.tailGhost.visible = false;
+        scene.allowAdd();
+        if(timeStart < timeEnd){
+            scene.createLongNote(scene.currentLongNoteLine, timeStart, timeEnd);
+        }else {
+            console.log("imossible");
+        }
+    }
+
+    //always follows pointer (but usually invisible)
+    tailGhostFollow(pointer) {
+        let scene = this.scene;
+        let y = scene.getYFromLineNum(scene.currentLongNoteLine);
+        let x = pointer.x;
+        scene.tailGhost.setX(x);
+        scene.tailGhost.setY(y);
     }
 
     //lines
@@ -210,13 +263,13 @@ export default class EditScene extends Phaser.Scene {
         this.beatmap.push(noteBundle);
 
         sprite.on("pointerdown", ()=>{
-            this.deleteNote(sprite)
+            this.deleteSimpleNote(sprite)
         });
         sprite.on("pointerover", ()=>{
-            this.highlightNote(sprite);
+            this.highlightSimpleNote(sprite);
         });
         sprite.on("pointerout", ()=>{
-            this.removeNoteHighlight(sprite);
+            this.removeSimpleNoteHighlight(sprite);
         });
     }
 
@@ -237,32 +290,72 @@ export default class EditScene extends Phaser.Scene {
         }
         console.log(noteBundle);
         this.beatmap.push(noteBundle);
-        /*
+        
         head.on("pointerdown", ()=>{
-            this.deleteNote(sprite);
+            this.deleteLongNote(head);
         });
         head.on("pointerover", ()=>{
-            //TODO
-        })*/
+            this.highlightLongNote(head, body);
+        });
+        head.on("pointerout", ()=>{
+            this.removeLongNoteHighlight(head, body);
+        });
     }
 
-    deleteNote(sprite) {
-        console.log("del");
+    deleteSimpleNote(sprite) {
+        console.log("del s");
         let i = this.findBMIndexFromSprite(sprite);
-        if(i===-1) return;
-        this.beatmap.splice(i, 1);
+        if(i===-1) {
+            console.log("ERROR: note not found");
+        }else {
+            this.beatmap.splice(i, 1);
+        }
         sprite.destroy();
         this.allowAdd();
     }
 
-    highlightNote(sprite) {
-        sprite.setTint(0xD12B4E);
+    deleteLongNote(sprite) {
+        console.log("del L");
+        let i = this.findBMIndexFromSprite(sprite)
+        let body;
+        if(i === -1){
+            console.log("ERROR: note not found");
+            return;
+        }else {
+            body = this.beatmap[i].body;
+            this.beatmap.splice(i, 1);
+            body.forEach(bSprite => {
+                bSprite.destroy();
+            });
+        }
+        sprite.destroy();
+        this.allowAdd();
+    }
+
+    highlightSimpleNote(sprite) {
+        sprite.setTint(delColor);
         this.preventAdd();
     }
 
-    removeNoteHighlight(sprite){
+    removeSimpleNoteHighlight(sprite){
         sprite.clearTint();
         this.allowAdd();
+    }
+
+    highlightLongNote(sprite, body){
+        sprite.setTint(delColor);
+        this.preventAdd();
+        body.forEach(bSprite => {
+            bSprite.setTint(delColor);
+        });
+    }
+
+    removeLongNoteHighlight(sprite, body){
+        sprite.clearTint();
+        this.allowAdd();
+        body.forEach(bSprite => {
+            bSprite.clearTint();
+        });
     }
 
     findBMIndexFromSprite(sprite) {

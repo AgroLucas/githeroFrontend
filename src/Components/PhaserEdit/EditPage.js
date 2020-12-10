@@ -28,10 +28,10 @@ let pageHtml = `
         <input id="timeLine" type="range" class="form-control-range" min="0" max="1" step="0.001" value="0"/>
     </div>
     <div class="col-1">
-        <button id="playBtn" class="btn btn-secondary">Play</button>
+        <p><span id="currentTimer">00:00</span>/<span id="endTimer">00:45</span></p>
     </div>
     <div class="col-1">
-        <p><span id="currentTimer">00:00</span>/<span id="endTimer">00:45</span></p>
+        <button id="playBtn" class="btn btn-secondary">Play</button>
     </div>
 </div>
 <div class="row mt-5">
