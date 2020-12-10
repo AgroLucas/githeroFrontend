@@ -167,8 +167,8 @@ export default class GameScene extends Phaser.Scene {
         document.addEventListener("touchend", event => this.onEndClick(event));
         document.addEventListener("keypress", event => this.onKeypress(event));
         document.addEventListener("keyup", event => this.onKeyup(event));
-        window.addEventListener("blur",  () => RedirectUrl("/list"))
-        
+        window.addEventListener("blur",  () => RedirectUrl("/list", "Vous avez quitté la page de jeu, retour dans la page de liste des musiques"))
+
         this.stackTimeout.push(setTimeout(()=> {
             this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
             this.playMusic();

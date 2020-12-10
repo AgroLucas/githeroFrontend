@@ -5,13 +5,14 @@ import {getUserSessionData} from "../utils/Session.js";
 
 let page = document.querySelector("#page");
 
-const MusicListPage = () => {
-    loadBeatmap();
+const MusicListPage = (message) => {
+    loadBeatmap(message);
 }
 
-const loadBeatmap = () => {
-
-    let buttonHtml = "";
+const loadBeatmap = (message) => {
+    if (!message)
+        message=""
+    let buttonHtml = "<div class=\"text-center font-weight-bold\">" + message + "</div>";
     let modalHtml = "";
     let user = getUserSessionData();
     user = user ? user : {username: null};
