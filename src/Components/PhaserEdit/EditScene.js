@@ -18,6 +18,7 @@ export default class EditScene extends Phaser.Scene {
         this.duration = duration;
         this.screenTimeSpan = 2500; //ms (time between oposing ends of the screen)
         this.currentTime = 0; //ms (time at x=0)
+        this.longNoteBodyStep = 7; //ms spacing between two body sprites (long note)
 
         //lines
         this.lines = [];
@@ -49,6 +50,8 @@ export default class EditScene extends Phaser.Scene {
         this.lNoteGhost = this.add.sprite(-150, -150, lNoteHeadKey);
         this.lNoteGhost.setTint(0x34eb3d);
         this.lNoteGhost.visible = false;
+
+        this.createLongNote(0, 1000, 2000);
 
         this.input.on("pointermove", this.ghostFollow);
         this.input.on("pointerdown", this.addNote);
@@ -150,6 +153,16 @@ export default class EditScene extends Phaser.Scene {
             if(noteBundle.note[0] === 0){//single note
                 let time=noteBundle.note[2];
                 noteBundle.sprite.setX(this.getXFromTime(time));
+            }else { //note longue
+                console.log("long: ", noteBundle);
+                let timeStart = noteBundle.note[2];
+                let timeEnd = noteBundle.note[3];
+                noteBundle.sprite.setX(this.getXFromTime(timeStart)); //place head
+                let i=0;
+                for(let time =timeStart+this.longNoteBodyStep; time <= timeEnd; time+=this.longNoteBodyStep) {
+                    noteBundle.body[i].setX(this.getXFromTime(time)); //place body part
+                    i++;
+                }
             }
         });
     }
@@ -190,10 +203,11 @@ export default class EditScene extends Phaser.Scene {
     createSimpleNote(lineNum, time){
         let note = [0, lineNum, time];
         let sprite = this.add.sprite(this.getXFromTime(time), this.getYFromLineNum(lineNum), sNoteKey).setInteractive();
-        this.beatmap.push({
+        let noteBundle = {
             note: note,
             sprite: sprite,
-        })
+        }
+        this.beatmap.push(noteBundle);
 
         sprite.on("pointerdown", ()=>{
             this.deleteNote(sprite)
@@ -206,8 +220,30 @@ export default class EditScene extends Phaser.Scene {
         });
     }
 
-    createLongNote() {
-        //TODO
+    createLongNote(lineNum, timeStart, timeEnd) {
+        let note = [1, lineNum, timeStart, timeEnd];
+        
+        let body = [];
+        for(let time=timeStart + this.longNoteBodyStep; time <= timeEnd; time += this.longNoteBodyStep){
+            body.push(this.add.sprite(this.getXFromTime(time), this.getYFromLineNum(lineNum), lNoteBodyKey));
+        }
+
+        let head = this.add.sprite(this.getXFromTime(timeStart), this.getYFromLineNum(lineNum), lNoteHeadKey).setInteractive(); //head after body so head is in front (not covered)
+
+        let noteBundle = {
+            note: note,
+            sprite: head,
+            body: body,
+        }
+        console.log(noteBundle);
+        this.beatmap.push(noteBundle);
+        /*
+        head.on("pointerdown", ()=>{
+            this.deleteNote(sprite);
+        });
+        head.on("pointerover", ()=>{
+            //TODO
+        })*/
     }
 
     deleteNote(sprite) {
