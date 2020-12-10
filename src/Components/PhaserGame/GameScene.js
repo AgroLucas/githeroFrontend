@@ -154,8 +154,9 @@ export default class GameScene extends Phaser.Scene {
         this.sound.add("slideSound3", soundEffectAudioConfig);
         this.sound.add("slideSound4", soundEffectAudioConfig);
 
-        let sprite = this.add.sprite(this.width/30, this.height/20, "flash");
-        sprite.setScale(3,3);
+        
+        let returnImage = this.add.sprite(this.width/30, this.height/20, "flash").setInteractive({useHandCursor: true});
+        returnImage.on("pointerdown", () => RedirectUrl("/list"));
 
         //notes
         this.createNoteEvents(this);
