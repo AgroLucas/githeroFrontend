@@ -127,6 +127,7 @@ const searchForPlayBtns = () => {
         let playBtn = playBtnArray[index];
         let beatmapID = playBtn.id;
         playBtn.addEventListener("click", ()=> {
+            console.log("before game: ", {bmID: beatmapID});
             RedirectUrl("/game", beatmapID);
         });
     }

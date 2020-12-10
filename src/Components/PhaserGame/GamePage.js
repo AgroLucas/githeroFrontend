@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import GameScene from "./GameScene.js";
 import {getUserPreferences} from "../OptionsPage.js";
+import { RedirectUrl } from "../Router.js";
 
 
 const hideExternalElements = () => {
@@ -10,8 +11,16 @@ const hideExternalElements = () => {
   footer.className += " d-none";
 }
 
-const PhaserGamePage = async () => {
+var beatmapID;
+
+const PhaserGamePage = async (data) => {
+  beatmapID = data.bmID;
+  console.log("game: ", beatmapID, data);
+
   hideExternalElements();
+  if(!beatmapID) {
+    RedirectUrl("/list");
+  }
   let phaserGame = `
   <div id="divAudio"></div>
   <div id="gameDiv" class="d-flex justify-content-center my-0">
@@ -46,8 +55,6 @@ const PhaserGamePage = async () => {
     //  parent DOM element into which the canvas created by the renderer will be injected.
     parent: "gameDiv",
   };
-
-  let beatmapID = -1;
   let ret = await fetch("/api/beatmaps/"+beatmapID)
   .then((response) => {
     if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
