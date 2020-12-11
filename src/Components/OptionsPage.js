@@ -20,7 +20,7 @@ let pageHtml = `
                     <input type="range" id="effectVolume" name="effectVolume" class="form-control-range w-25" min="0" max="1" step="0.05">
                 </div>
             </div>
-            <div class="border mt-5 pl-3 pt-2">
+            <div class="border mt-5 pl-3 pt-2 mb-3">
                 <h4>Configuration des touches:</h4>
                 <div class="row mt-3">
                     <div class="col-sm-2 pt-1">Bouton 1:</div>

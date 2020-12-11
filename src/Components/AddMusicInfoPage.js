@@ -5,9 +5,11 @@ let pageHtml = `
 <div class="row">
     <div class="col-3"></div>
     <div class="col-6">
-        <h2>Stub post beatmap</h2>
-        <p>In this example, we use <code>.was-validated</code> to indicate what's missing before submitting the form:</p>
-        <form action="#">
+        <header class="mt-4">
+            <h2>Création de Beatmap</h2>
+            <p>Entrez les informations sur la beatmap que vous voulez créer</p>
+        </header>
+        <form action="#" class="border px-5 py-3 mt-5">
             <div class="form-group was-validated">
                 <label for="musicTitle">Titre de la musique:</label>
                 <input type="text" class="form-control" id="musicTitle" placeholder="Titre" name="musicTitle" required>

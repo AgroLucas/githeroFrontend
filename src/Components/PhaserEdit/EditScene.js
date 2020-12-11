@@ -447,7 +447,9 @@ export default class EditScene extends Phaser.Scene {
 
     //returns 
     isAvailableForSimple(time, lineNum) {
-        console.log("call isAvailableForSimple("+time+", "+lineNum+")");
+        if(time < 0){
+            return false;
+        }
         for(let i=0; i<this.beatmap.length; i++) {
             let note = this.beatmap[i].note;
             console.log("compare ", note);
@@ -470,7 +472,9 @@ export default class EditScene extends Phaser.Scene {
     }
 
     isAvailableForLong(timeStart, timeEnd, lineNum) {
-        console.log("call isAvailableForLong("+timeStart+", "+timeEnd+", "+lineNum+")");
+        if(timeStart < 0 || timeEnd < 0){
+            return false;
+        }
         for(let i=0; i<this.beatmap.length; i++) {
             let note = this.beatmap[i].note;
             console.log("compare ", note);
