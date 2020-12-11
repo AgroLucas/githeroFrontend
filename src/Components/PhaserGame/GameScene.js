@@ -17,6 +17,7 @@ import NoteB from "../../img/game_assets/NoteB.png";
 import NoteA from "../../img/game_assets/NoteA.png";
 import NoteS from "../../img/game_assets/NoteS.png";
 import NoteS1 from "../../img/game_assets/NoteS+.png";
+import NoteS2 from "../../img/game_assets/NoteS++.png";
 import arrow from "../../img/game_assets/arrow.png";
 
 import hitSound1 from "../../audio/hit1.mp3";
@@ -89,18 +90,6 @@ export default class GameScene extends Phaser.Scene {
         this.maxCombo = 0;
 
     }
-    
-    setProportions() {
-        if(this.width < 1000){
-            this.topSpacing = this.width/5;
-            this.bottomSpacing = this.topSpacing;
-        }
-        else {
-            this.topSpacing =  this.width/40, 0;
-            this.bottomSpacing = 3*this.topSpacing;
-        }
-        this.endPathY = this.height;
-    }
 
 	preload() {
         this.load.image("simple_note", simple_note);
@@ -129,10 +118,11 @@ export default class GameScene extends Phaser.Scene {
         this.addEvents(this);   
         this.createNoteEvents(this);
      
+        //Start the game after noteTravelTime and Ending it after songDuration
         this.stackTimeout.push(setTimeout(()=> {
-            this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this)); //TODO make the game begin earlier so that the note are validated at the center of the button
+            this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this)); 
             this.playMusic();
-        }, this.noteTravelTime));
+        }, this.noteTravelTime)); //TODO make the game begin earlier so that the note are validated at the center of the button
     }
 
     displayGame (instance) {
@@ -194,18 +184,30 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
+    /**** Notes'creations ****/
+
+    /**
+     * Create all beatmaps'notes at the right time
+     * @param {*} instance 
+     */
     createNoteEvents(instance) {
         let beatmap = instance.beatmap;
         for (let n = 0; n < beatmap.length; n++) {
             let lineNbr = beatmap[n][1];
              if (beatmap[n][0] == 0) //simple notes
-                instance.stackTimeout.push(setTimeout(instance.createSimpleNote, beatmap[n][2], lineNbr, instance, beatmap[n][2]));
+                instance.stackTimeout.push(setTimeout(instance.createSimpleNote, beatmap[n][2], lineNbr, instance));
             else //long notes
                 instance.stackTimeout.push(setTimeout(instance.createLongNote, beatmap[n][2], lineNbr, instance, beatmap[n][3]-beatmap[n][2]))
         }
     }
 
-    createSimpleNote(lineNbr, instance, time) {
+    /**
+     * Create a simple note at the right line
+     * @param {*} lineNbr 
+     * @param {*} instance 
+     * @param {*} time 
+     */
+    createSimpleNote(lineNbr, instance) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
         instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, follower, instance));
 
@@ -219,11 +221,34 @@ export default class GameScene extends Phaser.Scene {
             verticalAdjust: true,
             onComplete: () => {
                 follower.destroy();
-                instance.onNoKeypress(instance.queuesTimestampToValidate[lineNbr], lineNbr, time);
+                instance.onNoKeypress(instance.queuesTimestampToValidate[lineNbr], lineNbr);
             },
         });       
    }
 
+   /**
+     * push into queuesTimestampToValidate[lineNbr] a new simple note and increment this note'score every shortNoteInterval ms
+     * only if the button wasn't active before
+     * @param {*} lineNbr, the line's number of the simple note 
+     * @param {*} follower, the follower created 
+     * @param {*} instance, this 
+     */
+    setFollowerToValidate(lineNbr, follower, instance) {
+        let note = {follower:follower, intervalID:undefined, score:0, line:lineNbr};
+        instance.queuesTimestampToValidate[lineNbr].push(note);
+        if (!instance.btns[lineNbr].active) {
+            let intervalID = setInterval(function() {note.score++}, instance.shortNoteInterval);
+            note.intervalID = intervalID;
+            instance.stackInterval.push(intervalID); 
+        }
+    }
+
+    /**
+     * Create a long note's head at the right line and create his body
+     * @param {*} lineNbr 
+     * @param {*} instance 
+     * @param {*} end 
+     */
    createLongNote(lineNbr, instance, end) {
     let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_head");
     instance.stackTimeout.push(setTimeout(instance.setLongFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, instance, end));
@@ -258,6 +283,300 @@ export default class GameScene extends Phaser.Scene {
         onComplete: () => follower.destroy(),
     });
    }
+
+    /**
+     * push into queuesTimestampToValidate[lineNbr] a new long note 
+     * if the button was active before the push less point is given
+     * @param {*} lineNbr, the line's number of the long note
+     * @param {*} instance, this
+     * @param {*} end, the time the long note should stay clickable
+     */
+    setLongFollowerToValidate(lineNbr, instance, end) {
+        let checkTime = instance.longNoteIntervalTime;
+        if (instance.btns[lineNbr].active)
+            checkTime = instance.longNoteIntervalTimeMalus;
+        let note = {follower:undefined, intervalID:undefined, score:0};
+        instance.queuesTimestampToValidate[lineNbr].push(note);
+        let intervalID = setInterval(instance.onLongNotePress, checkTime, lineNbr, note, instance);
+        instance.stackInterval.push(intervalID); 
+        note.intervalID = intervalID;
+
+        instance.stackTimeout.push(setTimeout(instance.onEndLongFollower, end, lineNbr, note, end, instance));
+    }
+
+    /**
+     * increment and display the long note'score every 250ms if the correct button is active, else reset the combo
+     * @param {*} lineNbr, the line's number of the long note
+     * @param {*} note, the long note containing the score 
+     * @param {*} instance, this
+     */
+    onLongNotePress(lineNbr, note, instance) {
+        if(instance.btns[lineNbr].active) {
+            note.score += instance.longNoteValueIncreaseTime
+            instance.destroySlideSounds();
+            instance.playSlideSound();
+            if (note.score%4*instance.longNoteValueIncreaseTime===0)
+                instance.incrementCombo();
+            instance.updateScore(note.score);
+        } else {
+            instance.resetCombo();
+            note.score = 0;
+        }
+    }
+
+    /**
+     * clear and the remove the long note from the queue and increment the nbrHits if less than 30% of the note is missed
+     * @param {*} lineNbr, the line's number of the long note
+     * @param {*} note, the note to clear and remove
+     * @param {*} end, the time the long note stayed clickable  
+     * @param {*} instance, this
+     */
+    onEndLongFollower(lineNbr, note, end, instance) {
+        clearInterval(note.intervalID);
+        instance.queuesTimestampToValidate[lineNbr].shift();
+        instance.destroySlideSounds();
+        if ((end/250)*0.70 < note.score)
+            instance.nbrHits++;
+    }   
+
+    /**** End game ****/
+
+    async endGame (instance) {
+        instance.isStarted = false;
+        let percent = Math.round(instance.nbrHits/instance.beatmap.length*10000)/100;
+        if(instance.combo > instance.maxCombo)
+            instance.maxCombo = instance.combo;
+
+        let arrayNote = instance.getNote(percent);
+        let note = arrayNote[0];
+        let imgNote = arrayNote[1];
+        
+        let scoreMessage = "";
+        let user = getUserSessionData();
+        if (user)
+            scoreMessage = await instance.getSetHighscore(instance.beatmapId, user, instance.score);
+            instance.displayModal(instance, scoreMessage, imgNote, note, percent);
+
+    }
+
+    /**
+     * get the percent's note and his image
+     * @param {*} percent 
+     * return an array containing the note at [0] and the image at [1]
+     */
+    getNote (percent) {
+        let toReturn = [];
+        if (percent === 100) {
+            toReturn[0] = "S++";
+            toReturn[1] = NoteS2;
+        }else if (percent >= 95) {
+            toReturn[0] = "S+";
+            toReturn[1] = NoteS1;
+        }else if (percent >= 90) {
+            toReturn[0] = "S";
+            toReturn[1] = NoteS;
+        }else if (percent >= 80) {
+            toReturn[0] = "A";
+            toReturn[1] = NoteA;
+        }else if (percent >= 60) {
+            toReturn[0] = "B";
+            toReturn[1] = NoteB;
+        }else if (percent >= 50) {
+            toReturn[0] = "C";
+            toReturn[1] = NoteC;
+        }else if (percent >= 35) {
+            toReturn[0] = "D";
+            toReturn[1] = NoteD;
+        }else if (percent >= 20) {
+            toReturn[0] = "E";
+            toReturn[1] = NoteE;
+        }else {
+            toReturn[0] = "F";
+            toReturn[1] = NoteF;
+        }
+        return toReturn;
+    }
+
+    async getSetHighscore  (beatmapId, user, score) {
+        let toReturn = "";
+        await fetch("/api/users/score", {
+            method: "POST", 
+            body: JSON.stringify({beatmapId: beatmapId, username: user.username, score: score}), 
+            headers: {
+                Authorization: user.token,
+                "Content-Type": "application/json",
+            },
+        })
+        .then((response) => {
+            if (!response.ok)
+                throw new Error("Error code : " + response.status + " : " + response.statusText);
+            return response.json();
+        })
+        .then((data) => {
+            let oldHighscore = data.oldHighscore;
+            if (oldHighscore>score) 
+                toReturn = "Highscore : " + oldHighscore;
+            else
+                toReturn = "New highscore : " + score;
+        })
+        .catch((err) => console.log(err.message));
+        return toReturn;
+    }
+
+    displayModal (instance, scoreMessage, imgNote, note, percent)  {
+        let modalBody = document.querySelector("#contentGameModal");
+        modalBody.innerHTML = `
+            <div class="d-flex justify-content-center my-0" id="modalGameOverText">` + scoreMessage + `</br>Score: ` + instance.score + `</br>Précision : ` + percent +`%</br>Combo max : ` + instance.maxCombo + `</br>Note : ` + note + `</div>
+            <div class="d-flex justify-content-center my-0"></br><img id="` + imgNote + `" class=mt-3 src="` + imgNote + `" alt="` + imgNote + `"></div></br><button type="button" id="replay" class="btn btn-primary modalGameButton" href="#" data-uri="/game">Rejouer</button>
+            <button type="button" id="returnList" class="btn btn-primary modalGameButton" href="#" data-uri="/list">Retour à la liste de map</button> `;
+
+        page.querySelector("#replay").addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri, instance.beatmapId));
+        page.querySelector("#returnList").addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri));
+        $('#gameModal').modal({show:true});
+    }
+
+
+    /**** Buttons'Interactions ****/
+
+    onClick(e) {
+        if (this.isStarted) {
+            let pos = e.changedTouches[0].clientX;
+            let quartTaille = window.innerWidth/4;
+            let queueToShift;
+    
+            if (pos <= quartTaille) {
+                this.setBtnActive(0);
+                queueToShift = this.queuesTimestampToValidate[0];
+            } else if (pos <= quartTaille*2) {
+                this.setBtnActive(1);
+                queueToShift = this.queuesTimestampToValidate[1];
+            } else if (pos <= quartTaille*3) {
+                this.setBtnActive(2);
+                queueToShift = this.queuesTimestampToValidate[2];
+            } else {
+                this.setBtnActive(3);
+                queueToShift = this.queuesTimestampToValidate[3];
+            } 
+            if (typeof queueToShift !== "undefined") {
+                if (queueToShift.length!==0) {
+                    if(typeof queueToShift[0].follower!== "undefined") //if the note is not long
+                        this.onKeypressRightTime(queueToShift);
+                }
+            }
+        }
+    }
+    
+    onEndClick(e) {
+        if (typeof this.queuesTimestampToValidate[0] === "undefined" || typeof this.queuesTimestampToValidate[0].follower === "undefined") //if there is no long note
+            this.setBtnInactive(0);
+        if (typeof this.queuesTimestampToValidate[1] === "undefined" || typeof this.queuesTimestampToValidate[1].follower === "undefined")
+            this.setBtnInactive(1);
+        if (typeof this.queuesTimestampToValidate[2] === "undefined" || typeof this.queuesTimestampToValidate[2].follower === "undefined") 
+            this.setBtnInactive(2);
+        if (typeof this.queuesTimestampToValidate[3] === "undefined" || typeof this.queuesTimestampToValidate[3].follower === "undefined") 
+            this.setBtnInactive(3);  
+    }  
+    
+    
+    onKeypress (e) {
+        if (this.isStarted) {
+            let queueToShift;
+            switch(e.key) {
+                case this.arrayKeys[0]:
+                    this.setBtnActive(0);
+                    queueToShift = this.queuesTimestampToValidate[0];
+                    break;
+                case this.arrayKeys[1]:
+                    this.setBtnActive(1);
+                    queueToShift = this.queuesTimestampToValidate[1];
+                    break;
+                case this.arrayKeys[2]:
+                    this.setBtnActive(2);
+                    queueToShift = this.queuesTimestampToValidate[2];
+                    break;
+                case this.arrayKeys[3]:
+                    this.setBtnActive(3);
+                    queueToShift = this.queuesTimestampToValidate[3];
+                    break;
+            }
+            if (typeof queueToShift !== "undefined") {
+                if (queueToShift.length!==0) {
+                    if(typeof queueToShift[0].follower!== "undefined") //if the note is not long
+                        this.onKeypressRightTime(queueToShift);
+                }
+                }
+        }
+    };
+    
+    onKeyup (e) {
+        switch(e.key){
+            case this.arrayKeys[0]:
+                this.setBtnInactive(0);
+                break;
+            case this.arrayKeys[1]:
+                this.setBtnInactive(1);
+                break;
+            case this.arrayKeys[2]:
+                this.setBtnInactive(2);
+                break;
+            case this.arrayKeys[3]:
+                this.setBtnInactive(3);
+                break;          
+        }
+    }
+    
+    
+    /**
+    * reset the global combo and stop the simple note's interval if it was not validated
+    * @param {*} queueToShift, the queue containing the simple note to clear and remove 
+    * @param {*} lineNbr, the number of the line containing the simple note 
+    * @param {*} time, the time of the note's end 
+    */
+    onNoKeypress (queueToShift, lineNbr) {
+        if (queueToShift.length!==0) {
+            this.resetCombo();
+            this.displayBtnEffect(lineNbr, "fail");
+            clearInterval(queueToShift.shift().intervalID);
+        }
+    }
+        
+    /**
+    * clear and remove the validated simple note from the queue, play a sound, increment the combo and score
+    * gives more point if perfect
+    * @param {*} queueToShift, the queue containing the simple note to clear and remove 
+    */
+    onKeypressRightTime (queueToShift) {
+        this.playHitSound();            
+        let note = queueToShift.shift();
+        clearInterval(note.intervalID);
+        note.follower.destroy();
+            
+        this.incrementCombo();
+        let value = note.score;
+        //check if perfect
+        if(value === Math.round(this.valueMiddleButton/2) || value === Math.round((this.valueMiddleButton)/2)-1) {
+            this.nbrHits += 1;
+            this.displayBtnEffect(note.line, "flash");
+            this.updateScore(this.valueToGive);
+        } else {
+            this.nbrHits += 0.5;
+            this.updateScore(Math.floor(this.valueToGive*0.5));
+        }
+    }
+
+    /**** graphic creation/modification ****/
+
+    setProportions() {
+        if(this.width < 1000){
+            this.topSpacing = this.width/5;
+            this.bottomSpacing = this.topSpacing;
+        }
+        else {
+            this.topSpacing =  this.width/40, 0;
+            this.bottomSpacing = 3*this.topSpacing;
+        }
+        this.endPathY = this.height;
+    }
 
     /**
      * Returns the x coordonate of the line to draw
@@ -304,9 +623,6 @@ export default class GameScene extends Phaser.Scene {
             let x = this.calcLineXFromY(i, y) -fntSize/3;
             this.add.text(x, y, this.arrayKeys[i].toUpperCase(), { font: '30px Arial', fill: '#FFFFFF' }); //set font size at the same value as fntSize
         }
-    }
-
-    update() {
     }
 
     /**
@@ -366,6 +682,7 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
+    /**** Audio ****/
 
     //play a short note'sound
     playHitSound() {
@@ -398,304 +715,5 @@ export default class GameScene extends Phaser.Scene {
                 sound.destroy()
         }
     }
-
-    //algorithm methods
-
-    /**
-     * reset the global combo and stop the simple note's interval if it was not validated
-     * @param {*} queueToShift, the queue containing the simple note to clear and remove 
-     * @param {*} lineNbr, the number of the line containing the simple note 
-     * @param {*} time, the time of the note's end 
-     */
-    onNoKeypress (queueToShift, lineNbr, time) {
-        if (queueToShift.length!==0) {
-            this.resetCombo();
-            this.displayBtnEffect(lineNbr, "fail");
-            clearInterval(queueToShift.shift().intervalID);
-            //console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
-        }
-    }
     
-    /**
-     * clear and remove the validated simple note from the queue, play a sound, increment the combo and score
-     * gives more point if perfect
-     * @param {*} queueToShift, the queue containing the simple note to clear and remove 
-     */
-    onKeypressRightTime (queueToShift) {
-        this.playHitSound();
-        let note = queueToShift.shift();
-        clearInterval(note.intervalID);
-        note.follower.destroy();
-        
-        //console.log("Well Done");
-        this.incrementCombo();
-        let value = note.score;
-        //check if perfect
-        if(value === Math.round(this.valueMiddleButton/2) || value === Math.round((this.valueMiddleButton)/2)-1) {
-            this.nbrHits += 1;
-            this.displayBtnEffect(note.line, "flash");
-            this.updateScore(this.valueToGive);
-        } else {
-            this.nbrHits += 0.5;
-            this.updateScore(Math.floor(this.valueToGive*0.5));
-        }
-    }
-
-    /**
-     * push into queuesTimestampToValidate[lineNbr] a new simple note and increment this note'score every 100ms
-     * only if the button wasn't active
-     * @param {*} lineNbr, the line's number of the simple note 
-     * @param {*} follower, the follower created 
-     * @param {*} instance, this 
-     */
-    setFollowerToValidate(lineNbr, follower, instance) {
-        let note = {follower:follower, intervalID:undefined, score:0, line:lineNbr};
-        instance.queuesTimestampToValidate[lineNbr].push(note);
-        if (!instance.btns[lineNbr].active) {
-            //console.log("push single");
-            let intervalID = setInterval(function() {note.score++}, instance.shortNoteInterval);
-            note.intervalID = intervalID;
-            instance.stackInterval.push(intervalID); 
-        }
-    }
-
-    /**
-     * push into queuesTimestampToValidate[lineNbr] a new long note 
-     * if the button was active before push less point is given
-     * @param {*} lineNbr, the line's number of the long note
-     * @param {*} instance, this
-     * @param {*} end, the time the long note should stay clickable
-     */
-    setLongFollowerToValidate(lineNbr, instance, end) {
-        let checkTime = instance.longNoteIntervalTime;
-        if (instance.btns[lineNbr].active)
-            checkTime = instance.longNoteIntervalTimeMalus;
-        let note = {follower:undefined, intervalID:undefined, score:0};
-        instance.queuesTimestampToValidate[lineNbr].push(note);
-        //console.log("push long");
-        let intervalID = setInterval(instance.onLongNotePress, checkTime, lineNbr, note, instance);
-        instance.stackInterval.push(intervalID); 
-        note.intervalID = intervalID;
-
-        instance.stackTimeout.push(setTimeout(instance.onEndLongFollower, end, lineNbr, note, end, instance));
-    }
-
-    /**
-     * increment and display the long note'score every 250ms if the correct button is active, else reset the combo
-     * @param {*} lineNbr, the line's number of the long note
-     * @param {*} note, the long note containing the score 
-     * @param {*} instance, this
-     */
-    onLongNotePress(lineNbr, note, instance) {
-        if(instance.btns[lineNbr].active) {
-            note.score += instance.longNoteValueIncreaseTime
-            instance.destroySlideSounds();
-            instance.playSlideSound();
-            if (note.score%4*instance.longNoteValueIncreaseTime===0)
-                instance.incrementCombo();
-            instance.updateScore(note.score);
-        } else {
-            instance.resetCombo();
-            note.score = 0;
-        }
-    }
-
-    /**
-     * clear and the remove the long note from the queue and increment the nbrHits if less than 30% of the note is missed
-     * @param {*} lineNbr, the line's number of the long note
-     * @param {*} note, the note to clear and remove
-     * @param {*} end, the time the long note stayed clickable  
-     * @param {*} instance, this
-     */
-    onEndLongFollower(lineNbr, note, end, instance) {
-        clearInterval(note.intervalID);
-        instance.queuesTimestampToValidate[lineNbr].shift();
-        instance.destroySlideSounds();
-        if ((end/250)*0.70 < note.score)
-            instance.nbrHits++;
-            
-    }
-
-    onClick(e) {
-        if (this.isStarted) {
-            let pos = e.changedTouches[0].clientX;
-            let quartTaille = window.innerWidth/4;
-            let queueToShift;
-
-            if (pos <= quartTaille) {
-                this.setBtnActive(0);
-                queueToShift = this.queuesTimestampToValidate[0];
-            } else if (pos <= quartTaille*2) {
-                this.setBtnActive(1);
-                queueToShift = this.queuesTimestampToValidate[1];
-            } else if (pos <= quartTaille*3) {
-                this.setBtnActive(2);
-                queueToShift = this.queuesTimestampToValidate[2];
-            } else {
-                this.setBtnActive(3);
-                queueToShift = this.queuesTimestampToValidate[3];
-            } 
-            if (typeof queueToShift !== "undefined") {
-                if (queueToShift.length!==0) {
-                    if(typeof queueToShift[0].follower!== "undefined") //if the note is not long
-                        this.onKeypressRightTime(queueToShift);
-                }
-            }
-        }
-    }
-
-    onEndClick(e) {
-        if (typeof this.queuesTimestampToValidate[0] === "undefined" || typeof this.queuesTimestampToValidate[0].follower === "undefined") //if there is no long note
-            this.setBtnInactive(0);
-        if (typeof this.queuesTimestampToValidate[1] === "undefined" || typeof this.queuesTimestampToValidate[1].follower === "undefined")
-            this.setBtnInactive(1);
-        if (typeof this.queuesTimestampToValidate[2] === "undefined" || typeof this.queuesTimestampToValidate[2].follower === "undefined") 
-            this.setBtnInactive(2);
-        if (typeof this.queuesTimestampToValidate[3] === "undefined" || typeof this.queuesTimestampToValidate[3].follower === "undefined") 
-            this.setBtnInactive(3);  
-    }
-
-
-    onKeypress (e) {
-        if (this.isStarted) {
-            let queueToShift;
-            switch(e.key) {
-                case this.arrayKeys[0]:
-                    this.setBtnActive(0);
-                    queueToShift = this.queuesTimestampToValidate[0];
-                    break;
-                case this.arrayKeys[1]:
-                    this.setBtnActive(1);
-                    queueToShift = this.queuesTimestampToValidate[1];
-                    break;
-                case this.arrayKeys[2]:
-                    this.setBtnActive(2);
-                    queueToShift = this.queuesTimestampToValidate[2];
-                    break;
-                case this.arrayKeys[3]:
-                    this.setBtnActive(3);
-                    queueToShift = this.queuesTimestampToValidate[3];
-                    break;
-            }
-            if (typeof queueToShift !== "undefined") {
-                if (queueToShift.length!==0) {
-                    if(typeof queueToShift[0].follower!== "undefined") //if the note is not long
-                        this.onKeypressRightTime(queueToShift);
-                }
-            }
-        }
-    };
-
-    onKeyup (e) {
-        switch(e.key){
-            case this.arrayKeys[0]:
-                this.setBtnInactive(0);
-                break;
-            case this.arrayKeys[1]:
-                this.setBtnInactive(1);
-                break;
-            case this.arrayKeys[2]:
-                this.setBtnInactive(2);
-                break;
-            case this.arrayKeys[3]:
-                this.setBtnInactive(3);
-                break;          
-        }
-    }
-
-    async endGame (instance) {
-        instance.isStarted = false;
-        let percent = Math.round(instance.nbrHits/instance.beatmap.length*10000)/100;
-        if(instance.combo > instance.maxCombo)
-            instance.maxCombo = instance.combo;
-
-        let arrayNote = getNote(percent);
-        let note = arrayNote[0];
-        let imgNote = arrayNote[1];
-        
-        let scoreMessage = "";
-        let user = getUserSessionData();
-        if (user)
-            scoreMessage = await getSetHighscore(instance.beatmapId, user, instance.score);
-        displayModal(instance, scoreMessage, imgNote, note, percent);
-
-    }
 }
-
-/**
- * get the percent's note and his image
- * @param {*} percent 
- * return an array containing the note at [0] and the image at [1]
- */
-const getNote = (percent) => {
-    let toReturn = [];
-    if (percent === 100) {
-        toReturn[0] = "S++";
-        //TODO create S++ img
-    }else if (percent >= 95) {
-        toReturn[0] = "S+";
-        toReturn[1] = NoteS1;
-    }else if (percent >= 90) {
-        toReturn[0] = "S";
-        toReturn[1] = NoteS;
-    }else if (percent >= 80) {
-        toReturn[0] = "A";
-        toReturn[1] = NoteA;
-    }else if (percent >= 60) {
-        toReturn[0] = "B";
-        toReturn[1] = NoteB;
-    }else if (percent >= 50) {
-        toReturn[0] = "C";
-        toReturn[1] = NoteC;
-    }else if (percent >= 35) {
-        toReturn[0] = "D";
-        toReturn[1] = NoteD;
-    }else if (percent >= 20) {
-        toReturn[0] = "E";
-        toReturn[1] = NoteE;
-    }else {
-        toReturn[0] = "F";
-        toReturn[1] = NoteF;
-    }
-    return toReturn;
-}
-
-const getSetHighscore = async (beatmapId, user, score) => {
-    let toReturn = "";
-    await fetch("/api/users/score", {
-        method: "POST", 
-        body: JSON.stringify({beatmapId: beatmapId, username: user.username, score: score}), 
-        headers: {
-            Authorization: user.token,
-            "Content-Type": "application/json",
-        },
-    })
-    .then((response) => {
-        if (!response.ok)
-            throw new Error("Error code : " + response.status + " : " + response.statusText);
-        return response.json();
-    })
-    .then((data) => {
-        let oldHighscore = data.oldHighscore;
-        if (oldHighscore>score) 
-            toReturn = "Highscore : " + oldHighscore;
-        else
-            toReturn = "New highscore : " + score;
-    })
-    .catch((err) => console.log(err.message));
-    return toReturn;
-}
-
-const displayModal = (instance, scoreMessage, imgNote, note, percent) => {
-    let modalBody = document.querySelector("#contentGameModal");
-    modalBody.innerHTML = `
-        <div class="d-flex justify-content-center my-0" id="modalGameOverText">` + scoreMessage + `</br>Score: ` + instance.score + `</br>Précision : ` + percent +`%</br>Combo max : ` + instance.maxCombo + `</br>Note : ` + note + `</div>
-        <div class="d-flex justify-content-center my-0"></br><img id="` + imgNote + `" class=mt-3 src="` + imgNote + `" alt="` + imgNote + `"></div></br><button type="button" id="replay" class="btn btn-primary modalGameButton" href="#" data-uri="/game">Rejouer</button>
-        <button type="button" id="returnList" class="btn btn-primary modalGameButton" href="#" data-uri="/list">Retour à la liste de map</button> `;
-
-    page.querySelector("#replay").addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri, instance.beatmapId));
-    page.querySelector("#returnList").addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri));
-    $('#gameModal').modal({show:true});
-}
-
-
