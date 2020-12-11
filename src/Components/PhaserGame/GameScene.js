@@ -71,7 +71,7 @@ export default class GameScene extends Phaser.Scene {
         this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn);
         this.valueMiddleButton = (Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)/this.shortNoteInterval)); //the value the short note should get for having a perfect shot
         this.valueToGive = Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)%this.shortNoteInterval); //the value given while doing a perfect shot
-        
+
         this.songDuration = audioFileDuration;
 
 
@@ -118,11 +118,11 @@ export default class GameScene extends Phaser.Scene {
         this.addEvents(this);   
         this.createNoteEvents(this);
      
-        //Start the game after noteTravelTime and Ending it after songDuration
+        //Start the game after noteTravelTimeToBtnCenter and Ending it after songDuration
         this.stackTimeout.push(setTimeout(()=> {
             this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this)); 
             this.playMusic();
-        }, this.noteTravelTime)); //TODO make the game begin earlier so that the note are validated at the center of the button
+        }, this.noteTravelTimeToBtnCenter));
     }
 
     displayGame (instance) {
