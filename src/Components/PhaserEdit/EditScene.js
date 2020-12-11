@@ -16,6 +16,7 @@ const delColor = 0xD12B4E;
 const visualizeColor = 0xFFFF00;
 
 const gradLineImgHeight = 200;
+const beforeAfterRatio = 1/10; //time offset
 
 export default class EditScene extends Phaser.Scene {
     constructor(width, height, duration) {
@@ -28,6 +29,7 @@ export default class EditScene extends Phaser.Scene {
         //time
         this.duration = duration;
         this.screenTimeSpan = 2500; //ms (time between oposing ends of the screen)
+        this.xOffset = beforeAfterRatio*this.width; //px
         this.currentTime = 0; //ms (time at x=0)
         this.longNoteBodyStep = 7; //ms spacing between two body sprites (long note)
 
@@ -64,6 +66,9 @@ export default class EditScene extends Phaser.Scene {
 
         this.createGradationLines();
 
+        this.createNowLine();
+        this.drawNowLine();
+
         //for adding notes
         this.sNoteGhost = this.add.sprite(-150,-150,sNoteKey);
         this.sNoteGhost.setTint(addColor);
@@ -94,11 +99,22 @@ export default class EditScene extends Phaser.Scene {
         }
     }
 
+    createNowLine() {
+        let x = this.getXFromTime(this.currentTime);
+        this.nowLine = this.add.path(x, 0);
+        this.nowLine.lineTo(x, this.height);
+    }
+
     drawLines() {
         this.setToLineStyle();
         for(let i=0; i<4; i++){
             this.lines[i].draw(this.graphics);
         }
+    }
+
+    drawNowLine() {
+        this.setToNowLineStyle();
+        this.nowLine.draw(this.graphics);
     }
 
     createGradationLines() {
@@ -231,12 +247,27 @@ export default class EditScene extends Phaser.Scene {
 
     getXFromTime(time) {
         let pxPerMs = this.width / this.screenTimeSpan; //number of pixels/ms
-        return (time - this.currentTime) * pxPerMs;
+        let res = (time - this.currentTime) * pxPerMs;
+        return res + this.xOffset;
     }
 
     getTimeFromX(x) {
         let msPerPx = this.screenTimeSpan / this.width;
-        return this.currentTime + (x*msPerPx);
+        return this.currentTime + ((x - this.xOffset)*msPerPx);
+    }
+
+    //lineNum integer between 0 and 3
+    getYFromLineNum(lineNum) {
+        let spacing = 1/5 * this.height;
+        return spacing*(1+lineNum);
+    }
+
+    setToLineStyle() {
+        this.graphics.lineStyle(3, 0x000000);
+    }
+
+    setToNowLineStyle() {
+        this.graphics.lineStyle(4, 0xFF0000);
     }
 
     //changes currentTime and updates display (to be called by EditPage)
@@ -276,16 +307,6 @@ export default class EditScene extends Phaser.Scene {
         if(res < 0) res = 0;
         if(res > 3) res = 3;
         return res;
-    }
-
-    //lineNum integer between 0 and 3
-    getYFromLineNum(lineNum) {
-        let spacing = 1/5 * this.height;
-        return spacing*(1+lineNum);
-    }
-
-    setToLineStyle() {
-        this.graphics.lineStyle(3, 0x000000);
     }
 
     setNoteType(type){
