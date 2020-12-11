@@ -43,7 +43,6 @@ let pageHtml = `
 <audio id="audio"/>
 `;
 
-
 let timeLine;
 let playBtn;
 let simpleBtn;
@@ -52,8 +51,12 @@ let publishBtn;
 let currentTimer;
 let endTimer;
 let title;
+let audio;
 let scene;
 let refreshIntervalID;
+
+let currentTime = 0; //ms
+const refreshTime = 25; //ms between frames while playing
 
 let difficulty;
 let musicTitle;
@@ -61,7 +64,11 @@ let musicData;
 let musicArtist;
 let duration;
 
-let state = 0; //0 = pause; 1 = play
+const possibleStates = {
+    pause: 0,
+    play: 1,
+}
+let state = possibleStates.pause;
 
 const possibleNoteTypes = {
     simple: 0,
@@ -69,11 +76,8 @@ const possibleNoteTypes = {
 }
 let noteType = possibleNoteTypes.simple;
 
-let currentTime = 0;
-const refreshTime = 25; //ms between frames while playing
 
 const EditPage = (data) => {
-    
     if(!data){
         RedirectUrl("/addBeatmap");
         return;
@@ -83,6 +87,7 @@ const EditPage = (data) => {
         RedirectUrl("/");
         return;
     }
+    
     
     difficulty = data.difficulty;
     musicTitle = data.title;
@@ -101,6 +106,8 @@ const EditPage = (data) => {
     publishBtn = document.querySelector("#publish");
     title = document.querySelector("#mapTitle")
     title.innerText = data.title;
+    audio = document.querySelector("#audio");
+    audio.src = musicData;
 
     initTimer(); //sets timer (time display) to 0
 
@@ -127,7 +134,9 @@ const EditPage = (data) => {
     longBtn.addEventListener("click", onClickLongNotesBtn);
 
     
-    publishBtn.addEventListener("click", () => {publish(scene, user)});
+    publishBtn.addEventListener("click", () => {
+        publish(scene, user)
+    });
     
 
     return game;
@@ -161,6 +170,8 @@ const publish = (scene, user) => {
         .catch((err) => onError(err));
 }
 
+//-- event handlers --
+
 const onClickSimpleNotesBtn = () => {
     resestTypeBtns();
     console.log("simple");
@@ -177,16 +188,34 @@ const onClickLongNotesBtn = () => {
     scene.setNoteType(noteType);
 }
 
+//change time with line
+const onTimeChange = () => {
+    currentTime = getTimeFromTimeline();
+    console.log("update time to "+currentTime);
+    setTimer(currentTime);
+    scene.updateCurrentTime(currentTime);
+}
+
+const onError = (err) => {
+    let messageBoard = document.querySelector("#messageBoard");
+    let errorMessage = err.message;
+    messageBoard.innerText = errorMessage;
+    // show the messageBoard div (add relevant Bootstrap class)
+    messageBoard.classList.add("d-block");  
+};
+
+const onBeatmapPublication = (data) => {
+    console.log("Success: res = ", data);
+    RedirectUrl("/");
+}
+
+// -- business methods --
+
 const resestTypeBtns = () => {
     console.log("reset");
     let idleClass = "btn btn-primary py-3";
     simpleBtn.className = idleClass;
     longBtn.className = idleClass;
-}
-
-const onBeatmapPublication = (data) => {
-    console.log("Success: res = ", data);
-    RedirectUrl("/");
 }
 
 //returns current time in ms
@@ -227,20 +256,23 @@ const initTimer = () => {
 }
 
 const play = () => {
-    if(state === 0){
+    if(state === possibleStates.pause){
         displayPauseBtn();
         timeLine.disabled = true;
+        audio.currentTime/*s*/= currentTime/*ms*/ / 1000 
+        audio.play();
         refreshIntervalID = setInterval(incrementTime, refreshTime); 
-        state = 1;   
+        state = possibleStates.play;   
     }
 }
 
 const pause = () => {
-    if(state === 1){
+    if(state === possibleStates.play){
         displayPlayBtn();
         timeLine.disabled = false;
+        audio.pause();
         clearInterval(refreshIntervalID);
-        state = 0;
+        state = possibleStates.pause;
     }
 }
 
@@ -254,35 +286,18 @@ const displayPauseBtn = () => {
 
 const togglePlay = () => {
     switch(state){
-        case 0:
+        case possibleStates.pause:
             play();
             break;
-        case 1:
+        case possibleStates.play:
             pause();
     }
 }
 
 //increments timeline by [refreshTime] ms
 const incrementTime = () => {
-    console.log("time++");
     currentTime += refreshTime;
     setTimelineTo(currentTime);
 }
-
-//change time with line
-const onTimeChange = () => {
-    currentTime = getTimeFromTimeline();
-    console.log("update time to "+currentTime);
-    setTimer(currentTime);
-    scene.updateCurrentTime(currentTime);
-}
-
-const onError = (err) => {
-    let messageBoard = document.querySelector("#messageBoard");
-    let errorMessage = err.message;
-    messageBoard.innerText = errorMessage;
-    // show the messageBoard div (add relevant Bootstrap class)
-    messageBoard.classList.add("d-block");  
-};
 
 export default EditPage ;
