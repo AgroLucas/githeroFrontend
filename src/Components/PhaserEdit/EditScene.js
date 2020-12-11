@@ -62,6 +62,8 @@ export default class EditScene extends Phaser.Scene {
         this.createLines();
         this.drawLines();
 
+        this.createGradationLines();
+
         //for adding notes
         this.sNoteGhost = this.add.sprite(-150,-150,sNoteKey);
         this.sNoteGhost.setTint(addColor);
@@ -78,8 +80,6 @@ export default class EditScene extends Phaser.Scene {
         this.lNoteGhost = this.add.sprite(0, 0, lNoteHeadKey);
         this.lNoteGhost.setTint(addColor);
         this.lNoteGhost.visible = false;
-
-        this.createGradationLines();
 
         this.input.on("pointermove", this.ghostFollow);
         this.input.on("pointermove", this.tailGhostFollow);
@@ -212,7 +212,11 @@ export default class EditScene extends Phaser.Scene {
         if(timeStart < timeEnd){
             scene.createLongNote(scene.currentLongNoteLine, timeStart, timeEnd);
         }else {
-            console.log("imossible");
+            if(timeStart != timeEnd){
+                scene.createLongNote(scene.currentLongNoteLine, timeEnd, timeStart); // end before start (swap)
+            }else {
+                console.log("impossible");
+            }
         }
     }
 
