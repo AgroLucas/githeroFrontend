@@ -11,6 +11,7 @@ import RegisterPage from "./RegisterPage.js";
 import LogoutComponent from "./LogoutComponent.js";
 import ErrorPage from "./ErrorPage.js";
 import EditPage from "./PhaserEdit/EditPage.js";
+import {getUserSessionData} from "../utils/Session.js";
 
 const routes = {
     "/": HomePage,
@@ -39,18 +40,46 @@ const Router = () => {
 
 //onLoadHandler
 const onLoadHandler = (e) => {
-    console.log("onLoad : ", window.location.pathname);
-    if (window.location.pathname==="/game") {
+    let user = getUserSessionData();
+    if(user){
+        fetch("/api/users/testToken", {
+            method: "GET",
+            headers: {
+                Authorization: user.token,
+                "Content-Type": "application/json",
+            },
+        })
+        .then((response) => {
+            console.log(response);
+            if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
+            return response.json();
+        })
+        .then(() => {
+            console.log("jwt valid");
+            load(window.location.pathname);
+        })
+        .catch((err) => {
+            console.log("jwt expired");
+            RedirectUrl("/logout"); // jwt expired
+        });
+    }else{
+        load(window.location.pathname);
+    }
+};
+
+const load = (url) => {
+    console.log("onLoad : ", url);
+    if (url==="/game") {
         createGame();
         return;
     }
-    componentToRender = routes[window.location.pathname];
+    componentToRender = routes[url];
     if(!componentToRender){
-        ErrorPage(window.location.pathname)
+        ErrorPage(url)
         return;
     }
     componentToRender();
-};
+}
 
 //onNavigateHandler
 const onNavigateHandler = (e) => {
