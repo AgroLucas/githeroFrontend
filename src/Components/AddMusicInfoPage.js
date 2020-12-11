@@ -41,8 +41,10 @@ let pageHtml = `
 </div>`;
 
 let page = document.querySelector("#page");
-let formErrMsg = "Soumission invalide";
+let formErrMsg = "Informations incomplètes";
 
+const validMimeTypes = ["audio/mpeg", "audio/wav"];
+const maxFileSize = 15000000; //15mb
 
 const AddMusicInfo = () => {
     let user = getUserSessionData();
@@ -76,23 +78,29 @@ const onSubmitHandler = (e) => {
         let audioDiv = document.querySelector("#audioDiv");
         audioDiv.innerHTML = `<audio id="audio" src="`+audioData+`"/>`
         let audioElement = document.querySelector("#audio");
+        
+        let inputToVerify = {
+            title: musicTitle,
+            artist: musicArtist,
+            file: file,
+        }
 
-        audioElement.onloadedmetadata = function() { //wait for the metadata to be loaded
-            let duration = Math.floor(1000*audioElement.duration); //convert in ms
-            let input = {
-                difficulty: difficulty,
-                title: musicTitle,
-                audioData: audioData,
-                artist: musicArtist,
-                duration: duration,
-            }
-            
-            if(verifyInput(input)){ //verify input validity
-                RedirectUrl("/edit", input);
-            }else{
-                onError(formErrMsg);
-            }
-        };
+        if(verifyInput(inputToVerify)){
+            audioElement.onloadedmetadata = function() { //wait for the metadata to be loaded
+                let duration = Math.floor(1000*audioElement.duration); //convert in ms
+                let data = {
+                    difficulty: difficulty,
+                    title: musicTitle,
+                    audioData: audioData,
+                    artist: musicArtist,
+                    duration: duration,
+                }
+                
+                RedirectUrl("/edit", data);
+            };
+        }else {
+            onError(formErrMsg);
+        }
     }
     reader.onerror = (err) => onError(err.message);
 }
@@ -103,13 +111,40 @@ const onError = (text) => {
     messageBoard.innerText = errorMessage;
     // show the messageBoard div (add relevant Bootstrap class)
     messageBoard.classList.add("d-block");  
+
+    formErrMsg = "Informations incomplètes"; //reset formErrMsg for further submits
 };
 
 const verifyInput = (input) => {
+    if(!verifyNoMissingInput(input)) return false;
+    if(!verifyFileInput(input.file)) return false;
+    return true;
+}
+
+const verifyNoMissingInput = (input) => {
     if(!input.title) return false;
     if(!input.artist) return false;
-    //TODO: verify the ext. & mime type of audio file
+    if(!input.file) return false;
     return true;
+}
+
+const verifyFileInput = (file) => {
+    if(!isValidType(file.type)) {
+        formErrMsg = "Type de fichier non supporté";
+        return false;
+    }
+    if(file.size > maxFileSize) {
+        formErrMsg = "Fichier trop volumineux";
+        return false;
+    }
+    return true;
+}
+
+const isValidType = (type) => {
+    for(let i=0; i<validMimeTypes.length; i++) {
+        if(type == validMimeTypes[i]) return true;
+    }
+    return false;
 }
 
 export default AddMusicInfo;
