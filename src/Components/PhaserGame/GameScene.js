@@ -236,11 +236,11 @@ export default class GameScene extends Phaser.Scene {
     setFollowerToValidate(lineNbr, follower, instance) {
         let note = {follower:follower, intervalID:undefined, score:0, line:lineNbr};
         instance.queuesTimestampToValidate[lineNbr].push(note);
-        //if (!instance.btns[lineNbr].active) {
+        if (!instance.btns[lineNbr].active) {
             let intervalID = setInterval(function() {note.score++}, instance.shortNoteInterval);
             note.intervalID = intervalID;
             instance.stackInterval.push(intervalID); 
-        //}
+        }
     }
 
     /**
