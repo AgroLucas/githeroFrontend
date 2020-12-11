@@ -24,7 +24,7 @@ const loadBeatmap = async (message) => {
         return response.json();
     }).then(response => {
         for(const ELEMENT of response){
-            buttonHtml += `<button type="button" class="btn btn-primary button_music" data-toggle="modal" data-target="#myModal` + ELEMENT.beatmapID +`">` + getTitleAndAuthor(ELEMENT) + `</button>`;
+            buttonHtml += `<button type="button" class="btn  button_music" data-toggle="modal" data-target="#myModal` + ELEMENT.beatmapID +`">` + getTitleAndAuthor(ELEMENT) + `</button>`;
             modalHtml += `
                 <div class="modal fade" id="myModal` + ELEMENT.beatmapID + `">
                     <div class="modal-dialog modal-xl" >

@@ -31,9 +31,19 @@ li button {
     margin-bottom: 1em;
 }
 
+.navbar {
+    background-color: #004085!important;
+}
+
 /*********************************On HomePage*********************************/
 #logo {
     width: 10em;
+}
+
+#titleHomePage {
+    font-family: ui-serif;
+    font-weight: bold;
+    font-size: 5em;
 }
 
 .homepage_play_button {
@@ -49,11 +59,20 @@ li button {
 }
 
 /*********************************On MusicListPage*********************************/
+
 .button_music {
     height: 13em;
     width: 18em;
     margin-top: 3em;
     margin-left: 4.5em;
+    color: white;
+    background-color: #004085;
+    transition: 0.7s;
+}
+
+.button_music:hover {
+    color: white;
+    background-color: #5191c5;
 }
 
 .music_info_leaderboard {
@@ -98,4 +117,9 @@ li button {
 /*********************************On GameScene*********************************/
 #modalGameOverText {
     margin-left: 2em;
+}
+
+body {
+    /*background-image: url("../img/GitHero_logo.png");*/
+    background-color:lightgrey;
 }

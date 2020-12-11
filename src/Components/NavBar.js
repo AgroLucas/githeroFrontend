@@ -10,7 +10,7 @@ const Navbar = () => {
     let user = getUserSessionData();
     if(user){ // connecté
         navbarHtml = `
-            <nav class="navbar navbar-expand-sm bg-primary navbar-dark" id="navbar">
+            <nav class="navbar navbar-expand-sm navbar-dark" id="navbar">
                 <img id="whiteLogo" src="` + whiteLogo + `" alt="whiteLogo" href="#" data-uri="/">
                 <ul class="navbar-nav">
                     <li class="nav-item"><button type="button" class="btn btn-danger active" href="#" data-uri="/list">Jouer</button></li>
