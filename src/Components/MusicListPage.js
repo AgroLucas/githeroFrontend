@@ -23,6 +23,7 @@ const loadBeatmap = async (message) => {
         }
         return response.json();
     }).then(response => {
+        console.log(response);
         for(const ELEMENT of response){
             buttonHtml += `<button type="button" class="btn btn-primary button_music" data-toggle="modal" data-target="#myModal` + ELEMENT.beatmapID +`">` + getTitleAndAuthor(ELEMENT) + `</button>`;
             modalHtml += `
@@ -41,32 +42,16 @@ const loadBeatmap = async (message) => {
                                             <thead>
                                                 <tr><th colspan="3"><h5>Meilleurs Scores</h5></th></tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody>`
+            for(let i = 0; i < 5 && i < ELEMENT.leaderboard.length; i++) {
+                modalHtml+=`
                                                 <tr>
-                                                    <td>1</td>
-                                                    <td>Pseudo</td>
-                                                    <td>Score</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>Pseudo</td>
-                                                    <td>Score</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>3</td>
-                                                    <td>Pseudo</td>
-                                                    <td>Score</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4</td>
-                                                    <td>Pseudo</td>
-                                                    <td>Score</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5</td>
-                                                    <td>Pseudo</td>
-                                                    <td>Score</td>
-                                                </tr>
+                                                    <td>` + i+1 + `</td>
+                                                    <td>` + ELEMENT.leaderboard[i].username + `</td>
+                                                    <td>` + ELEMENT.leaderboard[i].score + `</td>
+                                                </tr>`
+            }
+            modalHtml+=`
                                             </tbody>
                                         </table>
                                         <div style="text-align: center;"><h4>Difficulté : ` + getDifficultyWithColor(ELEMENT) + `</h4></div>
