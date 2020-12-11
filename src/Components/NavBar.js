@@ -1,5 +1,4 @@
 import whiteLogo from "../img/GitHero_logo_blanc.png";
-import profile from "../img/image_profil.png";
 import {getUserSessionData} from "../utils/Session.js";
 
 
