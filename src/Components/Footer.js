@@ -1,7 +1,7 @@
 import { RedirectUrl } from "./Router.js";
 
 let footerHtml = `
-<div class="footer fixed-bottom text-center">
+<div class="footer text-center">
     <button type="button" class="btn btn-secondary button_bottom" href="#" data-uri="/aboutus">A propos</button>
     <button type="button" class="btn btn-secondary button_bottom" href="#" data-uri="/help">Aide</button>
     <button type="button" class="btn btn-secondary button_bottom" href="#" data-uri="/ranking">Classements</button>
