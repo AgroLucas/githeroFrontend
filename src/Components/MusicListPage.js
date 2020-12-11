@@ -43,12 +43,22 @@ const loadBeatmap = async (message) => {
                                                 <tr><th colspan="3"><h5>Meilleurs Scores</h5></th></tr>
                                             </thead>
                                             <tbody>`
+            let cmpt = 0;
             for(let i = 0; i < 5 && i < ELEMENT.leaderboard.length; i++) {
                 modalHtml+=`
                                                 <tr>
-                                                    <td>` + i+1 + `</td>
+                                                    <td>` + (i+1) + `</td>
                                                     <td>` + ELEMENT.leaderboard[i].username + `</td>
                                                     <td>` + ELEMENT.leaderboard[i].score + `</td>
+                                                </tr>`
+                cmpt++;
+            }
+            for(let i = cmpt; i<5; i++) {
+                modalHtml+=`
+                                                <tr>
+                                                    <td>` + (i+1) + `</td>
+                                                    <td>/</td>
+                                                    <td>/</td>
                                                 </tr>`
             }
             modalHtml+=`
