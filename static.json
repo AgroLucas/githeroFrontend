@@ -11,7 +11,7 @@
     },
     "proxies": {
         "/api/": {
-            "origin": "https://githero-api/api/"
+            "origin": "https://githero-api.herokuapp.com/api/"
         }
     }
 }
