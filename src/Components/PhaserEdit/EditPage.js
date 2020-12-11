@@ -136,7 +136,7 @@ const EditPage = (data) => {
 const publish = (scene, user) => {
     console.log("publish");
     let noteList = scene.getBeatmap(); //TODO method EditScene
-    /*let beatmap = {
+    let beatmap = {
         noteList: noteList,
         difficulty: difficulty,
         musicTitle: musicTitle,
@@ -158,7 +158,7 @@ const publish = (scene, user) => {
             return response.json();
         })
         .then((data) => onBeatmapPublication(data))
-        .catch((err) => onError(err));*/
+        .catch((err) => onError(err));
 }
 
 const onClickSimpleNotesBtn = () => {
