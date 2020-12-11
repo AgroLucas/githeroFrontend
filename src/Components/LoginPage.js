@@ -9,19 +9,19 @@ import Navbar from "./NavBar.js";
 let loginPage = `
 <form>
   <div class="row mx-0">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-6">
+    <div class="col-lg-4 col-md-2"></div>
+    <div class="col-lg-4 col-md-8">
+      <h1 class="my-5">Connexion</h1>
       <div class="form-group">
-      <h1> Connexion : </h1>
-      <br>
-        <label for="username">Username</label>
+      
+        <label for="username">Pseudo</label>
         <input class="form-control" id="username" type="text" name="username" placeholder="Enter your username" minlength="4" required/>
       </div>
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password">Mot de passe</label>
         <input class="form-control" id="password" type="password" name="password" placeholder="Enter your password" required/>
       </div>
-      <button class="btn btn-primary" id="btn" type="submit">Submit</button>
+      <button class="btn btn-primary" id="btn" type="submit">Se connecter</button>
       <!-- Create an alert component with bootstrap that is not displayed by default-->
       <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div>
     </div>
