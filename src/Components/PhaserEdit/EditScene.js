@@ -195,43 +195,49 @@ export default class EditScene extends Phaser.Scene {
 
     addSimpleNote(pointer) {
         if(!this.preventAddNote){
-            console.log("add s");
             let time = this.getTimeFromX(pointer.x);
             let lineNbr = this.getLineNumFromY(pointer.y);
-            this.createSimpleNote(lineNbr, time);
+            if(this.isAvailableForSimple(time, lineNbr)){
+                console.log("add s");
+                this.createSimpleNote(lineNbr, time);
+            }
         }
     }
 
     addLongNote(pointer) {
         if(!this.preventAddNote){
-            console.log("add L");
-            this.preventAdd();
             let timeStart = this.getTimeFromX(pointer.x);
             let lineNum = this.getLineNumFromY(pointer.y);
-            this.currentLongNoteLine = lineNum;
-            this.headGhost.setX(this.getXFromTime(timeStart));
-            this.headGhost.setY(this.getYFromLineNum(lineNum));
-            this.headGhost.visible = true;
-            this.tailGhost.visible = true;
-            this.input.once("pointerdown", (pointer) =>this.completeLongNote(pointer, timeStart));
+            if(this.isAvailableForSimple(timeStart, lineNum)){
+                console.log("add L");
+                this.preventAdd();
+                this.currentLongNoteLine = lineNum;
+                this.headGhost.setX(this.getXFromTime(timeStart));
+                this.headGhost.setY(this.getYFromLineNum(lineNum));
+                this.headGhost.visible = true;
+                this.tailGhost.visible = true;
+                this.input.once("pointerdown", (pointer) =>this.completeLongNote(pointer, timeStart));
+            }
         }
     }
 
     completeLongNote(pointer, timeStart){
-        console.log("complete");
         let scene = this.scene.scene;
-        console.log(scene);
         let timeEnd = scene.getTimeFromX(pointer.x);
-        scene.headGhost.visible = false;
-        scene.tailGhost.visible = false;
-        scene.allowAdd();
-        if(timeStart < timeEnd){
-            scene.createLongNote(scene.currentLongNoteLine, timeStart, timeEnd);
-        }else {
-            if(timeStart != timeEnd){
-                scene.createLongNote(scene.currentLongNoteLine, timeEnd, timeStart); // end before start (swap)
+        let lineNum = scene.currentLongNoteLine;
+        if(this.isAvailableForLong(timeStart, timeEnd, lineNum)) {
+            console.log("complete");
+            scene.headGhost.visible = false;
+            scene.tailGhost.visible = false;
+            scene.allowAdd();
+            if(timeStart < timeEnd){
+                scene.createLongNote(scene.currentLongNoteLine, timeStart, timeEnd);
             }else {
-                console.log("impossible");
+                if(timeStart != timeEnd){
+                    scene.createLongNote(scene.currentLongNoteLine, timeEnd, timeStart); // end before start (swap)
+                }else {
+                    console.log("impossible");
+                }
             }
         }
     }
@@ -437,6 +443,77 @@ export default class EditScene extends Phaser.Scene {
             }
         }
         return -1;
+    }
+
+    //returns 
+    isAvailableForSimple(time, lineNum) {
+        console.log("call isAvailableForSimple("+time+", "+lineNum+")");
+        for(let i=0; i<this.beatmap.length; i++) {
+            let note = this.beatmap[i].note;
+            console.log("compare ", note);
+            if(note[1] === lineNum) {
+                if(note[0] === 0){ //simple x simple
+                    if(note[2] === time) {
+                        console.log("return false");
+                        return false;
+                    }
+                }else { //simple x long 
+                    if(this.overlapsSingleLong(time, note[2], note[3])) {
+                        console.log("return false");
+                        return false;
+                    }
+                }
+            }
+        }
+        console.log("return true");
+        return true;
+    }
+
+    isAvailableForLong(timeStart, timeEnd, lineNum) {
+        console.log("call isAvailableForLong("+timeStart+", "+timeEnd+", "+lineNum+")");
+        for(let i=0; i<this.beatmap.length; i++) {
+            let note = this.beatmap[i].note;
+            console.log("compare ", note);
+            if(note[1] === lineNum){
+                if(note[0] === 0) { //long x simple
+                    if(this.overlapsSingleLong(note[2], timeStart, timeEnd)) {
+                        console.log("return false");
+                        return false;
+                    }
+                }else { //long x long
+                    if(this.overlapsLongLong(timeStart, timeEnd, note[2], note[3])) {
+                        console.log("return false");
+                        return false;
+                    }
+                }
+            }
+        }
+        console.log("return true");
+        return true;
+    }
+
+    //checks if target is between start & end
+    overlapsSingleLong(target, start, end) {
+        let min ,max;
+        if(start < end){
+            min = start;
+            max = end;
+        }else {
+            min = end;
+            max = start;
+        }
+        return min <= target && target <= max;
+    }
+
+    //checks if 2 timespans are overlaping
+    overlapsLongLong(targetStart, targetEnd, start, end) {
+        if(this.overlapsSingleLong(targetStart, start, end)) return true;
+        if(this.overlapsSingleLong(targetEnd, start, end)) return true;
+        
+        //second time in case target covers start+end
+        if(this.overlapsSingleLong(start, targetStart, targetEnd)) return true;
+        if(this.overlapsSingleLong(end, targetStart, targetEnd)) return true;
+        return false;
     }
 
     getBeatmap(){
