@@ -2,37 +2,34 @@
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./NavBar.js";
 import {setUserSessionData} from "../utils/Session.js";
-import logo from "../img/GitHero_logo.png";
 
 const registerPage=`
 <form>
-<div class="row">
+  <div class="row">
     <div class="col-sm-3"></div>
-    <div class="col-sm-6">
-  <div class="form-group">
-  <h1> Inscription : </h1>
-  <br>
+      <div class="col-sm-6">
+        <div class="my-5">
+          <h1> Inscription : </h1>
+        </div>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input class="form-control" id="username" type="text" name="username" placeholder="Enter your username" minlength="4" required  /> 
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input class="form-control" id="email" type="text" name="email" placeholder="Enter your email" required="" pattern="^\\w+([.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+\$" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input class="form-control" id="password" type="password" name="password" placeholder="Enter your password" required="" pattern="*" />
+        </div>
+        <button class="btn btn-primary" id="btn" type="submit">Submit</button>
 
-  <div class="form-group">
-    <label for="username">Username</label>
-    <input class="form-control" id="username" type="text" name="username" placeholder="Enter your username" minlength="4" required  /> 
+        <!-- Create an alert component with bootstrap that is not displayed by default-->
+        <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
     </div>
-    <div class="form-group">
-    <label for="email">Email</label>
-    <input class="form-control" id="email" type="text" name="email" placeholder="Enter your email" required="" pattern="^\\w+([.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+\$" />
   </div>
-  <div class="form-group">
-    <label for="password">Password</label>
-    <input class="form-control" id="password" type="password" name="password" placeholder="Enter your password" required="" pattern="*" />
-  </div>
-  <button class="btn btn-primary" id="btn" type="submit">Submit</button>
-  <!-- Create an alert component with bootstrap that is not displayed by default-->
-  <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
-  <img id="logo" src="`+ logo +`" alt="logo">
-  
-  </div>
-</div>
-  </form>`;
+</form>`;
 
 const RegisterPage = () => {
   let page = document.querySelector("#page");

@@ -7,9 +7,12 @@ let page = document.querySelector("#page");
 
 let pageHtml = `
 <div class="row pt-5 pr-2 jumbotron">
-    <div class="col-11 text-center"><h1 id="mapTitle"></h1></div>
-    <div class="col-1 pr-2">
-        <button id="publish" class="btn btn-danger p-3">Publier</button>
+    <div class="col-10 text-center">
+    <h1 id="mapTitle"></h1>
+    <p id="artist"></p>
+    </div>
+    <div class="col-2 pr-2">
+        <button id="publish" class="btn btn-danger w-50 py-3">Publier</button>
     </div>
 </div>
 <div class="row mt-5 ml-5 mr-2">
@@ -17,6 +20,7 @@ let pageHtml = `
     </div>
     <div class="col-1"></div>
     <div class="col-1 pr-2 my-5">
+        <p>Notes:</p>
         <div class="btn-group-vertical">
             <button id="btnSimple" type="button" class="btn btn-primary py-3 active">Simple</button>
             <button id="btnLong" type="button" class="btn btn-primary py-3">Longues</button>
@@ -31,7 +35,7 @@ let pageHtml = `
         <p><span id="currentTimer">00:00</span>/<span id="endTimer">00:45</span></p>
     </div>
     <div class="col-1">
-        <button id="playBtn" class="btn btn-secondary">Play</button>
+        <button id="playBtn" class="btn btn-secondary py-2 w-50">Play</button>
     </div>
 </div>
 <div class="row mt-5">
@@ -51,6 +55,7 @@ let publishBtn;
 let currentTimer;
 let endTimer;
 let title;
+let artist;
 let audio;
 let scene;
 let refreshIntervalID;
@@ -105,7 +110,9 @@ const EditPage = (data) => {
     longBtn = document.querySelector("#btnLong");
     publishBtn = document.querySelector("#publish");
     title = document.querySelector("#mapTitle")
-    title.innerText = data.title;
+    title.innerText = musicTitle;
+    artist = document.querySelector("#artist");
+    artist.innerText = musicArtist;
     audio = document.querySelector("#audio");
     audio.src = musicData;
 
