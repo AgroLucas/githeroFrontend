@@ -19,9 +19,9 @@ let pageAuthHtml = `
         <img id="logo" class="mt-5 mb-3" src="`+ logo +`" alt="logo">
         <h1 id="titleHomePage" class="display-2 mb-5">GitHero</h1>
         <div class="row">
-            <div class="col-12"><button type="button" class="btn btn-danger homepage_play_button mt-5" href="#" data-uri="/list"><strong>Jouer</strong></button></div>
+            <div class="col-12"><button type="button" class="btn btn-danger homepage_play_button mt-5" href="#" data-uri="/list"><strong data-uri="/addBeatmap">Jouer</strong></button></div>
         </div><div class="row">
-            <div class="col-12"><button type="button" class="btn btn-secondary homepage_edit_button" data-uri="/addBeatmap"><strong>Editer</strong></button></div>
+            <div class="col-12"><button type="button" class="btn btn-secondary homepage_edit_button" data-uri="/addBeatmap"><strong data-uri="/addBeatmap">Editer</strong></button></div>
         </div>
     </div>
 </div>`;
@@ -41,6 +41,8 @@ const HomePage = () => {
     page.innerHTML = htmlToDisplay;
     page.querySelectorAll("button").forEach(button=>{
         button.addEventListener("click",(e)=>{
+            
+            console.log(e.target.dataset.uri)
             RedirectUrl(e.target.dataset.uri);
         })
     })

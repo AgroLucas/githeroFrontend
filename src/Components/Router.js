@@ -130,6 +130,8 @@ const RedirectUrl = (uri, data) => {
     if (game)
         killGame();
     removeModals();
+    console.log(uri)
+    console.log(window.location.origin + uri)
     window.history.pushState({}, uri, window.location.origin + uri);
     
     console.log(window.location.pathname);
