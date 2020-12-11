@@ -6,7 +6,7 @@ const Logout = () => {
   removeSessionData();
   // re-render the navbar for a non-authenticated user
   Navbar();
-  RedirectUrl("/login"); 
+  RedirectUrl("/"); 
 };
 
 
