@@ -123,3 +123,9 @@ body {
     /*background-image: url("../img/GitHero_logo.png");*/
     background-color:lightgrey;
 }
+
+/********************************On options**********************************/
+.keyBindingBtn {
+    width: 3em;
+    height: 3em;
+}

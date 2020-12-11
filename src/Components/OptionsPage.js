@@ -26,28 +26,28 @@ let pageHtml = `
                     <div class="col-sm-2 pt-1">Bouton 1:</div>
                     <div class="col-sm-8"></div>
                     <div class="col-sm-1">
-                        <button id="btnKey1" type="button" class="btn btn-outline-primary w-50" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
+                        <button id="btnKey1" type="button" class="btn btn-outline-primary keyBindingBtn" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-sm-2 pt-1">Bouton 2:</div>
                     <div class="col-sm-8"></div>
                     <div class="col-sm-1">
-                        <button id="btnKey2" type="button" class="btn btn-outline-primary w-50" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
+                        <button id="btnKey2" type="button" class="btn btn-outline-primary keyBindingBtn" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-sm-2 pt-1">Bouton 3:</div>
                     <div class="col-sm-8"></div>
                     <div class="col-sm-1">
-                        <button id="btnKey3" type="button" class="btn btn-outline-primary w-50" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
+                        <button id="btnKey3" type="button" class="btn btn-outline-primary keyBindingBtn" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
                     </div>
                 </div>
                 <div class="row my-3">
                     <div class="col-sm-2 pt-1">Bouton 4:</div>
                     <div class="col-sm-8"></div>
                     <div class="col-sm-1">
-                        <button id="btnKey4" type="button" class="btn btn-outline-primary w-50" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
+                        <button id="btnKey4" type="button" class="btn btn-outline-primary keyBindingBtn" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
                     </div>
                 </div>
             </div>
