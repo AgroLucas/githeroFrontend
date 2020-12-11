@@ -136,7 +136,7 @@ export default class GameScene extends Phaser.Scene {
         this.scoreDisplay = this.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' });
         this.comboDisplay = this.add.text(this.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
 
-        let soundEffectAudioConfig = {
+        this.soundEffectAudioConfig = {
             mute: false,
             volume: this.soundEffectVolume * this.masterVolume,
             rate: 1,
@@ -145,20 +145,22 @@ export default class GameScene extends Phaser.Scene {
             loop: false,
             delay: 0
         }
+
+        console.log(this.soundEffectAudioConfig);
         
         this.hitSoundSelect=1;
         this.slideSoundSelect=1;
         this.hitSoundMax=4;
         this.slideSoundMax=4;
-        this.sound.add("hitSound1", soundEffectAudioConfig);
-        this.sound.add("hitSound2", soundEffectAudioConfig);
-        this.sound.add("hitSound3", soundEffectAudioConfig);
-        this.sound.add("hitSound4", soundEffectAudioConfig);
-        this.sound.add("failSound", soundEffectAudioConfig);
-        this.sound.add("slideSound1", soundEffectAudioConfig);
-        this.sound.add("slideSound2", soundEffectAudioConfig);
-        this.sound.add("slideSound3", soundEffectAudioConfig);
-        this.sound.add("slideSound4", soundEffectAudioConfig);
+        this.sound.add("hitSound1");
+        this.sound.add("hitSound2");
+        this.sound.add("hitSound3");
+        this.sound.add("hitSound4");
+        this.sound.add("failSound");
+        this.sound.add("slideSound1");
+        this.sound.add("slideSound2");
+        this.sound.add("slideSound3");
+        this.sound.add("slideSound4");
 
         
         let returnImage = this.add.sprite(this.width/30, this.height/20, "arrow").setInteractive({useHandCursor: true});
@@ -362,7 +364,8 @@ export default class GameScene extends Phaser.Scene {
 
     //play a short note'sound
     playHitSound() {
-        this.sound.play("hitSound"+this.hitSoundSelect);
+        let soundToPlay = "hitSound"+this.hitSoundSelect;
+        this.sound.play(soundToPlay, this.soundEffectAudioConfig);
         this.hitSoundSelect++;
         if (this.hitSoundSelect > this.hitSoundMax)
             this.hitSoundSelect = 1;
@@ -370,8 +373,8 @@ export default class GameScene extends Phaser.Scene {
 
     //play a long note'sound
     playSlideSound(){
-        let songToPlay = "slideSound"+this.slideSoundSelect;
-        this.sound.play(songToPlay);
+        let soundToPlay = "slideSound"+this.slideSoundSelect;
+        this.sound.play(soundToPlay, this.soundEffectAudioConfig);
         this.slideSoundSelect++;
         if (this.slideSoundSelect > this.slideSoundMax)
             this.slideSoundSelect=1;
@@ -379,7 +382,7 @@ export default class GameScene extends Phaser.Scene {
 
     //play a fail'sound
     playFailSound() {
-        this.sound.play("failSound");
+        this.sound.play("failSound", this.soundEffectAudioConfig);
     }
 
     destroySlideSounds() {
