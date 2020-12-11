@@ -2,10 +2,11 @@
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./NavBar.js";
 import {setUserSessionData} from "../utils/Session.js";
+import {escapeHtml} from "../utils/Utils.js"
 
 const registerPage=`
 <form>
-  <div class="row">
+  <div class="row mx-0">
     <div class="col-sm-3"></div>
       <div class="col-sm-6">
         <div class="my-5">
@@ -41,8 +42,8 @@ const RegisterPage = () => {
 let onRegister = async (e) => {
   e.preventDefault();
   let user = {
-    username: document.getElementById("username").value,
-    password: document.getElementById("password").value,
+    username: escapeHtml("" + document.getElementById("username").value),
+    password: escapeHtml("" + document.getElementById("password").value),
   };
   try{
     let response = await fetch("/api/users/" , {

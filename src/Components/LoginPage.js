@@ -3,11 +3,12 @@ escaped using the escape character \ if they are to be included in their templat
 By default, all escape sequences in a template literal are ignored.*/
 import {getUserSessionData, setUserSessionData} from "../utils/Session.js";
 import { RedirectUrl } from "./Router.js";
+import {escapeHtml} from "../utils/Utils.js"
 import Navbar from "./NavBar.js";
 // condition username
 let loginPage = `
 <form>
-  <div class="row">
+  <div class="row mx-0">
     <div class="col-sm-3"></div>
     <div class="col-sm-6">
       <div class="form-group">
@@ -41,12 +42,14 @@ const LoginPage = () => {
 
 const onLogin = (e) => {
   e.preventDefault();
-  let username = document.getElementById("username");
-  let password = document.getElementById("password");
+  let username = document.getElementById("username").value;
+  let password = document.getElementById("password").value;
+  username = escapeHtml("" + username);
+  password = escapeHtml("" + password);
 
   let user = {
-    username: document.getElementById("username").value,
-    password: document.getElementById("password").value,
+    username: username,
+    password: password,
   };
 
   fetch("/api/users/login", {

@@ -6,7 +6,7 @@ import Phaser from "phaser";
 let page = document.querySelector("#page");
 
 let pageHtml = `
-<div class="row pt-5 pr-2 jumbotron">
+<div class="row mx-0 jumbotron">
     <div class="col-10 text-center">
     <h1 id="mapTitle"></h1>
     <p id="artist"></p>
@@ -15,7 +15,7 @@ let pageHtml = `
         <button id="publish" class="btn btn-danger w-50 py-3">Publier</button>
     </div>
 </div>
-<div class="row mt-5 ml-5 mr-2">
+<div class="row mx-0 mt-5">
     <div id="editScreen" class="col-10">
     </div>
     <div class="col-1"></div>
@@ -27,7 +27,7 @@ let pageHtml = `
         </div>
     </div>
 </div>
-<div class="row mt-5 ml-5 mr-2">
+<div class="row mx-0 mt-5">
     <div class="col-10">
         <input id="timeLine" type="range" class="form-control-range" min="0" max="1" step="0.001" value="0"/>
     </div>
@@ -38,7 +38,7 @@ let pageHtml = `
         <button id="playBtn" class="btn btn-secondary py-2 w-50">Play</button>
     </div>
 </div>
-<div class="row mt-5">
+<div class="row mx-0 mt-5">
     <div class="col-3"></div>
     <div class="col-6">
         <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>

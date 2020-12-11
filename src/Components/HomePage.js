@@ -3,7 +3,7 @@ import { RedirectUrl } from "./Router.js";
 import { getUserSessionData } from "../utils/Session.js";
 
 let pageHtml = `
-<div class="row">
+<div class="row mx-0">
     <div class="col-4"></div>
     <div class="col-4 text-center mt-5">
         <img id="logo" class="mt-5 mb-3" src="`+ logo +`" alt="logo">
@@ -13,7 +13,7 @@ let pageHtml = `
 </div>`;
 
 let pageAuthHtml = `
-<div class="row text-center">
+<div class="row mx-0 text-center">
     <div class="col-4"></div>
     <div class="col-4 mt-5">
         <img id="logo" class="mt-5 mb-3" src="`+ logo +`" alt="logo">
@@ -41,8 +41,6 @@ const HomePage = () => {
     page.innerHTML = htmlToDisplay;
     page.querySelectorAll("button").forEach(button=>{
         button.addEventListener("click",(e)=>{
-            
-            console.log(e.target.dataset.uri)
             RedirectUrl(e.target.dataset.uri);
         })
     })

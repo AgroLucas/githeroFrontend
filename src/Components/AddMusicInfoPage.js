@@ -1,8 +1,9 @@
 import {RedirectUrl} from "./Router.js";
 import { getUserSessionData } from "../utils/Session.js";
+import {escapeHtml} from "../utils/Utils.js"
 
 let pageHtml = `
-<div class="row">
+<div class="row mr-5">
     <div class="col-3"></div>
     <div class="col-6">
         <header class="mt-4">
@@ -59,8 +60,8 @@ const AddMusicInfo = () => {
 
 const onSubmitHandler = (e) => {
     e.preventDefault();
-    let musicTitle = document.querySelector("#musicTitle").value;
-    let musicArtist = document.querySelector("#musicArtist").value;
+    let musicTitle = escapeHtml("" + document.querySelector("#musicTitle").value);
+    let musicArtist = escapeHtml("" + document.querySelector("#musicArtist").value);
     let difficulty = document.querySelector("#difficulty").value;
     let file = document.querySelector("#musicFile").files[0];
     if(!file){
