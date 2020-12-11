@@ -34,7 +34,7 @@ export default class GameScene extends Phaser.Scene {
     
 	constructor(beatmap, audioHtmlElement, userPreferences, audioFileDuration, beatmapId) {
         super('game-scene');
-        this.beatmap = beatmap;
+        this.beatmap = beatmap; //array -> [0]:type, [1]:line's number, [2]:beginTime(, [3]:endTime)
         this.beatmapId = beatmapId;
         this.audioHtmlElement = audioHtmlElement;
         this.height = window.innerHeight;
@@ -43,7 +43,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.noteTravelTime = 3000;
         this.lowestPoint = 50
-        this.longNoteValueIncreaseTime = 10; // score increase by 10 every 250ms holding long note
+        this.longNoteValueIncreaseTime = 10;
         this.shortNoteInterval = 50; 
         this.longNoteIntervalTime = 250;
         this.longNoteIntervalTimeMalus = 500;
@@ -62,12 +62,10 @@ export default class GameScene extends Phaser.Scene {
         this.masterVolume = userPreferences.volume.master;
         this.soundEffectVolume = userPreferences.volume.effect;
         
-        //calc noteTravelTimeToBtnCenter
 
         let tweak = 1.5;        
         let distanceToBtnCenter = this.height-(tweak * this.btnSize/2);
         this.noteTravelTimeToBtnCenter = this.calcTimeToGetToY(distanceToBtnCenter); 
-
         let distanceToBtn = this.height-(tweak * this.btnSize);
         this.noteTravelTimeToBtn = this.calcTimeToGetToY(distanceToBtn);
         this.valueMiddleButton = (Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)/this.shortNoteInterval)); //the value the short note should get for having a perfect shot
@@ -126,59 +124,64 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	create() {
-        this.graphics = this.add.graphics();
-        this.createLines();
-        this.createBtns();
-        this.createBtnLabels();
-        this.drawAll();
+        this.displayGame(this);
+        this.addAudio(this);
+        this.addEvents(this);   
+        this.createNoteEvents(this);
+     
+        this.stackTimeout.push(setTimeout(()=> {
+            this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this)); //TODO make the game begin earlier so that the note are validated at the center of the button
+            this.playMusic();
+        }, this.noteTravelTime));
+    }
 
-        //text display
-        this.scoreDisplay = this.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' });
-        this.comboDisplay = this.add.text(this.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
+    displayGame (instance) {
+        instance.graphics = instance.add.graphics();
+        instance.createLines();
+        instance.createBtns();
+        instance.createBtnLabels();
+        instance.drawAll();
+        instance.scoreDisplay = instance.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' });
+        instance.comboDisplay = instance.add.text(instance.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
+        let returnImage = instance.add.sprite(instance.width/30, instance.height/20, "arrow").setInteractive({useHandCursor: true});
+        returnImage.on("pointerdown", () => instance.quitPage());
+    }
 
-        this.soundEffectAudioConfig = {
+
+    addAudio (instance) {
+        instance.soundEffectAudioConfig = {
             mute: false,
-            volume: this.soundEffectVolume * this.masterVolume,
+            volume: instance.soundEffectVolume * instance.masterVolume,
             rate: 1,
             detune: 0,
             seek: 0,
             loop: false,
             delay: 0
         }
-
-        console.log(this.soundEffectAudioConfig);
-        
-        this.hitSoundSelect=1;
-        this.slideSoundSelect=1;
-        this.hitSoundMax=4;
-        this.slideSoundMax=4;
-        this.sound.add("hitSound1");
-        this.sound.add("hitSound2");
-        this.sound.add("hitSound3");
-        this.sound.add("hitSound4");
-        this.sound.add("failSound");
-        this.sound.add("slideSound1");
-        this.sound.add("slideSound2");
-        this.sound.add("slideSound3");
-        this.sound.add("slideSound4");
-
-        
-        let returnImage = this.add.sprite(this.width/30, this.height/20, "arrow").setInteractive({useHandCursor: true});
-        returnImage.on("pointerdown", () => this.quitPage());
-
-        this.createNoteEvents(this);
-
-        document.addEventListener("touchstart", event => this.onClick(event));
-        document.addEventListener("touchend", event => this.onEndClick(event));
-        document.addEventListener("keypress", event => this.onKeypress(event));
-        document.addEventListener("keyup", event => this.onKeyup(event));
-        window.addEventListener("blur",  event => this.quitPage(event));
-
-        this.stackTimeout.push(setTimeout(()=> {
-            this.stackTimeout.push(setTimeout(this.endGame, this.songDuration, this));
-            this.playMusic();
-        }, this.noteTravelTime));
+        console.log(instance.soundEffectAudioConfig);
+        instance.hitSoundSelect=1;
+        instance.slideSoundSelect=1;
+        instance.hitSoundMax=4;
+        instance.slideSoundMax=4;
+        instance.sound.add("hitSound1");
+        instance.sound.add("hitSound2");
+        instance.sound.add("hitSound3");
+        instance.sound.add("hitSound4");
+        instance.sound.add("failSound");
+        instance.sound.add("slideSound1");
+        instance.sound.add("slideSound2");
+        instance.sound.add("slideSound3");
+        instance.sound.add("slideSound4");
     }
+
+    addEvents (instance) {
+        document.addEventListener("touchstart", e => instance.onClick(e));
+        document.addEventListener("touchend", e => instance.onEndClick(e));
+        document.addEventListener("keypress", e => instance.onKeypress(e));
+        document.addEventListener("keyup", e => instance.onKeyup(e));
+        window.addEventListener("blur",  e => instance.quitPage(e));
+    }
+
 
     playMusic(){
        this.audioHtmlElement.play(); 
@@ -205,6 +208,7 @@ export default class GameScene extends Phaser.Scene {
     createSimpleNote(lineNbr, instance, time) {
         let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "simple_note");
         instance.stackTimeout.push(setTimeout(instance.setFollowerToValidate, instance.noteTravelTimeToBtn, lineNbr, follower, instance));
+
         follower.startFollow({
             positionOnPath: true,
             duration: instance.noteTravelTime,
@@ -237,11 +241,12 @@ export default class GameScene extends Phaser.Scene {
 
     let intervalID = setInterval(instance.createLongNoteBodySprite, 1, lineNbr, instance);
     instance.stackInterval.push(intervalID);
-    setTimeout(() => clearInterval(intervalID), end);
+    instance.stackTimeout.push(setTimeout( () => clearInterval(intervalID), end ));
    }
 
    createLongNoteBodySprite(lineNbr, instance) {
     let follower = instance.add.follower(instance.lines[lineNbr], 0, 0, "long_note_body");
+
     follower.startFollow({
         positionOnPath: true,
         duration: instance.noteTravelTime,
@@ -305,7 +310,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     /**
-     * add the number to the global score and update the display
+     * add the number*combo to the global score and update the display
      * @param {*} number, the number to add to the score 
      */
     updateScore(number) {
@@ -407,12 +412,13 @@ export default class GameScene extends Phaser.Scene {
             this.resetCombo();
             this.displayBtnEffect(lineNbr, "fail");
             clearInterval(queueToShift.shift().intervalID);
-            console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
+            //console.log("FAILED :: line " + lineNbr + " at " + time + " ms");
         }
     }
     
     /**
      * clear and remove the validated simple note from the queue, play a sound, increment the combo and score
+     * gives more point if perfect
      * @param {*} queueToShift, the queue containing the simple note to clear and remove 
      */
     onKeypressRightTime (queueToShift) {
@@ -421,9 +427,10 @@ export default class GameScene extends Phaser.Scene {
         clearInterval(note.intervalID);
         note.follower.destroy();
         
-        console.log("Well Done");
+        //console.log("Well Done");
         this.incrementCombo();
         let value = note.score;
+        //check if perfect
         if(value === Math.round(this.valueMiddleButton/2) || value === Math.round((this.valueMiddleButton)/2)-1) {
             this.nbrHits += 1;
             this.displayBtnEffect(note.line, "flash");
@@ -445,7 +452,7 @@ export default class GameScene extends Phaser.Scene {
         let note = {follower:follower, intervalID:undefined, score:0, line:lineNbr};
         instance.queuesTimestampToValidate[lineNbr].push(note);
         if (!instance.btns[lineNbr].active) {
-            console.log("push single");
+            //console.log("push single");
             let intervalID = setInterval(function() {note.score++}, instance.shortNoteInterval);
             note.intervalID = intervalID;
             instance.stackInterval.push(intervalID); 
@@ -465,7 +472,7 @@ export default class GameScene extends Phaser.Scene {
             checkTime = instance.longNoteIntervalTimeMalus;
         let note = {follower:undefined, intervalID:undefined, score:0};
         instance.queuesTimestampToValidate[lineNbr].push(note);
-        console.log("push long");
+        //console.log("push long");
         let intervalID = setInterval(instance.onLongNotePress, checkTime, lineNbr, note, instance);
         instance.stackInterval.push(intervalID); 
         note.intervalID = intervalID;
@@ -549,7 +556,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
 
-    //check if we clicked at the right time
     onKeypress (e) {
         if (this.isStarted) {
             let queueToShift;
@@ -602,76 +608,94 @@ export default class GameScene extends Phaser.Scene {
         let percent = Math.round(instance.nbrHits/instance.beatmap.length*10000)/100;
         if(instance.combo > instance.maxCombo)
             instance.maxCombo = instance.combo;
-        console.log("Your precision is: " + percent + "%");
 
-        let note;
-        let imgNote;
-        if (percent === 100) {
-            note = "S++";
-        }else if (percent >= 95) {
-            note = "S+";
-            imgNote = NoteS1;
-        }else if (percent >= 90) {
-            note = "S";
-            imgNote = NoteS;
-        }else if (percent >= 80) {
-            note = "A";
-            imgNote = NoteA;
-        }else if (percent >= 60) {
-            note = "B";
-            imgNote = NoteB;
-        }else if (percent >= 50) {
-            note = "C";
-            imgNote = NoteC;
-        }else if (percent >= 35) {
-            note = "D";
-            imgNote = NoteD;
-        }else if (percent >= 20) {
-            note = "E";
-            imgNote = NoteE;
-        }else {
-            note = "F";
-            imgNote = NoteF;
-        }
+        let arrayNote = getNote(percent);
+        let note = arrayNote[0];
+        let imgNote = arrayNote[1];
+        
         let scoreMessage = "";
         let user = getUserSessionData();
-        if (user) {
-            let toSend = {beatmapId: instance.beatmapId, username: user.username, score: instance.score};
-            await fetch("/api/users/score", {
-                method: "POST", 
-                body: JSON.stringify(toSend), 
-                headers: {
-                    Authorization: user.token,
-                    "Content-Type": "application/json",
-                },
-            })
-            .then((response) => {
-             if (!response.ok)
-                throw new Error("Error code : " + response.status + " : " + response.statusText);
-             return response.json();
-            })
-            .then((data) => {
-                let oldHighscore = data.oldHighscore;
-                if (oldHighscore>instance.score)
-                    scoreMessage = "Highscore : " + oldHighscore
-                else
-                    scoreMessage = "New highscore : " + instance.score;
-            })
-            .catch((err) => onError(err));
-        }
-
-
-        $('#gameModal').modal({show:true});
-        let modalBody = document.querySelector("#contentGameModal");
-        modalBody.innerHTML = "<div class=\"d-flex justify-content-center my-0\" id=\"modalGameOverText\">" + scoreMessage + "</br>Score: " + instance.score + "</br>Précision : " + percent +"%</br>Combo max : " + instance.maxCombo + "</br>Note : " + note
-        + "</div><div class=\"d-flex justify-content-center my-0\"></br><img id=" + imgNote + " class=mt-3 src="+ imgNote +" alt=" + imgNote + "></div></br><button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/game\">Rejouer</button>"
-        + "<button type=\"button\" class=\"btn btn-primary modalGameButton\" href=\"#\" data-uri=\"/list\">Retour à la liste de map</button> ";
-        page.querySelectorAll("button").forEach( button => button.addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri)) )
-
+        if (user)
+            scoreMessage = await getSetHighscore(instance.beatmapId, user, instance.score);
+        displayModal(instance, scoreMessage, imgNote, note, percent);
 
     }
 }
 
-const onError = (e) => {
-    console.log(e.message);
+/**
+ * get the percent's note and his image
+ * @param {*} percent 
+ * return an array containing the note at [0] and the image at [1]
+ */
+const getNote = (percent) => {
+    let toReturn = [];
+    if (percent === 100) {
+        toReturn[0] = "S++";
+        //TODO create S++ img
+    }else if (percent >= 95) {
+        toReturn[0] = "S+";
+        toReturn[1] = NoteS1;
+    }else if (percent >= 90) {
+        toReturn[0] = "S";
+        toReturn[1] = NoteS;
+    }else if (percent >= 80) {
+        toReturn[0] = "A";
+        toReturn[1] = NoteA;
+    }else if (percent >= 60) {
+        toReturn[0] = "B";
+        toReturn[1] = NoteB;
+    }else if (percent >= 50) {
+        toReturn[0] = "C";
+        toReturn[1] = NoteC;
+    }else if (percent >= 35) {
+        toReturn[0] = "D";
+        toReturn[1] = NoteD;
+    }else if (percent >= 20) {
+        toReturn[0] = "E";
+        toReturn[1] = NoteE;
+    }else {
+        toReturn[0] = "F";
+        toReturn[1] = NoteF;
+    }
+    return toReturn;
 }
+
+const getSetHighscore = async (beatmapId, user, score) => {
+    let toReturn = "";
+    await fetch("/api/users/score", {
+        method: "POST", 
+        body: JSON.stringify({beatmapId: beatmapId, username: user.username, score: score}), 
+        headers: {
+            Authorization: user.token,
+            "Content-Type": "application/json",
+        },
+    })
+    .then((response) => {
+        if (!response.ok)
+            throw new Error("Error code : " + response.status + " : " + response.statusText);
+        return response.json();
+    })
+    .then((data) => {
+        let oldHighscore = data.oldHighscore;
+        if (oldHighscore>score) 
+            toReturn = "Highscore : " + oldHighscore;
+        else
+            toReturn = "New highscore : " + score;
+    })
+    .catch((err) => console.log(err.message));
+    return toReturn;
+}
+
+const displayModal = (instance, scoreMessage, imgNote, note, percent) => {
+    let modalBody = document.querySelector("#contentGameModal");
+    modalBody.innerHTML = `
+        <div class="d-flex justify-content-center my-0" id="modalGameOverText">` + scoreMessage + `</br>Score: ` + instance.score + `</br>Précision : ` + percent +`%</br>Combo max : ` + instance.maxCombo + `</br>Note : ` + note + `</div>
+        <div class="d-flex justify-content-center my-0"></br><img id="` + imgNote + `" class=mt-3 src="` + imgNote + `" alt="` + imgNote + `"></div></br><button type="button" id="replay" class="btn btn-primary modalGameButton" href="#" data-uri="/game">Rejouer</button>
+        <button type="button" id="returnList" class="btn btn-primary modalGameButton" href="#" data-uri="/list">Retour à la liste de map</button> `;
+
+    page.querySelector("#replay").addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri, instance.beatmapId));
+    page.querySelector("#returnList").addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri));
+    $('#gameModal').modal({show:true});
+}
+
+
