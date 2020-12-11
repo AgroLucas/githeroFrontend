@@ -38,7 +38,7 @@ const loadBeatmap = async (message) => {
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-md-4 ">
-                                        <table class="table table-dark" style="text-align: center;">
+                                        <table class="table table-dark text-center">
                                             <thead>
                                                 <tr><th colspan="3"><h5>Meilleurs Scores</h5></th></tr>
                                             </thead>
@@ -57,14 +57,14 @@ const loadBeatmap = async (message) => {
                 modalHtml+=`
                                                 <tr>
                                                     <td>` + (i+1) + `</td>
-                                                    <td>/</td>
-                                                    <td>/</td>
+                                                    <td></td>
+                                                    <td></td>
                                                 </tr>`
             }
             modalHtml+=`
                                             </tbody>
                                         </table>
-                                        <div style="text-align: center;"><h4>Difficulté : ` + getDifficultyWithColor(ELEMENT) + `</h4></div>
+                                        <div class="text-center"><h4>Difficulté : ` + getDifficultyWithColor(ELEMENT) + `</h4></div>
                                     </div>
                                     <div class="music_info_leaderboard">
                                         <p><h4>` + ELEMENT.musicTitle + `</h4></p>
@@ -87,13 +87,6 @@ const loadBeatmap = async (message) => {
         let pageHtml = `<div id="button_page">` + buttonHtml + `</div><div id="modal_page">` + modalHtml + `</div>`;
         page.innerHTML = pageHtml;
 
-        /*
-        let allPlayBtns = document.querySelectorAll(".playBtn");
-        allPlayBtns.forEach(playBtn => {
-            let beatmapID = playBtn.id;
-            playBtn.addEventListener("click", RedirectUrl("/game", beatmapID));            
-        });
-        */
         searchForPlayBtns();
     });
 }
