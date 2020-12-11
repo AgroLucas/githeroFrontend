@@ -9,7 +9,7 @@ let pageHtml = `
             <h2>Création de Beatmap</h2>
             <p>Entrez les informations sur la beatmap que vous voulez créer</p>
         </header>
-        <form action="#" class="border px-5 py-3 mt-5">
+        <form action="#" class="border border-dark px-5 py-3 mt-5">
             <div class="form-group was-validated">
                 <label for="musicTitle">Titre de la musique:</label>
                 <input type="text" class="form-control" id="musicTitle" placeholder="Titre" name="musicTitle" required>
@@ -30,7 +30,7 @@ let pageHtml = `
             </div>
             <div class="form-group was-validated">
                 <label for="musicFile">Musique:</label>
-                <input id="musicFile" type="file" class="form-control-file border" name="musicFile" required>
+                <input id="musicFile" type="file" class="form-control-file border border-dark" name="musicFile" required>
                 <div class="invalid-feedback">Ce champ est obligatoire.</div>
             </div>
             <button id="submit" type="submit" class="btn btn-primary">Editer</button>

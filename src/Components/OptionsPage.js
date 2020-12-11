@@ -5,7 +5,7 @@ let pageHtml = `
     <div class="col-md-6">
         <h2>Options</h2>
         <form action="#" class="mb-5">
-            <div class="border mt-5 pl-3 pt-2">
+            <div class="border border-dark mt-5 pl-3 py-2">
                 <h4>Volumes:</h4>
                 <div class="form-group">
                     <label for="masterVolume">Principal:</label>
@@ -20,34 +20,34 @@ let pageHtml = `
                     <input type="range" id="effectVolume" name="effectVolume" class="form-control-range w-25" min="0" max="1" step="0.05">
                 </div>
             </div>
-            <div class="border mt-5 pl-3 pt-2 mb-3">
+            <div class="border border-dark mt-5 pl-3 pt-3 pb-5 mb-3">
                 <h4>Configuration des touches:</h4>
                 <div class="row mt-3">
                     <div class="col-sm-2 pt-1">Bouton 1:</div>
                     <div class="col-sm-8"></div>
                     <div class="col-sm-1">
-                        <button id="btnKey1" type="button" class="btn btn-outline-primary" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
+                        <button id="btnKey1" type="button" class="btn btn-outline-primary w-50" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-sm-2 pt-1">Bouton 2:</div>
                     <div class="col-sm-8"></div>
                     <div class="col-sm-1">
-                        <button id="btnKey2" type="button" class="btn btn-outline-primary" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
+                        <button id="btnKey2" type="button" class="btn btn-outline-primary w-50" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-sm-2 pt-1">Bouton 3:</div>
                     <div class="col-sm-8"></div>
                     <div class="col-sm-1">
-                        <button id="btnKey3" type="button" class="btn btn-outline-primary" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
+                        <button id="btnKey3" type="button" class="btn btn-outline-primary w-50" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
                     </div>
                 </div>
                 <div class="row my-3">
                     <div class="col-sm-2 pt-1">Bouton 4:</div>
                     <div class="col-sm-8"></div>
                     <div class="col-sm-1">
-                        <button id="btnKey4" type="button" class="btn btn-outline-primary" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
+                        <button id="btnKey4" type="button" class="btn btn-outline-primary w-50" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
                     </div>
                 </div>
             </div>
