@@ -131,7 +131,7 @@ export default class GameScene extends Phaser.Scene {
         instance.createBtns();
         instance.createBtnLabels();
         instance.drawAll();
-        instance.scoreDisplay = instance.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' });
+        instance.scoreDisplay = instance.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' }); //TODO responsive
         instance.comboDisplay = instance.add.text(instance.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
         let returnImage = instance.add.sprite(instance.width/30, instance.height/20, "arrow").setInteractive({useHandCursor: true});
         returnImage.on("pointerdown", () => instance.quitPage());
@@ -618,11 +618,32 @@ export default class GameScene extends Phaser.Scene {
 
     createBtnLabels(){
         let fntSize = 30; 
-        let y = this.endPathY - this.btnYOffset -fntSize/2 ; //same y as btns
+        let y = this.endPathY - this.btnYOffset ; //same y as btns
         for(let i=0; i<4; i++){
-            let x = this.calcLineXFromY(i, y) -fntSize/3;
-            this.add.text(x, y, this.arrayKeys[i].toUpperCase(), { font: '30px Arial', fill: '#FFFFFF' }); //set font size at the same value as fntSize
+            let x = this.calcLineXFromY(i, this.height);
+            let txt = this.add.text(x, y, this.arrayKeys[i].toUpperCase(), { font: '30px Arial', fill: '#FFFFFF' }); //set font size at the same value as fntSize
+            this.centerText(txt);
         }
+    }
+
+    centerText(text) {
+        //top left
+        let tl_x = text.x;
+        let tl_y = text.y;
+
+        //center
+        let c_x = text.getCenter().x;
+        let c_y = text.getCenter().y;
+
+        let xOffset = c_x - tl_x;
+        let yOffset = c_y - tl_y;
+
+        //new coord.
+        let n_x = tl_x - xOffset;
+        let n_y = tl_y - yOffset;
+
+        text.setX(n_x);
+        text.setY(n_y);
     }
 
     /**
