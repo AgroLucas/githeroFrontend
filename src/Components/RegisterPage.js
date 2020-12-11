@@ -7,13 +7,13 @@ import {escapeHtml} from "../utils/Utils.js"
 const registerPage=`
 <form>
   <div class="row mx-0">
-    <div class="col-sm-3"></div>
-      <div class="col-sm-6">
+    <div class="col-lg-4 col-md-2"></div>
+      <div class="col-lg-4 col-md-8">
         <div class="my-5">
-          <h1> Inscription : </h1>
+          <h1>Inscription</h1>
         </div>
         <div class="form-group">
-          <label for="username">Username</label>
+          <label for="username">Pseudo</label>
           <input class="form-control" id="username" type="text" name="username" placeholder="Enter your username" minlength="4" required  /> 
         </div>
         <div class="form-group">
@@ -21,10 +21,10 @@ const registerPage=`
           <input class="form-control" id="email" type="text" name="email" placeholder="Enter your email" required="" pattern="^\\w+([.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+\$" />
         </div>
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">Mot de passe</label>
           <input class="form-control" id="password" type="password" name="password" placeholder="Enter your password" required="" pattern="*" />
         </div>
-        <button class="btn btn-primary" id="btn" type="submit">Submit</button>
+        <button class="btn btn-primary" id="btn" type="submit">S'inscrire</button>
 
         <!-- Create an alert component with bootstrap that is not displayed by default-->
         <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
