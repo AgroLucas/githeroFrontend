@@ -68,7 +68,7 @@ const onLogin = (e) => {
 };
 
 const onUserLogin = (userData) => {
-  console.log("onUserLogin:", userData);
+  console.log("onUserLogin:");
   const user = { ...userData, isAutenticated: true };  
   setUserSessionData(user);
   // re-render the navbar for the authenticated user

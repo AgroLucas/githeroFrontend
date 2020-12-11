@@ -50,7 +50,6 @@ const AddMusicInfo = () => {
         RedirectUrl("/");
         return;
     }
-    console.log(user);
     page.innerHTML = pageHtml;
     let submitBtn = document.querySelector("#submit");
     submitBtn.addEventListener("click", onSubmitHandler)
