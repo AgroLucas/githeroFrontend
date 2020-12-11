@@ -351,11 +351,11 @@ export default class GameScene extends Phaser.Scene {
         let note = arrayNote[0];
         let imgNote = arrayNote[1];
         
-        let scoreMessage = "";
+        let scoreMessage = "Connectez-vous pour inscrire votre score";
         let user = getUserSessionData();
         if (user)
             scoreMessage = await instance.getSetHighscore(instance.beatmapId, user, instance.score);
-            instance.displayModal(instance, scoreMessage, imgNote, note, percent);
+        instance.displayModal(instance, scoreMessage, imgNote, note, percent);
 
     }
 
