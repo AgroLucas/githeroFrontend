@@ -22,7 +22,7 @@ let pageHtml = `
             </div>
             <div class="form-group">
                 <label for="difficulty">Difficulté:</label>
-                <select class="form-control" id="difficulty">
+                <select class="form-control w-25" id="difficulty">
                     <option>Facile</option>
                     <option>Moyen</option>
                     <option>Difficile</option>
