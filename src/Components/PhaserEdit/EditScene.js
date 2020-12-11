@@ -2,12 +2,20 @@ import Phaser from 'phaser';
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
 import long_note_body from "../../img/game_assets/note_longue_sentinelle.png";
+import primary_gradation from "../../img/game_assets/primary_gradation.png";
+import secondary_gradation from "../../img/game_assets/secondary_gradation.png";
+
 const sNoteKey = "simple_note";
 const lNoteHeadKey = "long_note_head";
 const lNoteBodyKey = "long_note_body";
+const pGradKey = "primary_gradation_line";
+const sGradKey = "secondary_gradation_line";
+
 const addColor = 0x34EB3D;
 const delColor = 0xD12B4E;
 const visualizeColor = 0xFFFF00;
+
+const gradLineImgHeight = 200;
 
 export default class EditScene extends Phaser.Scene {
     constructor(width, height, duration) {
@@ -25,6 +33,7 @@ export default class EditScene extends Phaser.Scene {
 
         //lines
         this.lines = [];
+        this.gradLineSprites = [];
 
         //notes
         this.beatmap = []; //contains notes & sprites
@@ -33,12 +42,18 @@ export default class EditScene extends Phaser.Scene {
         //state
         this.preventAddNote = false;
         this.noteType = 0; //0 = simple; 1 = long
+
+        this.primaryGradationDelay = 1000; //ms between 2 primary grad. lines
+        this.secondaryGradationNumber = 3; //number of sec. grad. lines between 2 primary
+        this.gradLineScale = this.height / gradLineImgHeight;
     }
 
     preload() {
         this.load.image(sNoteKey, simple_note);
         this.load.image(lNoteHeadKey, long_note_head);
         this.load.image(lNoteBodyKey, long_note_body);
+        this.load.image(pGradKey, primary_gradation);
+        this.load.image(sGradKey, secondary_gradation);
     }
 
     create() {
@@ -64,11 +79,52 @@ export default class EditScene extends Phaser.Scene {
         this.lNoteGhost.setTint(addColor);
         this.lNoteGhost.visible = false;
 
-        this.createLongNote(0, 1000, 2000);
+        this.createGradationLines();
 
         this.input.on("pointermove", this.ghostFollow);
         this.input.on("pointermove", this.tailGhostFollow);
         this.input.on("pointerdown", this.addNote);
+    }
+
+    createLines() {
+        for(let i=0; i<4; i++){
+            let y=this.getYFromLineNum(i);
+            this.lines[i] = this.add.path(0, y);
+            this.lines[i].lineTo(this.width, y);
+        }
+    }
+
+    drawLines() {
+        this.setToLineStyle();
+        for(let i=0; i<4; i++){
+            this.lines[i].draw(this.graphics);
+        }
+    }
+
+    createGradationLines() {
+        let timeIncrement = this.primaryGradationDelay / (1+this.secondaryGradationNumber);
+        for(let time=0; time < this.duration; time += timeIncrement){
+            let textureKey;
+            if(time%this.primaryGradationDelay === 0){
+                textureKey = pGradKey;
+            }else{
+                textureKey = sGradKey;
+            }
+            let bundle = {
+               time: time,
+               sprite: this.createOneGradLine(textureKey, time),
+            }
+            this.gradLineSprites.push(bundle);
+        }
+    }
+
+    //returns the new sprite
+    createOneGradLine(textureKey, time){
+        let x = this.getXFromTime(time);
+        let y = this.height/2;
+        let res = this.add.sprite(x, y, textureKey);
+        res.setScale(1, this.gradLineScale);
+        return res;
     }
 
     ghostFollow(pointer) {
@@ -169,22 +225,6 @@ export default class EditScene extends Phaser.Scene {
         scene.tailGhost.setY(y);
     }
 
-    //lines
-    createLines() {
-        for(let i=0; i<4; i++){
-            let y=this.getYFromLineNum(i);
-            this.lines[i] = this.add.path(0, y);
-            this.lines[i].lineTo(this.width, y);
-        }
-    }
-
-    drawLines() {
-        this.setToLineStyle();
-        for(let i=0; i<4; i++){
-            this.lines[i].draw(this.graphics);
-        }
-    }
-
     getXFromTime(time) {
         let pxPerMs = this.width / this.screenTimeSpan; //number of pixels/ms
         return (time - this.currentTime) * pxPerMs;
@@ -198,6 +238,7 @@ export default class EditScene extends Phaser.Scene {
     //changes currentTime and updates display (to be called by EditPage)
     updateCurrentTime(time) {
         this.currentTime = time;
+        this.updateGradLines();
         this.updateNotes();
     }
 
@@ -217,6 +258,12 @@ export default class EditScene extends Phaser.Scene {
                     i++;
                 }
             }
+        });
+    }
+
+    updateGradLines(){
+        this.gradLineSprites.forEach(bundle => {
+            bundle.sprite.setX(this.getXFromTime(bundle.time));
         });
     }
 

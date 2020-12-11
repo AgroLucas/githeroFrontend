@@ -133,12 +133,9 @@ const EditPage = (data) => {
     simpleBtn.addEventListener("click", onClickSimpleNotesBtn);
     longBtn.addEventListener("click", onClickLongNotesBtn);
 
-    
     publishBtn.addEventListener("click", () => {
         publish(scene, user)
     });
-    
-
     return game;
 }
 
