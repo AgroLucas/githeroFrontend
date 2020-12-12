@@ -131,6 +131,7 @@ const restoreDefault = (e) => {
         currentPreferences.keyBinding[i] = defaultPreferences.keyBinding[i];
     }
     refreshFormInfo();
+    setUserPreferences();
 }
 
 // --- KEY BINDING ---

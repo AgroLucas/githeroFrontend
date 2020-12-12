@@ -4,8 +4,8 @@ import { getUserSessionData } from "../utils/Session.js";
 
 let pageHtml = `
 <div class="row mx-0">
-    <div class="col-4"></div>
-    <div class="col-4 text-center mt-5">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 text-center mt-5">
         <img id="logo" class="mt-5 mb-3" src="`+ logo +`" alt="logo">
         <h1 id="titleHomePage" class="display-2 mb-5 text-center">GitHero</h1>
         <button type="button" class="btn btn-danger homepage_play_button mt-5" href="#" data-uri="/list">Jouer</button>
@@ -14,8 +14,8 @@ let pageHtml = `
 
 let pageAuthHtml = `
 <div class="row mx-0 text-center">
-    <div class="col-4"></div>
-    <div class="col-4 mt-5">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 mt-5">
         <img id="logo" class="mt-5 mb-3" src="`+ logo +`" alt="logo">
         <h1 id="titleHomePage" class="display-2 mb-5">GitHero</h1>
         <div class="row">
