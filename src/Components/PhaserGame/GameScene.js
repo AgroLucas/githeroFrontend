@@ -134,25 +134,36 @@ export default class GameScene extends Phaser.Scene {
     }
 
     displayHUD () {
-        let textConfig = { font: '48px Arial', fill: '#000000' };
         let x_retImg, y_retImg;
+        let x_score, y_score, x_combo, y_combo ;
+
+        let textConfig;
+
+        let scoreText;
+
         if(detectMob()){ //mobile
-            let x_center = this.width/2;
-            let y_score = 1/10 * this.height;
-            let y_combo = 2/10 * this.height;
+            textConfig = { font: '32px Arial', fill: '#000000' };
+            x_score = 1/30 * this.width;
+            x_combo = 1/30 * this.width;
+            y_score = 2/10 * this.height;
+            y_combo = 3/10 * this.height;
 
-            x_retImg = this.width/30;
-            y_retImg = this.height/20;
+            x_retImg = 60;
+            y_retImg = 60;
 
-            this.scoreDisplay = this.add.text(x_center, y_score, "Score: 0", textConfig);
-            this.comboDisplay = this.add.text(x_center, y_combo, "X0", textConfig);
+            scoreText = "Score\n0";
+
         }else { //computer
-            this.scoreDisplay = this.add.text(100, 100, "Score: 0", textConfig); //TODO responsive
-            this.comboDisplay = this.add.text(this.width-200, 100, "X0", textConfig);
+            textConfig = { font: '48px Arial', fill: '#000000' };
             
             x_retImg = this.width/30;
             y_retImg = this.height/20;
+
+            scoreText = "Score: 0";
         }
+        this.scoreDisplay = this.add.text(x_score, y_score, scoreText, textConfig);
+        this.comboDisplay = this.add.text(x_combo, y_combo, "X0", textConfig);
+
         let returnImage = this.add.sprite(x_retImg, y_retImg, "arrow").setInteractive({useHandCursor: true});
         returnImage.on("pointerdown", () => this.quitPage());
     }
@@ -672,7 +683,11 @@ export default class GameScene extends Phaser.Scene {
      */
     updateScore(number) {
         this.score += number * this.combo;
-        this.scoreDisplay.setText("Score: " + this.score);
+        if(detectMob()){
+            this.scoreDisplay.setText("Score\n" + this.score);
+        }else {
+            this.scoreDisplay.setText("Score: " + this.score);
+        }
     }
 
     /**
