@@ -1,6 +1,7 @@
 import logo from "../img/GitHero_logo.png";
 import { RedirectUrl } from "./Router.js";
 import { getUserSessionData } from "../utils/Session.js";
+import {detectMob} from "../utils/Utils.js"
 
 let pageHtml = `
 <div class="row mx-0">
@@ -19,9 +20,13 @@ let pageAuthHtml = `
         <img id="logo" class="mt-5 mb-3" src="`+ logo +`" alt="logo">
         <h1 id="titleHomePage" class="display-2 mb-5">GitHero</h1>
         <div class="row">
-            <div class="col-12"><button type="button" class="btn btn-danger homepage_play_button mt-5" href="#" data-uri="/list"><strong data-uri="/addBeatmap">Jouer</strong></button></div>
-        </div><div class="row">
-            <div class="col-12"><button type="button" class="btn btn-secondary homepage_edit_button" data-uri="/addBeatmap"><strong data-uri="/addBeatmap">Editer</strong></button></div>
+            <div class="col-12"><button type="button" class="btn btn-danger homepage_play_button mt-5" href="#" data-uri="/list"><strong data-uri="/addBeatmap">Jouer</strong></button></div>`
+        if (!detectMob()) {
+            pageAuthHtml+=`
+                </div><div class="row">
+                <div class="col-12"><button type="button" class="btn btn-secondary homepage_edit_button" data-uri="/addBeatmap"><strong data-uri="/addBeatmap">Editer</strong></button></div>`
+        }
+        pageAuthHtml+=`
         </div>
     </div>
 </div>`;

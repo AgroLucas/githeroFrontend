@@ -1,6 +1,6 @@
 import {RedirectUrl} from "./Router.js";
 import { getUserSessionData } from "../utils/Session.js";
-import {escapeHtml} from "../utils/Utils.js"
+import {escapeHtml, detectMob} from "../utils/Utils.js"
 
 let pageHtml = `
 <div class="row mr-5">
@@ -49,7 +49,7 @@ const maxFileSize = 15000000; //15mb
 
 const AddMusicInfo = () => {
     let user = getUserSessionData();
-    if(!user){
+    if(!user || detectMob()){
         RedirectUrl("/");
         return;
     }
