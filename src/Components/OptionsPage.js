@@ -5,7 +5,7 @@ let pageHtml = `
 <div class="row mt-3 mx-0">
     <div class="col-md-3"></div>
     <div class="col-md-6">
-        <h2>Options</h2>
+        <h1>Options</h1>
         <form action="#" class="mb-5">
             <div class="border border-dark mt-5 pl-3 py-2">
                 <h4>Volumes:</h4>
