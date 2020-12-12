@@ -29,7 +29,7 @@ const GamePage = async (data) => {
           <div class="modal-content">
             <div class="modal-header"> </div>
             <div class="modal-body">
-              <div id="contentGameModal"></div>
+              <div id="contentGameModal" class="row text-center"></div>
             </div>
             <div class="modal-footer"> </div>
           </div>
