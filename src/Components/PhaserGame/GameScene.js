@@ -141,12 +141,12 @@ export default class GameScene extends Phaser.Scene {
 
         let scoreText;
 
-        if(detectMob()){ //mobile
+        if(detectMob() || this.width < 1000){ //mobile
             textConfig = { font: '32px Arial', fill: '#000000' };
             x_score = 1/30 * this.width;
             x_combo = 1/30 * this.width;
             y_score = 2/10 * this.height;
-            y_combo = 3/10 * this.height;
+            y_combo = y_score + 3 * 32;
 
             x_retImg = 30;
             y_retImg = 30;
@@ -464,9 +464,20 @@ export default class GameScene extends Phaser.Scene {
     displayModal (instance, scoreMessage, imgNote, note, percent)  {
         let modalBody = document.querySelector("#contentGameModal");
         modalBody.innerHTML = `
-            <div class="d-flex justify-content-center my-0" id="modalGameOverText">` + scoreMessage + `</br>Score: ` + instance.score + `</br>Précision : ` + percent +`%</br>Combo max : ` + instance.maxCombo + `</br>Note : ` + note + `</div>
-            <div class="d-flex justify-content-center my-0"></br><img id="` + imgNote + `" class=mt-3 src="` + imgNote + `" alt="` + imgNote + `"></div></br><button type="button" id="replay" class="btn btn-primary modalGameButton" href="#" data-uri="/game">Rejouer</button>
-            <button type="button" id="returnList" class="btn btn-primary modalGameButton" href="#" data-uri="/list">Retour à la liste de map</button> `;
+            <div class="col-12 mx-0" id="modalGameOverText">
+                <p>` + scoreMessage + `</br>Score: ` + instance.score + `</br>Précision : ` + percent +`%</br>Combo max : ` + instance.maxCombo + `</p>
+            </div>
+            <div class="col-12">
+                <img id="` + imgNote + `" class=mt-3 src="` + imgNote + `" alt="` + imgNote + `">
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <button type="button" id="replay" class="btn btn-primary modalGameButton h-50" href="#" data-uri="/game">Rejouer</button>
+                </div>
+                <div class="col-12 col-md-6">
+                    <button type="button" id="returnList" class="btn btn-primary modalGameButton h-50" href="#" data-uri="/list">Retour à la liste de map</button>
+                </div>
+            </div>`;
 
         page.querySelector("#replay").addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri, instance.beatmapId));
         page.querySelector("#returnList").addEventListener("click", (e) => RedirectUrl(e.target.dataset.uri));
