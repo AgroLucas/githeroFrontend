@@ -134,7 +134,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     displayHUD () {
-        let x_retImg, y_retImg;
+        let x_retImg, y_retImg, scale_retImg;
         let x_score, y_score, x_combo, y_combo ;
 
         let textConfig;
@@ -148,8 +148,9 @@ export default class GameScene extends Phaser.Scene {
             y_score = 2/10 * this.height;
             y_combo = 3/10 * this.height;
 
-            x_retImg = 60;
-            y_retImg = 60;
+            x_retImg = 30;
+            y_retImg = 30;
+            scale_retImg = 0.5;
 
             scoreText = "Score\n0";
 
@@ -163,6 +164,7 @@ export default class GameScene extends Phaser.Scene {
             
             x_retImg = this.width/30;
             y_retImg = this.height/20;
+            scale_retImg = 1;
 
             scoreText = "Score: 0";
         }
@@ -171,6 +173,7 @@ export default class GameScene extends Phaser.Scene {
 
         let returnImage = this.add.sprite(x_retImg, y_retImg, "arrow").setInteractive({useHandCursor: true});
         returnImage.on("pointerdown", () => this.quitPage());
+        returnImage.setScale(scale_retImg, scale_retImg);
     }
 
 
