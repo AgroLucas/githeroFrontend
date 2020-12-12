@@ -43,17 +43,20 @@ const loadScoreboard = async () => {
         });
 
         let pageHtml = `
-<div class="mt-3 mt-sm-5 ml-2 mr-2 w-90">
-    <h1 class="text-center mb-3">Classements</h1>
-    <h4>` +  rankMessage + `</h4>
-    <table class="table table-dark text-center">
-        <thead>
-            <tr><th colspan="3"><h5>Meilleurs Scores Généraux</h5></th></tr>
-        </thead>
-        <tbody>`
-        + content +
-        `</tbody>
-    </table>
+<div class="row mx-0">
+    <div class="col-0 col-md-2 col-lg-3"></div>
+    <div class="mt-3 mt-sm-5 col-12 col-md-8 col-lg-6">
+        <h1 class="text-center mb-3">Classements</h1>
+        <h4>` +  rankMessage + `</h4>
+        <table class="table table-dark text-center">
+            <thead>
+                <tr><th colspan="3"><h5>Meilleurs Scores Généraux</h5></th></tr>
+            </thead>
+            <tbody>`
+            + content +
+            `</tbody>
+        </table>
+    </div>
 </div>`;
         page.innerHTML = pageHtml;
     });
