@@ -1,5 +1,5 @@
 let pageHtml = `
-<div class="text-center side_page">
+<div class="text-center mt-0 mt-md-5 ml-4 mr-4">
     <h1>A propos de nous</h1>
     <p>Nous sommes étudiants en 2ème année en Informatique de gestion à L'institut Paul Lambin.</p>
     <p>Nous avons dû créer ce site dans le cadre de notre cours de Javascript.</p>
@@ -8,8 +8,8 @@ let pageHtml = `
     <p>Anis Assaidi : anis.assaidi@student.vinci.be</p>
     <p>Bastien Boutte : bastien.boutte@student.vinci.be</p>
     <p>Baptiste Honnay : baptiste.honnay@student.vinci.be</p>    
-    <p></p>
-    <p>Note : notre logo est dérivé du logo de GIT de Jason Long.</p>
+    <p class ="mt-5">Note : notre logo est dérivé du logo de GIT de Jason Long.</p>
+
 </div>`;
 
 let page = document.querySelector("#page");
