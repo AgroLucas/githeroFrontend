@@ -155,6 +155,11 @@ export default class GameScene extends Phaser.Scene {
 
         }else { //computer
             textConfig = { font: '48px Arial', fill: '#000000' };
+
+            x_score = 100;
+            x_combo = this.width - 200;
+            y_score = 100;
+            y_combo = 100;
             
             x_retImg = this.width/30;
             y_retImg = this.height/20;
