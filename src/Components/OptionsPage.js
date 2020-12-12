@@ -9,17 +9,17 @@ let pageHtml = `
         <form action="#" class="mb-5">
             <div class="border border-dark mt-5 pl-3 py-2">
                 <h4>Volumes:</h4>
-                <div class="form-group">
+                <div class="form-group col-sm-12 col-md-8 col-lg-4">
                     <label for="masterVolume">Principal:</label>
-                    <input type="range" id="masterVolume" name="masterVolume" class="form-control-range w-25" min="0" max="1" step="0.05">
+                    <input type="range" id="masterVolume" name="masterVolume" class="form-control-range" min="0" max="1" step="0.05">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-sm-12 col-md-8 col-lg-4">
                     <label for="bgmVolume">Musique:</label>
-                    <input type="range" id="bgmVolume" name="bgmVolume" class="form-control-range w-25" min="0" max="1" step="0.05">
+                    <input type="range" id="bgmVolume" name="bgmVolume" class="form-control-range" min="0" max="1" step="0.05">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-sm-12 col-md-8 col-lg-4">
                     <label for="effectVolume">Effets sonores:</label>
-                    <input type="range" id="effectVolume" name="effectVolume" class="form-control-range w-25" min="0" max="1" step="0.05">
+                    <input type="range" id="effectVolume" name="effectVolume" class="form-control-range" min="0" max="1" step="0.05">
                 </div>
             </div>`
             if (!detectMob()) {
