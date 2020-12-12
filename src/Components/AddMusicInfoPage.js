@@ -7,7 +7,7 @@ let pageHtml = `
     <div class="col-md-1 col-lg-3"></div>
     <div class="col-12 col-md-10 col-lg-6">
         <header class="mt-4">
-            <h2>Création de Beatmap</h2>
+            <h1>Création de Beatmap</h1>
             <p>Entrez les informations sur la beatmap que vous voulez créer</p>
         </header>
         <form action="#" class="border border-dark px-5 py-3 mt-5">
@@ -45,7 +45,7 @@ let page = document.querySelector("#page");
 let formErrMsg = "Informations incomplètes";
 
 const validMimeTypes = ["audio/mpeg", "audio/wav"];
-const maxFileSize = 15000000; //15mb
+const maxFileSize = 8000000; //8mb
 
 const AddMusicInfo = () => {
     let user = getUserSessionData();

@@ -1,6 +1,7 @@
 import Phaser, {Game, Time ,Base64} from 'phaser';
 import { RedirectUrl } from "../Router.js";
 import {getUserSessionData} from "../../utils/Session.js";
+import { detectMob } from "../../utils/Utils.js";
 
 import simple_note from "../../img/game_assets/note_simple.png";
 import long_note_head from "../../img/game_assets/note_longue_tete.png";
@@ -59,7 +60,6 @@ export default class GameScene extends Phaser.Scene {
         this.btnSize = 80; //sprite of 80px TODO scale dynamicly to screen size
         this.btnYOffset = this.btnSize/2;
 
-
         this.masterVolume = userPreferences.volume.master;
         this.soundEffectVolume = userPreferences.volume.effect;
         
@@ -73,7 +73,6 @@ export default class GameScene extends Phaser.Scene {
         this.valueToGive = Math.round((this.noteTravelTime - this.noteTravelTimeToBtn)%this.shortNoteInterval); //the value given while doing a perfect shot
 
         this.songDuration = audioFileDuration;
-
 
         this.arrayKeys = [];
         this.arrayKeys[0] = userPreferences.keyBinding[1];
@@ -131,10 +130,47 @@ export default class GameScene extends Phaser.Scene {
         instance.createBtns();
         instance.createBtnLabels();
         instance.drawAll();
-        instance.scoreDisplay = instance.add.text(100, 100, "Score: 0", { font: '48px Arial', fill: '#000000' }); //TODO responsive
-        instance.comboDisplay = instance.add.text(instance.width-200, 100, "X0", { font: '48px Arial', fill: '#000000' });
-        let returnImage = instance.add.sprite(instance.width/30, instance.height/20, "arrow").setInteractive({useHandCursor: true});
-        returnImage.on("pointerdown", () => instance.quitPage());
+        instance.displayHUD();
+    }
+
+    displayHUD () {
+        let x_retImg, y_retImg;
+        let x_score, y_score, x_combo, y_combo ;
+
+        let textConfig;
+
+        let scoreText;
+
+        if(detectMob()){ //mobile
+            textConfig = { font: '32px Arial', fill: '#000000' };
+            x_score = 1/30 * this.width;
+            x_combo = 1/30 * this.width;
+            y_score = 2/10 * this.height;
+            y_combo = 3/10 * this.height;
+
+            x_retImg = 60;
+            y_retImg = 60;
+
+            scoreText = "Score\n0";
+
+        }else { //computer
+            textConfig = { font: '48px Arial', fill: '#000000' };
+
+            x_score = 100;
+            x_combo = this.width - 200;
+            y_score = 100;
+            y_combo = 100;
+            
+            x_retImg = this.width/30;
+            y_retImg = this.height/20;
+
+            scoreText = "Score: 0";
+        }
+        this.scoreDisplay = this.add.text(x_score, y_score, scoreText, textConfig);
+        this.comboDisplay = this.add.text(x_combo, y_combo, "X0", textConfig);
+
+        let returnImage = this.add.sprite(x_retImg, y_retImg, "arrow").setInteractive({useHandCursor: true});
+        returnImage.on("pointerdown", () => this.quitPage());
     }
 
 
@@ -340,7 +376,6 @@ export default class GameScene extends Phaser.Scene {
     }   
 
     /**** End game ****/
-
     async endGame (instance) {
         instance.isStarted = false;
         let percent = Math.round(instance.nbrHits/instance.beatmap.length*10000)/100;
@@ -475,7 +510,7 @@ export default class GameScene extends Phaser.Scene {
             this.setBtnInactive(2);
         if (typeof this.queuesTimestampToValidate[3] === "undefined" || typeof this.queuesTimestampToValidate[3].follower === "undefined") 
             this.setBtnInactive(3);  
-    }  
+    }
     
     
     onKeypress (e) {
@@ -504,7 +539,7 @@ export default class GameScene extends Phaser.Scene {
                     if(typeof queueToShift[0].follower!== "undefined") //if the note is not long
                         this.onKeypressRightTime(queueToShift);
                 }
-                }
+            }
         }
     };
     
@@ -617,12 +652,13 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createBtnLabels(){
-        let fntSize = 30; 
-        let y = this.endPathY - this.btnYOffset ; //same y as btns
-        for(let i=0; i<4; i++){
-            let x = this.calcLineXFromY(i, this.height);
-            let txt = this.add.text(x, y, this.arrayKeys[i].toUpperCase(), { font: '30px Arial', fill: '#FFFFFF' }); //set font size at the same value as fntSize
-            this.centerText(txt);
+        if(!detectMob()){
+            let y = this.endPathY - this.btnYOffset ; //same y as btns
+            for(let i=0; i<4; i++){
+                let x = this.calcLineXFromY(i, this.height);
+                let txt = this.add.text(x, y, this.arrayKeys[i].toUpperCase(), { font: '30px Arial', fill: '#FFFFFF' }); //set font size at the same value as fntSize
+                this.centerText(txt);
+            }
         }
     }
 
@@ -652,7 +688,11 @@ export default class GameScene extends Phaser.Scene {
      */
     updateScore(number) {
         this.score += number * this.combo;
-        this.scoreDisplay.setText("Score: " + this.score);
+        if(detectMob()){
+            this.scoreDisplay.setText("Score\n" + this.score);
+        }else {
+            this.scoreDisplay.setText("Score: " + this.score);
+        }
     }
 
     /**
