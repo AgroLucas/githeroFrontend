@@ -74,7 +74,9 @@ export default class GameScene extends Phaser.Scene {
         this.soundEffectVolume = userPreferences.volume.effect;
         
 
-        let tweak = 1.5;     
+        let tweak = 1.5;   
+        if(this.width < this.smallBtnWidthThreshold)
+            tweak = 1.75;  
         let distanceToBtnCenter = this.height-(tweak * this.btnSize/2);
         this.noteTravelTimeToBtnCenter = this.calcTimeToGetToY(distanceToBtnCenter); 
         let distanceToBtn = this.height-(tweak * this.btnSize);
