@@ -13,7 +13,7 @@ const MusicListPage = (message) => {
 const loadBeatmap = async (message) => {
     if (!message)
         message=""
-    let buttonHtml = "<div class=\"text-center font-weight-bold\">" + message + "</div>";
+    let buttonHtml = "";
     let modalHtml = "";
     let user = getUserSessionData();
     user = user ? user : {username: null};
@@ -84,7 +84,7 @@ const loadBeatmap = async (message) => {
                 </div>`;
         }
 
-        let pageHtml = `<div id="button_page" class="d-flex flex-md-row flex-sm-column justify-content-start flex-wrap">` + buttonHtml + `</div><div id="modal_page">` + modalHtml + `</div>`;
+        let pageHtml = `<div class="text-center font-weight-bold">` + message + `</div><div id="button_page" class="d-flex flex-md-row flex-sm-column justify-content-start flex-wrap">` + buttonHtml + `</div><div id="modal_page">` + modalHtml + `</div>`;
         page.innerHTML = pageHtml;
 
         searchForPlayBtns();
