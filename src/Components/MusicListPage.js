@@ -66,7 +66,7 @@ const loadBeatmap = async (message) => {
                                         </table>
                                         <div class="text-center"><h4>Difficulté : ` + getDifficultyWithColor(ELEMENT) + `</h4></div>
                                     </div>
-                                    <div class="music_info_leaderboard">
+                                    <div class="music_info_leaderboard col-md-7 mx-auto mr-md-0 text-center text-md-left">
                                         <p><h4>` + ELEMENT.musicTitle + `</h4></p>
                                         <p>Durée : ` + (Math.floor(ELEMENT.musicDuration/1000/60)) + `:` + (Math.floor(ELEMENT.musicDuration/1000)%60) + `</p>
                                         <p>Auteur : ` + ELEMENT.musicArtist + `</p>
