@@ -40,34 +40,7 @@ const Router = () => {
 
 //onLoadHandler
 const onLoadHandler = async (e) => {
-    let user = getUserSessionData();
-    if(user){
-        await fetch("/api/users/testToken", {
-            method: "GET",
-            headers: {
-                Authorization: user.token,
-                "Content-Type": "application/json",
-            },
-        })
-        .then((response) => {
-            console.log(response);
-            if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
-            return response.json();
-        })
-        .then(() => {
-            console.log("jwt valid");
-            load(window.location.pathname);
-        })
-        .catch((err) => {
-            console.log("jwt expired");
-            RedirectUrl("/logout"); // jwt expired
-        });
-    }else{
-        load(window.location.pathname);
-    }
-};
-
-const load = (url) => {
+    let url = window.location.pathname;
     console.log("onLoad : ", url);
     if (url==="/game") {
         createGame();

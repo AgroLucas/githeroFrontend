@@ -1,7 +1,6 @@
 "use strict";
 import {searchForPlayBtns} from "./Router.js";
 import {getUserSessionData} from "../utils/Session.js";
-import {RedirectUrl} from "./Router.js";
 
 
 let page = document.querySelector("#page");
@@ -37,21 +36,32 @@ const loadBeatmap = async (message) => {
                         <!-- Modal Body -->
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-md-4 ">
+                                    <div class="col-12 col-lg-4 ">
                                         <table class="table table-dark text-center">
                                             <thead>
                                                 <tr><th colspan="3"><h5>Meilleurs Scores</h5></th></tr>
                                             </thead>
                                             <tbody>`
             let cmpt = 0;
+            let user = getUserSessionData();
             for(let i = 0; i < 5 && i < ELEMENT.leaderboard.length; i++) {
-                modalHtml+=`
-                                                <tr>
-                                                    <td>` + (i+1) + `</td>
-                                                    <td>` + ELEMENT.leaderboard[i].username + `</td>
-                                                    <td>` + ELEMENT.leaderboard[i].score + `</td>
-                                                </tr>`
-                cmpt++;
+                if (user && user.username==ELEMENT.leaderboard[i].username) {
+                    modalHtml+=`
+                                <tr>
+                                    <td class="text-warning">` + (i+1) + `</td>
+                                    <td class="text-warning">` + ELEMENT.leaderboard[i].username + `</td>
+                                    <td class="text-warning">` + ELEMENT.leaderboard[i].score + `</td>
+                                </tr>`;
+                    cmpt++;
+                } else {
+                    modalHtml+=`
+                                 <tr>
+                                    <td>` + (i+1) + `</td>
+                                    <td>` + ELEMENT.leaderboard[i].username + `</td>
+                                    <td>` + ELEMENT.leaderboard[i].score + `</td>
+                                </tr>`
+                    cmpt++;
+                }
             }
             for(let i = cmpt; i<5; i++) {
                 modalHtml+=`
@@ -66,7 +76,7 @@ const loadBeatmap = async (message) => {
                                         </table>
                                         <div class="text-center"><h4>Difficulté : ` + getDifficultyWithColor(ELEMENT) + `</h4></div>
                                     </div>
-                                    <div class="music_info_leaderboard col-md-7 mx-auto mr-md-0 text-center text-md-left">
+                                    <div class="music_info_leaderboard col-12 col-lg-7 mx-auto mr-md-0 text-center text-lg-left">
                                         <p><h4>` + ELEMENT.musicTitle + `</h4></p>
                                         <p>Durée : ` + (Math.floor(ELEMENT.musicDuration/1000/60)) + `:` + (Math.floor(ELEMENT.musicDuration/1000)%60) + `</p>
                                         <p>Auteur : ` + ELEMENT.musicArtist + `</p>
