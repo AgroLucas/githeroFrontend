@@ -42,6 +42,7 @@ export default class EditScene extends Phaser.Scene {
         console.log(this.beatmap);
 
         //state
+        this.visualizing = false;
         this.preventAddNote = false;
         this.noteType = 0; //0 = simple; 1 = long
 
@@ -182,6 +183,18 @@ export default class EditScene extends Phaser.Scene {
         this.preventAddNote = false;
     }
 
+    startVisualizing() {
+        this.headGhost.visible = true;
+        this.tailGhost.visible = true;
+        this.visualizing = true;
+    }
+
+    stopVisualizing() {
+        this.headGhost.visible = false;
+        this.tailGhost.visible = false;
+        this.visualizing = false;
+    }
+
     addNote(pointer) {
         let scene = this.scene;
         switch(scene.noteType) {
@@ -214,8 +227,7 @@ export default class EditScene extends Phaser.Scene {
                 this.currentLongNoteLine = lineNum;
                 this.headGhost.setX(this.getXFromTime(timeStart));
                 this.headGhost.setY(this.getYFromLineNum(lineNum));
-                this.headGhost.visible = true;
-                this.tailGhost.visible = true;
+                this.startVisualizing();
                 this.input.once("pointerdown", (pointer) =>this.completeLongNote(pointer, timeStart));
             }
         }
@@ -223,20 +235,21 @@ export default class EditScene extends Phaser.Scene {
 
     completeLongNote(pointer, timeStart){
         let scene = this.scene.scene;
-        let timeEnd = scene.getTimeFromX(pointer.x);
-        let lineNum = scene.currentLongNoteLine;
-        if(this.isAvailableForLong(timeStart, timeEnd, lineNum)) {
-            console.log("complete");
-            scene.headGhost.visible = false;
-            scene.tailGhost.visible = false;
-            scene.allowAdd();
-            if(timeStart < timeEnd){
-                scene.createLongNote(scene.currentLongNoteLine, timeStart, timeEnd);
-            }else {
-                if(timeStart != timeEnd){
-                    scene.createLongNote(scene.currentLongNoteLine, timeEnd, timeStart); // end before start (swap)
+        if(scene.visualizing){
+            let timeEnd = scene.getTimeFromX(pointer.x);
+            let lineNum = scene.currentLongNoteLine;
+            if(this.isAvailableForLong(timeStart, timeEnd, lineNum)) {
+                console.log("complete");
+                this.stopVisualizing();
+                scene.allowAdd();
+                if(timeStart < timeEnd){
+                    scene.createLongNote(scene.currentLongNoteLine, timeStart, timeEnd);
                 }else {
-                    console.log("impossible");
+                    if(timeStart != timeEnd){
+                        scene.createLongNote(scene.currentLongNoteLine, timeEnd, timeStart); // end before start (swap)
+                    }else {
+                        console.log("impossible");
+                    }
                 }
             }
         }
@@ -323,6 +336,8 @@ export default class EditScene extends Phaser.Scene {
                 case 0:
                     this.sNoteGhost.visible = true;
                     this.lNoteGhost.visible = false;
+                    this.stopVisualizing(); //edge case
+                    this.allowAdd();
                     break;
                 case 1:
                     this.sNoteGhost.visible = false;
