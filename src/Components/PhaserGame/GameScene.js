@@ -44,6 +44,7 @@ export default class GameScene extends Phaser.Scene {
         this.setProportions();
 
         this.noteTravelTime = 3000;
+        this.slowTravelTime = 4000;
         this.lowestPoint = 50
         this.longNoteValueIncreaseTime = 10;
         this.shortNoteInterval = 50; 
@@ -58,13 +59,22 @@ export default class GameScene extends Phaser.Scene {
         this.lines = [];
 
         this.btnSize = 80; //sprite of 80px TODO scale dynamicly to screen size
+        this.smallBtnScale = 0.75;
+        this.smallBtnWidthThreshold = 400; //px
         this.btnYOffset = this.btnSize/2;
 
+        if(this.width < this.smallBtnWidthThreshold){
+            this.btnSize *= this.smallBtnScale;
+            this.btnYOffset *= this.smallBtnScale;
+            this.noteTravelTime = this.slowTravelTime;
+        }
+        console.log("btn size: ", this.btnSize);
+        
         this.masterVolume = userPreferences.volume.master;
         this.soundEffectVolume = userPreferences.volume.effect;
         
 
-        let tweak = 1.5;        
+        let tweak = 1.5;     
         let distanceToBtnCenter = this.height-(tweak * this.btnSize/2);
         this.noteTravelTimeToBtnCenter = this.calcTimeToGetToY(distanceToBtnCenter); 
         let distanceToBtn = this.height-(tweak * this.btnSize);
@@ -654,8 +664,15 @@ export default class GameScene extends Phaser.Scene {
         let y = this.endPathY - this.btnYOffset;
         for (let i = 0; i < 4; i++) {
             let x = this.calcLineXFromY(i, y);
-            this.btns[i] = {button:this.add.sprite(x,y, "btnInactive"), active:false};
+            this.btns[i] = {
+                button:this.add.sprite(x,y, "btnInactive"),
+                active:false,
+            };
+            if(this.width < this.smallBtnWidthThreshold){
+                this.btns[i].button.setScale(this.smallBtnScale, this.smallBtnScale);
+            }
         }
+        
     }
 
     createLines() {
