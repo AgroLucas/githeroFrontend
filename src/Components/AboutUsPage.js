@@ -1,5 +1,5 @@
 let pageHtml = `
-<div class="text-center mt-0 mt-md-5 ml-4 mr-4">
+<div class="text-center mt-3 mt-md-5 ml-4 mr-4 mb-3">
     <h1>A propos de nous</h1>
     <p>Nous sommes étudiants en 2ème année en Informatique de gestion à L'institut Paul Lambin.</p>
     <p>Nous avons dû créer ce site dans le cadre de notre cours de Javascript.</p>

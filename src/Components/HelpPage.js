@@ -2,10 +2,10 @@ import {detectMob} from "../utils/Utils.js"
 let pageHtml;
 if (!detectMob()) {
     pageHtml = `
-    <div class="side_page text-center">
+    <div class="text-center mt-3 mt-md-5 ml-4 mr-4">
         <h1>Aide</h1>
         <div>
-            <h2>Règles du jeu</h2>
+            <h2 class="mt-2 mb-3">Règles du jeu</h2>
             <p>Une fois la musique sélectionnée, vous arriverez sur la page du jeu.</br>
             Sur celle-ci, vous verrez 4 lignes qui sont par défaut reliées à vos touches D, F, J et K </br>
             (les touches sont modifiables dans la page "Options").</p>
@@ -19,10 +19,10 @@ if (!detectMob()) {
     </div>`;
 } else {
     pageHtml = `
-    <div class="text-center mt-3 ml-4 mr-4">
+    <div class="text-center mt-3 mt-md-5 ml-4 mr-4">
         <h1>Aide</h1>
         <div>
-            <h2 class="mt-3 mb-3">Règles du jeu</h2>
+            <h2 class="mt-2 mb-3">Règles du jeu</h2>
             <p>Une fois la musique sélectionnée, vous arriverez sur la page du jeu.</br>
             Sur celle-ci, vous verrez 4 lignes.</p>
             <p>Des notes vont commencer à apparaître et à défiler le long des lignes jusqu'à arriver à vos touches.</br>
