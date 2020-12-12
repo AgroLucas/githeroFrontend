@@ -39,10 +39,10 @@ const Router = () => {
 }
 
 //onLoadHandler
-const onLoadHandler = (e) => {
+const onLoadHandler = async (e) => {
     let user = getUserSessionData();
     if(user){
-        fetch("/api/users/testToken", {
+        await fetch("/api/users/testToken", {
             method: "GET",
             headers: {
                 Authorization: user.token,

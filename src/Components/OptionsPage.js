@@ -1,4 +1,6 @@
 import {RedirectUrl} from "./Router.js";
+import {detectMob} from "../utils/Utils.js"
+
 let pageHtml = `
 <div class="row mt-3 mx-0">
     <div class="col-md-3"></div>
@@ -19,7 +21,9 @@ let pageHtml = `
                     <label for="effectVolume">Effets sonores:</label>
                     <input type="range" id="effectVolume" name="effectVolume" class="form-control-range w-25" min="0" max="1" step="0.05">
                 </div>
-            </div>
+            </div>`
+            if (!detectMob()) {
+                pageHtml+= `
             <div class="border border-dark mt-5 pl-3 pt-3 pb-5 mb-3">
                 <h4>Configuration des touches:</h4>
                 <div class="row mt-3 mx-0">
@@ -50,7 +54,9 @@ let pageHtml = `
                         <button id="btnKey4" type="button" class="btn btn-outline-primary keyBindingBtn" data-toggle="popover" data-content="Appuiez sur une touche" data-trigger="focus"></button>
                     </div>
                 </div>
-            </div>
+            </div>`
+            }
+            pageHtml+=`
             <button id="defaultBtn" class="mt-3 btn btn-secondary">Défaut</button>
         </form>
     </div>
@@ -111,7 +117,8 @@ const OptionsPage = () => {
     rangeBgm.addEventListener("change", onVolumeChange);
 
     refreshFormInfo();
-    addKeyBindingBtnListeners();
+    if (!detectMob())
+        addKeyBindingBtnListeners();
 }
 
 const restoreDefault = (e) => {
@@ -136,10 +143,12 @@ const onVolumeChange = () => {
 }
 
 const refreshFormInfo = () => {
-    btnKey1.innerText = currentPreferences.keyBinding[1].toUpperCase();
-    btnKey2.innerText = currentPreferences.keyBinding[2].toUpperCase();
-    btnKey3.innerText = currentPreferences.keyBinding[3].toUpperCase();
-    btnKey4.innerText = currentPreferences.keyBinding[4].toUpperCase();
+    if (!detectMob()) {
+        btnKey1.innerText = currentPreferences.keyBinding[1].toUpperCase();
+        btnKey2.innerText = currentPreferences.keyBinding[2].toUpperCase();
+        btnKey3.innerText = currentPreferences.keyBinding[3].toUpperCase();
+        btnKey4.innerText = currentPreferences.keyBinding[4].toUpperCase();
+    }
     rangeMaster.value = currentPreferences.volume.master;
     rangeBgm.value = currentPreferences.volume.bgm;
     rangeEffect.value = currentPreferences.volume.effect;
@@ -212,7 +221,8 @@ const onClickOutside = () => {
     removeKeyBindingListeners();
     console.log("remove CLICK EE");
     window.removeEventListener("click", onClickOutside);
-    addKeyBindingBtnListeners();
+    if (!detectMob())
+        addKeyBindingBtnListeners();
 }
 
 const onKey1Binding = (e) => {

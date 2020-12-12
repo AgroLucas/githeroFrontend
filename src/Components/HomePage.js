@@ -30,7 +30,6 @@ let page = document.querySelector("#page");
 
 const HomePage = () => {
     let htmlToDisplay;
-
     let user = getUserSessionData();
     if(!user) {
         htmlToDisplay = pageHtml;
