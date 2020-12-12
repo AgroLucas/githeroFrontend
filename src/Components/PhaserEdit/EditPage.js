@@ -12,7 +12,7 @@ let pageHtml = `
     <p id="artist"></p>
     </div>
     <div class="col-2 pr-2">
-        <button id="publish" class="btn btn-danger w-50 py-3">Publier</button>
+        <button id="publish" class="btn btn-danger px-5 py-3">Publier</button>
     </div>
 </div>
 <div class="row mx-0 mt-5">
@@ -32,7 +32,7 @@ let pageHtml = `
         <input id="timeLine" type="range" class="form-control-range" min="0" max="1" step="0.001" value="0"/>
     </div>
     <div class="col-1">
-        <p><span id="currentTimer">00:00</span>/<span id="endTimer">00:45</span></p>
+        <p><span id="currentTimer"></span>/<span id="endTimer"></span></p>
     </div>
     <div class="col-1">
         <button id="playBtn" class="btn btn-secondary py-2 w-50">Play</button>
