@@ -3,9 +3,9 @@ import { getUserSessionData } from "../utils/Session.js";
 import {escapeHtml, detectMob} from "../utils/Utils.js"
 
 let pageHtml = `
-<div class="row mr-5">
-    <div class="col-3"></div>
-    <div class="col-6">
+<div class="row mx-0">
+    <div class="col-md-1 col-lg-3"></div>
+    <div class="col-12 col-md-10 col-lg-6">
         <header class="mt-4">
             <h2>Création de Beatmap</h2>
             <p>Entrez les informations sur la beatmap que vous voulez créer</p>
