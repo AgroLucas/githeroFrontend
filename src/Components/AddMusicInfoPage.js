@@ -45,7 +45,7 @@ let page = document.querySelector("#page");
 let formErrMsg = "Informations incomplètes";
 
 const validMimeTypes = ["audio/mpeg", "audio/wav"];
-const maxFileSize = 15000000; //15mb
+const maxFileSize = 8000000; //8mb
 
 const AddMusicInfo = () => {
     let user = getUserSessionData();
