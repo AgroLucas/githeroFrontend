@@ -25,7 +25,7 @@ const loadBeatmap = async (message) => {
     }).then(response => {
         console.log(response);
         for(const ELEMENT of response){
-            buttonHtml += `<button type="button" class="btn  button_music" data-toggle="modal" data-target="#myModal` + ELEMENT.beatmapID +`">` + getTitleAndAuthor(ELEMENT) + `</button>`;
+            buttonHtml += `<button type="button" class="btn button_music mx-auto mx-md-5 my-5 py-5" data-toggle="modal" data-target="#myModal` + ELEMENT.beatmapID +`">` + getTitleAndAuthor(ELEMENT) + `</button>`;
             modalHtml += `
                 <div class="modal fade" id="myModal` + ELEMENT.beatmapID + `">
                     <div class="modal-dialog modal-xl" >
@@ -84,7 +84,7 @@ const loadBeatmap = async (message) => {
                 </div>`;
         }
 
-        let pageHtml = `<div id="button_page">` + buttonHtml + `</div><div id="modal_page">` + modalHtml + `</div>`;
+        let pageHtml = `<div id="button_page" class="d-flex flex-md-row flex-sm-column justify-content-start flex-wrap">` + buttonHtml + `</div><div id="modal_page">` + modalHtml + `</div>`;
         page.innerHTML = pageHtml;
 
         searchForPlayBtns();

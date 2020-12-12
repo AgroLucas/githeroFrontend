@@ -55,10 +55,8 @@ li button {
 /*********************************On MusicListPage*********************************/
 
 .button_music {
-    height: 13em;
+    /*height: 13em;*/
     width: 18em;
-    margin-top: 3em;
-    margin-left: 4.5em;
     color: white;
     background-color: #004085;
     transition: 0.7s;
