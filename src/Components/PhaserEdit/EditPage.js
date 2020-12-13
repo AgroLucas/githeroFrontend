@@ -152,7 +152,7 @@ const EditPage = (data) => {
     longBtn.addEventListener("click", onClickLongNotesBtn);
 
     if(modify){ //modify
-        scene.loadBeatmap(noteList);
+        scene.loadBeatmap(scene, noteList);
         publishBtn.innerText = "Modifier";
         publishBtn.addEventListener("click", () => {
             update(scene, user);

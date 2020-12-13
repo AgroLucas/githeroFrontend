@@ -25,7 +25,7 @@ const onError = (err) => {
 }
 
 const onResponse = (data) => {
-    if(user.username === data.bmCreator){
+    if(user.username == data.creator){
         let beatmap = {
             beatmapID: data.beatmapID,
             difficulty: data.difficulty,

@@ -212,7 +212,7 @@ export default class EditScene extends Phaser.Scene {
             let lineNbr = this.getLineNumFromY(pointer.y);
             if(this.isAvailableForSimple(time, lineNbr)){
                 console.log("add s");
-                this.createSimpleNote(lineNbr, time);
+                this.createSimpleNote(this, lineNbr, time);
             }
         }
     }
@@ -346,23 +346,25 @@ export default class EditScene extends Phaser.Scene {
         }
     }
 
-    createSimpleNote(lineNum, time){
+    createSimpleNote(instance, lineNum, time){
         let note = [0, lineNum, time];
-        let sprite = this.add.sprite(this.getXFromTime(time), this.getYFromLineNum(lineNum), sNoteKey).setInteractive();
+        let test = instance.add;
+        console.log(instance, instance.add);
+        let sprite = instance.add.sprite(instance.getXFromTime(time), instance.getYFromLineNum(lineNum), sNoteKey).setInteractive();
         let noteBundle = {
             note: note,
             sprite: sprite,
         }
-        this.beatmap.push(noteBundle);
+        instance.beatmap.push(noteBundle);
 
         sprite.on("pointerdown", ()=>{
-            this.deleteSimpleNote(sprite)
+            instance.deleteSimpleNote(sprite)
         });
         sprite.on("pointerover", ()=>{
-            this.highlightSimpleNote(sprite);
+            instance.highlightSimpleNote(sprite);
         });
         sprite.on("pointerout", ()=>{
-            this.removeSimpleNoteHighlight(sprite);
+            instance.removeSimpleNoteHighlight(sprite);
         });
     }
 
@@ -544,7 +546,7 @@ export default class EditScene extends Phaser.Scene {
     }
 
     //add notes to beatmap
-    loadBeatmap(noteList){
+    loadBeatmap(noteList, instance){
         for(let i=0; i<noteList.length; i++){
             let note = noteList[i];
             let noteType = note[0];
@@ -552,7 +554,7 @@ export default class EditScene extends Phaser.Scene {
             switch(noteType){
                 case 0: //simple
                     let time = note[2];
-                    this.createSimpleNote(lineNum, time);
+                    this.createSimpleNote(instance, lineNum, time);
                     break;
                 case 1: //long
                     let timeStart = note[2];
