@@ -47,6 +47,10 @@ let pageHtml = `
 <audio id="audio"/>
 `;
 
+let modify;
+let noteList;
+let beatmapID;
+
 let timeLine;
 let playBtn;
 let simpleBtn;
@@ -93,7 +97,14 @@ const EditPage = (data) => {
         return;
     }
     
-    
+    if(!data.modify){ //create new
+        modify = false;
+    }else { //modify aleady existing beatmap
+        modify = true;
+        noteList = data.noteList;
+        beatmapID = data.beatmapID;
+    }
+
     difficulty = data.difficulty;
     musicTitle = data.title;
     musicData = data.audioData;
@@ -140,15 +151,23 @@ const EditPage = (data) => {
     simpleBtn.addEventListener("click", onClickSimpleNotesBtn);
     longBtn.addEventListener("click", onClickLongNotesBtn);
 
-    publishBtn.addEventListener("click", () => {
-        publish(scene, user)
-    });
+    if(modify){ //modify
+        scene.loadBeatmap(noteList);
+        publishBtn.innerText = "Modifier";
+        publishBtn.addEventListener("click", () => {
+            update(scene, user);
+        });
+    }else{ //publish new
+        publishBtn.addEventListener("click", () => {
+            publish(scene, user);
+        });
+    }
     return game;
 }
 
 const publish = (scene, user) => {
     console.log("publish");
-    let noteList = scene.getBeatmap(); //TODO method EditScene
+    noteList = scene.getBeatmap();
     let beatmap = {
         noteList: noteList,
         difficulty: difficulty,
@@ -172,6 +191,30 @@ const publish = (scene, user) => {
         })
         .then((data) => onBeatmapPublication(data))
         .catch((err) => onError(err));
+}
+
+const update = (scene, user) => {
+    noteList = scene.getBeatmap();
+    let data = {
+        beatmapID: beatmapID,
+        noteList: noteList,
+        username: user.username,
+    }
+
+    fetch("/api/beatmaps/",{
+        method: "PATCH",
+        body: JSON.stringify(data),
+        headers: {
+            Authorization: user.token,
+            "Content-Type": "application/json",
+        }
+    })
+    .then((response) => {
+        if (!response.ok) throw new Error("Error code : " + response.status + " : " + response.statusText);
+        return response.json();
+    })
+    .then((data) => onBeatmapPublication(data))
+    .catch((err) => onError(err));
 }
 
 //-- event handlers --
