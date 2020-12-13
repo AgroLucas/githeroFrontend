@@ -202,7 +202,7 @@ const update = (scene, user) => {
     }
 
     fetch("/api/beatmaps/",{
-        method: "PUT",
+        method: "PATCH",
         body: JSON.stringify(data),
         headers: {
             Authorization: user.token,
