@@ -15,6 +15,7 @@ if (!detectMob()) {
             Il existe également des notes longues, quand elles atteignent une de vos touches restez appuyer pour gagner des points. </br>
             Si vous êtes connecté, votre score final sera sauvegardé et vous pourrez le comparer à celui des autres </br>
             sur la page "Classements".</p>
+            <p>Il est également possible de créer et modifier sa propre beatmap sur ordinateur seulement !</p>
         </div>
     </div>`;
 } else {
@@ -31,6 +32,7 @@ if (!detectMob()) {
             Il existe également des notes longues, quand elles atteignent une de vos touches restez appuyer pour gagner des points. </br>
             Si vous êtes connecté, votre score final sera sauvegardé et vous pourrez le comparer à celui des autres </br>
             sur la page "Classements".</p>
+            <p>Il est également possible de créer et modifier sa propre beatmap sur ordinateur seulement !</p>
         </div>
     </div>`;
 }
