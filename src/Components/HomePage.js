@@ -20,7 +20,7 @@ let pageAuthHtml = `
         <img id="logo" class="mt-2 mb-3" src="`+ logo +`" alt="logo">
         <h1 id="titleHomePage" class="display-2 mb-2 mb-md-5 text-center">GitHero</h1>
         <div class="row">
-            <div class="col-12"><button type="button" class="btn btn-danger homepage_play_button mt-5" href="#" data-uri="/list"><strong data-uri="/addBeatmap">Jouer</strong></button></div>`
+            <div class="col-12"><button type="button" class="btn btn-danger homepage_play_button mt-5" href="#" data-uri="/list"><strong data-uri="/list">Jouer</strong></button></div>`
         if (!detectMob()) {
             pageAuthHtml+=`
                 </div><div class="row">

@@ -1,4 +1,3 @@
-import {RedirectUrl} from "./Router.js";
 import {detectMob} from "../utils/Utils.js"
 
 let pageHtml = `

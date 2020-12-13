@@ -1,10 +1,11 @@
 "use strict";
 import {searchForPlayBtns} from "./Router.js";
 import {getUserSessionData} from "../utils/Session.js";
+import {detectMob} from "../utils/Utils.js"
+import { RedirectUrl } from "./Router.js";
 
 
 let page = document.querySelector("#page");
-let token = 0;
 
 const MusicListPage = (message) => {
     loadBeatmap(message);
@@ -99,6 +100,12 @@ const loadBeatmap = async (message) => {
                                 
                             }
                         }
+                        if (!detectMob() && user.username === element.creator && element.beatmapID >= 0) { 
+                            modalHtml += `
+                            <div class="d-flex justify-content-center mt-5 mb-3">
+                                <button type="button" id="`+element.beatmapID+`" class="btn modify"><h5>Modifier</h5></button>
+                            </div>`;
+                        }
                     modalHtml += `      
                     </div>
                 </div>
@@ -107,9 +114,11 @@ const loadBeatmap = async (message) => {
         let pageHtml = `<div class="text-center font-weight-bold">` + message + `</div><div id="button_page" class="d-flex flex-md-row flex-sm-column justify-content-start flex-wrap">` + buttonHtml + `</div><div id="modal_page">` + modalHtml + `</div>`;
         page.innerHTML = pageHtml;
         searchForPlayBtns();
-        let buttons = document.querySelectorAll(".changeActive");
-        buttons.forEach(element => {
-         element.addEventListener("click", e =>  test(element, user))                       
+        document.querySelectorAll(".changeActive").forEach(element => {
+            element.addEventListener("click", e =>  changeActive(element, user))                       
+        });
+        document.querySelectorAll(".modify").forEach(element => {
+            element.addEventListener("click", e =>  modify(element))                       
         });
     });
 }
@@ -124,7 +133,12 @@ const getDifficultyWithColor = (music) => {
   else return '<span class="badge badge-danger">' + music.difficulty + '</span>';
 }
 
-const test = async (button, user) => {
+const modify = async (button) => {    //TODO 
+
+}
+
+
+const changeActive = async (button, user) => {
     let isActive = button.childNodes[0].innerHTML+"";
     if (isActive === "Bloquer") {
         button.childNodes[0].innerHTML = "Processing"

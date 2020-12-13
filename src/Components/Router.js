@@ -11,7 +11,6 @@ import RegisterPage from "./RegisterPage.js";
 import LogoutComponent from "./LogoutComponent.js";
 import ErrorPage from "./ErrorPage.js";
 import EditPage from "./PhaserEdit/EditPage.js";
-import {getUserSessionData} from "../utils/Session.js";
 
 const routes = {
     "/": HomePage,

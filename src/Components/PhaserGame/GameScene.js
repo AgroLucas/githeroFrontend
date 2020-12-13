@@ -68,7 +68,6 @@ export default class GameScene extends Phaser.Scene {
             this.btnYOffset *= this.smallBtnScale;
             this.noteTravelTime = this.slowTravelTime;
         }
-        console.log("btn size: ", this.btnSize);
         
         this.masterVolume = userPreferences.volume.master;
         this.soundEffectVolume = userPreferences.volume.effect;
@@ -199,7 +198,6 @@ export default class GameScene extends Phaser.Scene {
             loop: false,
             delay: 0
         }
-        console.log(instance.soundEffectAudioConfig);
         instance.hitSoundSelect=1;
         instance.slideSoundSelect=1;
         instance.hitSoundMax=4;
