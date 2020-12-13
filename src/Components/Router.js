@@ -124,19 +124,6 @@ const RedirectUrl = (uri, data) => {
         componentToRender(data);
 };
 
-
-const searchForPlayBtns = () => {
-    let playBtnArray = document.querySelectorAll(".playBtn");
-    for (let index = 0; index < playBtnArray.length; index++) {
-        let playBtn = playBtnArray[index];
-        let beatmapID = playBtn.id;
-        playBtn.addEventListener("click", () => {
-            RedirectUrl("/game", beatmapID);
-        });
-    }
-}
-
-
 const removeModals = () => {
     let modalArray = document.querySelectorAll(".modal-backdrop");
     for (let index = 0; index < modalArray.length; index++) {

@@ -113,12 +113,14 @@ const loadBeatmap = async (message) => {
         });    
         let pageHtml = `<div class="text-center font-weight-bold">` + message + `</div><div id="button_page" class="d-flex flex-md-row flex-sm-column justify-content-start flex-wrap">` + buttonHtml + `</div><div id="modal_page">` + modalHtml + `</div>`;
         page.innerHTML = pageHtml;
-        searchForPlayBtns();
+        document.querySelectorAll(".playBtn").forEach(element => {
+            element.addEventListener("click", () => RedirectUrl("/game", element.id))
+        });
         document.querySelectorAll(".changeActive").forEach(element => {
-            element.addEventListener("click", e =>  changeActive(element, user))                       
+            element.addEventListener("click", () =>  changeActive(element, user))                       
         });
         document.querySelectorAll(".modify").forEach(element => {
-            element.addEventListener("click", e =>  modify(element))                       
+            element.addEventListener("click", () =>  modify(element))                       
         });
     });
 }
