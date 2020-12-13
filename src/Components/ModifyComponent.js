@@ -6,7 +6,7 @@ let user;
 const Modify = (beatmapID) => {
     user = getUserSessionData();
 
-    if(!user || beatmapID < 0){
+    if(!user || !beatmapID || beatmapID < 0){
         RedirectUrl("/list");
     }
     
@@ -25,7 +25,7 @@ const onError = (err) => {
 }
 
 const onResponse = (data) => {
-    if(user.username === data.bmCreator){
+    if(user.username == data.creator){
         let beatmap = {
             beatmapID: data.beatmapID,
             difficulty: data.difficulty,

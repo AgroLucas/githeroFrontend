@@ -106,7 +106,7 @@ const loadBeatmap = async (message) => {
                             if (!detectMob() && user.username === element.creator && element.beatmapID >= 0) { 
                                 modalHtml += `
                                 <div class="d-flex justify-content-center mt-5 mb-3">
-                                    <button type="button" id="`+element.beatmapID+`" class="btn modify"><h5>Modifier</h5></button>
+                                    <button type="button" id="`+element.beatmapID+`" class="btn btn-secondary modify"><h5>Modifier</h5></button>
                                 </div>`;
                             }
                         modalHtml += `      
@@ -138,7 +138,7 @@ const loadBeatmap = async (message) => {
         });
 
         document.querySelectorAll(".modify").forEach(element => {
-            element.addEventListener("click", () =>  modify(element))                       
+            element.addEventListener("click", () =>  RedirectUrl("/modify", element.id));                       
         });
 
     });
@@ -152,14 +152,6 @@ const getDifficultyWithColor = (music) => {
   if(music.difficulty == "Facile") return '<span class="badge badge-success">' + music.difficulty + '</span>';
   if(music.difficulty == "Moyen") return '<span class="badge badge-warning">' + music.difficulty + '</span>';
   else return '<span class="badge badge-danger">' + music.difficulty + '</span>';
-}
-
-const redirectGame = (e) => {
-    RedirectUrl("/game", e.target.id);
-}
-
-const modify = async (button) => {    //TODO 
-
 }
 
 

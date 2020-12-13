@@ -56,18 +56,18 @@ let onRegister = async (e) => {
     console.log(response); // HTTP reponse
     if(!response.ok) 
     throw new Error("Error code : " + response.status + " , " + response.statusText);
-    let jsonResponse = await response.json(); // return le body de la reponse parsed in JSON
+    let jsonResponse = await response.json(); // return the body of the response parsed in JSON
     console.log("Response from server in JSON:", jsonResponse);
     setUserSessionData(jsonResponse);
     Navbar(jsonResponse); //refresh navbar for auth user
-    RedirectUrl("/"); // renvoi home donc  ?!?!
+    RedirectUrl("/"); 
   }catch (error) {
     let messageBoard = document.querySelector("#messageBoard");
     let errorMessage = "";
     if(errorMessage.includes("409")) errorMessage = "This user is already registered";
     else errorMessage = error.message;
     messageBoard.innerText=errorMessage;
-    messageBoard.classList.add("d-block"); // montre le message grace au dblock de la classe boostrap
+    messageBoard.classList.add("d-block"); // show the message with the bootstrap class dblock
   }
     
 }

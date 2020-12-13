@@ -11,6 +11,7 @@ import RegisterPage from "./RegisterPage.js";
 import LogoutComponent from "./LogoutComponent.js";
 import ErrorPage from "./ErrorPage.js";
 import EditPage from "./PhaserEdit/EditPage.js";
+import Modify from "./ModifyComponent.js";
 
 const routes = {
     "/": HomePage,
@@ -25,6 +26,7 @@ const routes = {
     "/options": OptionsPage,
     "/addBeatmap": AddMusicInfo,
     "/edit": EditPage,
+    "/modify": Modify,
 };
 
 let componentToRender;
