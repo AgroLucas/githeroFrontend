@@ -146,4 +146,4 @@ const createGame = async (data) => {
     game = await GamePage(data);
 }
 
-export { Router, RedirectUrl, searchForPlayBtns};
+export { Router, RedirectUrl};
