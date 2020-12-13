@@ -543,4 +543,23 @@ export default class EditScene extends Phaser.Scene {
         return res;
     }
 
+    //add notes to beatmap
+    loadBeatmap(noteList){
+        for(let i=0; i<noteList.length; i++){
+            let note = noteList[i];
+            let noteType = note[0];
+            let lineNum = note[1];
+            switch(noteType){
+                case 0: //simple
+                    let time = note[2];
+                    this.createSimpleNote(lineNum, time);
+                    break;
+                case 1: //long
+                    let timeStart = note[2];
+                    let timeEnd = note[3];
+                    this.createLongNote(lineNum, timeStart, timeEnd);
+            }
+        }
+    }
+
 }
