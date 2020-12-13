@@ -20,6 +20,8 @@ const loadScoreboard = async () => {
         response.totalscore.every(element => {
             if (index==51)
                 return false;
+            if (element.totalHighscore == 0)
+                return false;
             if (user && user.username == element.username) {
                 if (index===1)
                     rankMessage = "Vous êtes " + index + "er";
