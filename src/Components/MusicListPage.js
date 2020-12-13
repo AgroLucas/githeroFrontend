@@ -103,7 +103,7 @@ const loadBeatmap = async (message) => {
                         if (!detectMob() && user.username === element.creator && element.beatmapID >= 0) { 
                             modalHtml += `
                             <div class="d-flex justify-content-center mt-5 mb-3">
-                                <button type="button" id="`+element.beatmapID+`" class="btn modify"><h5>Modifier</h5></button>
+                                <button type="button" id="`+element.beatmapID+`" class="btn btn-secondary modify"><h5>Modifier</h5></button>
                             </div>`;
                         }
                     modalHtml += `      
