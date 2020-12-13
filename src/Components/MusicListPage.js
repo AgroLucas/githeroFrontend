@@ -114,13 +114,13 @@ const loadBeatmap = async (message) => {
         let pageHtml = `<div class="text-center font-weight-bold">` + message + `</div><div id="button_page" class="d-flex flex-md-row flex-sm-column justify-content-start flex-wrap">` + buttonHtml + `</div><div id="modal_page">` + modalHtml + `</div>`;
         page.innerHTML = pageHtml;
         document.querySelectorAll(".playBtn").forEach(element => {
-            element.addEventListener("click", () => RedirectUrl("/game", element.id))
+            element.addEventListener("click", () => RedirectUrl("/game", element.id));
         });
         document.querySelectorAll(".changeActive").forEach(element => {
-            element.addEventListener("click", () =>  changeActive(element, user))                       
+            element.addEventListener("click", () =>  changeActive(element, user));                    
         });
         document.querySelectorAll(".modify").forEach(element => {
-            element.addEventListener("click", () =>  modify(element))                       
+            element.addEventListener("click", () =>  RedirectUrl("/modify", element.id));                       
         });
     });
 }
@@ -133,10 +133,6 @@ const getDifficultyWithColor = (music) => {
   if(music.difficulty == "Facile") return '<span class="badge badge-success">' + music.difficulty + '</span>';
   if(music.difficulty == "Moyen") return '<span class="badge badge-warning">' + music.difficulty + '</span>';
   else return '<span class="badge badge-danger">' + music.difficulty + '</span>';
-}
-
-const modify = async (button) => {    //TODO 
-
 }
 
 
