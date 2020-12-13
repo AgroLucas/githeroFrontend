@@ -11,4 +11,4 @@ npm start
 
 4) Make sure to follow backend's README
 
-Avilable at https://githero-game.herokuapp.com/ (also on mobile)
+Available at https://githero-game.herokuapp.com/ (also on mobile)
