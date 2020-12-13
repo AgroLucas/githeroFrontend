@@ -10,5 +10,3 @@ npm install
 npm start
 
 4) Make sure to follow backend's README
-
-Note: the site is also available at https://githero-game.herokuapp.com/ (and on smartphones)
