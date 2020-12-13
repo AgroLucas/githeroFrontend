@@ -48,7 +48,7 @@ let pageHtml = `
 `;
 
 let modify;
-let noteList;
+let noteList = [];
 let beatmapID;
 
 let timeLine;
@@ -102,6 +102,7 @@ const EditPage = (data) => {
     }else { //modify aleady existing beatmap
         modify = true;
         noteList = data.noteList;
+        console.log(noteList);
         beatmapID = data.beatmapID;
     }
 
@@ -133,7 +134,7 @@ const EditPage = (data) => {
     const editScreenHeight = 1/2 * window.innerHeight;
     
 
-    scene = new EditScene(editScreenWidth, editScreenHeight, duration)
+    scene = new EditScene(editScreenWidth, editScreenHeight, duration, noteList);
 
     let config = {
         type: Phaser.AUTO,
@@ -152,7 +153,6 @@ const EditPage = (data) => {
     longBtn.addEventListener("click", onClickLongNotesBtn);
 
     if(modify){ //modify
-        scene.loadBeatmap(scene, noteList);
         publishBtn.innerText = "Modifier";
         publishBtn.addEventListener("click", () => {
             update(scene, user);

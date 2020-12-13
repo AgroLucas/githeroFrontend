@@ -19,8 +19,10 @@ const gradLineImgHeight = 200;
 const beforeAfterRatio = 1/10; //time offset
 
 export default class EditScene extends Phaser.Scene {
-    constructor(width, height, duration) {
+    constructor(width, height, duration, noteList) {
         super('game-scene');
+
+        this.initNoteList = noteList;
 
         //proportions
         this.width = width;
@@ -90,6 +92,24 @@ export default class EditScene extends Phaser.Scene {
         this.input.on("pointermove", this.ghostFollow);
         this.input.on("pointermove", this.tailGhostFollow);
         this.input.on("pointerdown", this.addNote);
+
+        if(this.initNoteList){ //create notes if provided
+            for(let i=0; i<this.initNoteList.length; i++){
+                let note = this.initNoteList[i];
+                let noteType = note[0];
+                let lineNum = note[1];
+                switch(noteType){
+                    case 0:
+                        let time = note[2];
+                        this.createSimpleNote(lineNum, time);
+                        break;
+                    case 1:
+                        let start = note[2];
+                        let end = note[3];
+                        this.createLongNote(lineNum, start, end);
+                } 
+            }
+        }
     }
 
     createLines() {
@@ -212,7 +232,7 @@ export default class EditScene extends Phaser.Scene {
             let lineNbr = this.getLineNumFromY(pointer.y);
             if(this.isAvailableForSimple(time, lineNbr)){
                 console.log("add s");
-                this.createSimpleNote(this, lineNbr, time);
+                this.createSimpleNote(lineNbr, time);
             }
         }
     }
@@ -346,25 +366,25 @@ export default class EditScene extends Phaser.Scene {
         }
     }
 
-    createSimpleNote(instance, lineNum, time){
+    createSimpleNote(lineNum, time){
         let note = [0, lineNum, time];
-        let test = instance.add;
-        console.log(instance, instance.add);
-        let sprite = instance.add.sprite(instance.getXFromTime(time), instance.getYFromLineNum(lineNum), sNoteKey).setInteractive();
+        let test = this.add;
+        console.log(this, this.add);
+        let sprite = this.add.sprite(this.getXFromTime(time), this.getYFromLineNum(lineNum), sNoteKey).setInteractive();
         let noteBundle = {
             note: note,
             sprite: sprite,
         }
-        instance.beatmap.push(noteBundle);
+        this.beatmap.push(noteBundle);
 
         sprite.on("pointerdown", ()=>{
-            instance.deleteSimpleNote(sprite)
+            this.deleteSimpleNote(sprite)
         });
         sprite.on("pointerover", ()=>{
-            instance.highlightSimpleNote(sprite);
+            this.highlightSimpleNote(sprite);
         });
         sprite.on("pointerout", ()=>{
-            instance.removeSimpleNoteHighlight(sprite);
+            this.removeSimpleNoteHighlight(sprite);
         });
     }
 
@@ -543,25 +563,6 @@ export default class EditScene extends Phaser.Scene {
             res.push(noteBundle.note);            
         });
         return res;
-    }
-
-    //add notes to beatmap
-    loadBeatmap(noteList, instance){
-        for(let i=0; i<noteList.length; i++){
-            let note = noteList[i];
-            let noteType = note[0];
-            let lineNum = note[1];
-            switch(noteType){
-                case 0: //simple
-                    let time = note[2];
-                    this.createSimpleNote(instance, lineNum, time);
-                    break;
-                case 1: //long
-                    let timeStart = note[2];
-                    let timeEnd = note[3];
-                    this.createLongNote(lineNum, timeStart, timeEnd);
-            }
-        }
     }
 
 }
