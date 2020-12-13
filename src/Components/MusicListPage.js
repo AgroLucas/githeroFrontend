@@ -48,8 +48,11 @@ const loadBeatmap = async (message) => {
                                             <tbody>`
                                             let cmpt = 0;
                                             for(let i = 0; i < 5 && i < element.leaderboard.length; i++) {
+                                                if (user && user.username == element.leaderboard[i].username)
+                                                    modalHtml+=`<tr class="text-warning">`
+                                                else
+                                                    modalHtml+=`<tr>`;
                                                 modalHtml+=`
-                                                <tr>
                                                     <td>` + (i+1) + `</td>
                                                     <td>` + element.leaderboard[i].username + `</td>
                                                     <td>` + element.leaderboard[i].score + `</td>
@@ -73,7 +76,7 @@ const loadBeatmap = async (message) => {
                                     </div>
                                     <div class="music_info_leaderboard">
                                         <p><h4>` + element.musicTitle + `</h4></p>
-                                        <p>Durée : ` + (Math.floor(element.musicDuration/1000/60)) + `:` + (Math.floor(element.musicDuration/1000)%60) + `</p>
+                                        <p>Durée : ` + convertMsToDisplay(element.musicDuration) + `</p>
                                         <p>Auteur : ` + element.musicArtist + `</p>
                                         <p>Créateur du niveau : ` + element.creator + `</p>
                                         <p>Votre meilleur score : ` + element.highscore + ` points</p>
@@ -214,6 +217,20 @@ const isAdmin = async (user) => {
         }).then((data) => isAdmin = data.isAdmin)
         .catch((err) => console.log(err));
         return isAdmin;
+}
+
+const convertMsToDisplay = (time) => {
+    let allSeconds = Math.floor(time/1000);
+    let seconds = allSeconds%60;
+    let minutes = Math.floor(allSeconds/60);
+    if(seconds < 10){
+        seconds = "0"+seconds;
+    }
+    if(minutes < 10){
+        minutes = "0"+minutes;
+    }
+    let res = minutes + ":" + seconds;
+    return res;
 }
 
 export default MusicListPage;
