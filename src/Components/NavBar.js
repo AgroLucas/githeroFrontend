@@ -8,7 +8,7 @@ let navBar = document.querySelector("#navbar");
 const Navbar = () => { 
     let navbarHtml;
     let user = getUserSessionData();
-    if(user){ // connecté
+    if(user){ // if connected
         navbarHtml = `
             <nav class="navbar navbar-expand-sm navbar-dark" id="navbar">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +27,7 @@ const Navbar = () => {
                     </ul>
                 </div>
             </nav>`;
-    } else { // pas connecté
+    } else { // if not connected
         navbarHtml = `
             <nav class="navbar navbar-expand-sm bg-primary navbar-dark" id="navbar">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
