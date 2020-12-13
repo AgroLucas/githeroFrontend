@@ -154,6 +154,9 @@ const getDifficultyWithColor = (music) => {
   else return '<span class="badge badge-danger">' + music.difficulty + '</span>';
 }
 
+const redirectGame = (e) => {
+    RedirectUrl("/game", e.target.id);
+}
 
 const changeActive = async (button, user, playBtn) => {
     let isActive = button.childNodes[0].innerHTML+"";
