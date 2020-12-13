@@ -167,7 +167,7 @@ const EditPage = (data) => {
 
 const publish = (scene, user) => {
     console.log("publish");
-    noteList = scene.getBeatmap(); //TODO method EditScene
+    noteList = scene.getBeatmap();
     let beatmap = {
         noteList: noteList,
         difficulty: difficulty,
