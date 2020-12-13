@@ -6,7 +6,7 @@ let user;
 const Modify = (beatmapID) => {
     user = getUserSessionData();
 
-    if(!user || beatmapID < 0){
+    if(!user || !beatmapID || beatmapID < 0){
         RedirectUrl("/list");
     }
     
