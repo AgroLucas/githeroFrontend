@@ -1,7 +1,7 @@
 # Projet_JS_Frontend
 
 1) Clone the repo
-git clone https://github.com/baptistehonnay/Projet_JS_Frontend
+git clone https://github.com/baptistehonnay/Projet_JS_Frontend.git
 
 2) Install dependencies
 npm install
