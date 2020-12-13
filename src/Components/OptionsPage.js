@@ -92,7 +92,6 @@ const OptionsPage = () => {
     page.innerHTML = pageHtml;
 
     currentPreferences = getUserPreferences(); //previously stored prefs. or default
-    console.log(currentPreferences);
 
     btnKey1 = document.querySelector("#btnKey1");
     btnKey2 = document.querySelector("#btnKey2");
@@ -155,7 +154,6 @@ const refreshFormInfo = () => {
 }
 
 const addKeyBindingBtnListeners = () => {
-    console.log("add BTN EE");
     btnKey1.addEventListener("click", onKeyBindingBtn1);
     btnKey2.addEventListener("click", onKeyBindingBtn2);
     btnKey3.addEventListener("click", onKeyBindingBtn3);
@@ -163,7 +161,6 @@ const addKeyBindingBtnListeners = () => {
 }
 
 const removeBtnListeners = () => {
-    console.log("remove BTN EE");
     btnKey1.removeEventListener("click", onKeyBindingBtn1);
     btnKey2.removeEventListener("click", onKeyBindingBtn2);
     btnKey3.removeEventListener("click", onKeyBindingBtn3);
@@ -172,7 +169,6 @@ const removeBtnListeners = () => {
 
 //remove key binding related EventListeners
 const removeKeyBindingListeners = () => {
-    console.log("remove KB EE");
     window.removeEventListener("keypress", onKey1Binding);
     window.removeEventListener("keypress", onKey2Binding);
     window.removeEventListener("keypress", onKey3Binding);
@@ -197,9 +193,7 @@ const onKeyBindingBtn4 = () => {
 
 const onKeyBindingBtn = (num) => {
     removeBtnListeners();
-    console.log("add CLICK EE");
     setTimeout(() => window.addEventListener("click", onClickOutside),100);
-    console.log("add KB EE");
     switch(num){
         case 1:
             window.addEventListener("keypress", onKey1Binding);
@@ -219,7 +213,6 @@ const onKeyBindingBtn = (num) => {
 //cancels key binding
 const onClickOutside = () => {
     removeKeyBindingListeners();
-    console.log("remove CLICK EE");
     window.removeEventListener("click", onClickOutside);
     if (!detectMob())
         addKeyBindingBtnListeners();

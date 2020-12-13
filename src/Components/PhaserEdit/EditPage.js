@@ -102,7 +102,6 @@ const EditPage = (data) => {
     }else { //modify aleady existing beatmap
         modify = true;
         noteList = data.noteList;
-        console.log(noteList);
         beatmapID = data.beatmapID;
     }
 
@@ -166,7 +165,6 @@ const EditPage = (data) => {
 }
 
 const publish = (scene, user) => {
-    console.log("publish");
     noteList = scene.getBeatmap();
     let beatmap = {
         noteList: noteList,
@@ -221,7 +219,6 @@ const update = (scene, user) => {
 
 const onClickSimpleNotesBtn = () => {
     resestTypeBtns();
-    console.log("simple");
     simpleBtn.className += " active";
     noteType = possibleNoteTypes.simple;
     scene.setNoteType(noteType);
@@ -229,7 +226,6 @@ const onClickSimpleNotesBtn = () => {
 
 const onClickLongNotesBtn = () => {
     resestTypeBtns();
-    console.log("long");
     longBtn.className += " active";
     noteType = possibleNoteTypes.long;
     scene.setNoteType(noteType);
@@ -238,7 +234,6 @@ const onClickLongNotesBtn = () => {
 //change time with line
 const onTimeChange = () => {
     currentTime = getTimeFromTimeline();
-    console.log("update time to "+currentTime);
     setTimer(currentTime);
     scene.updateCurrentTime(currentTime);
 }
@@ -252,14 +247,12 @@ const onError = (err) => {
 };
 
 const onBeatmapPublication = (data) => {
-    console.log("Success: res = ", data);
     RedirectUrl("/");
 }
 
 // -- business methods --
 
 const resestTypeBtns = () => {
-    console.log("reset");
     let idleClass = "btn btn-primary py-3";
     simpleBtn.className = idleClass;
     longBtn.className = idleClass;
