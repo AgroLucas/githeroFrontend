@@ -9,20 +9,22 @@ module.exports = {
     path: __dirname + "/dist",
     filename: "bundle.js",
   },
-  devtool: "cheap-module-eval-source-map",
+  devtool: "eval-cheap-module-source-map",
   devServer: {
-    contentBase: path.join(__dirname, "dist"),
-    port: 80,
+    static: {
+      directory: path.join(__dirname, "dist"),
+    },
+    port: 8080,
     host: '0.0.0.0', // server to be accessible externally
-    public: "localhost", // force to open localhost instead of 0.0.0.0
     open: true, // open the default browser
     historyApiFallback: true, // serve index.html instead of routes leading to no specific ressource
-    proxy: {
-      "/api": {
+    proxy: [
+      {
+        context: ["/api"],
         target: "http://localhost:3000",
         //pathRewrite: {'^/api' : ''}
       },
-    },
+    ],
   },
   module: {
     rules: [
